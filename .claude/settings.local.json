@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const si = require\\('react-icons/si'\\); console.log\\(Object.keys\\(si\\).filter\\(k => /linkedin|tiktok|thread|instagram/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const lr = require\\('/Users/dannyyy/Documents/nuclii_web/node_modules/lucide-react'\\); const icons = Object.keys\\(lr\\); console.log\\('Total icons:', icons.length\\); console.log\\('Briefcase:', icons.filter\\(k => /briefcase/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Store:', icons.filter\\(k => /store/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Wrench:', icons.filter\\(k => /wrench/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Stethoscope:', icons.filter\\(k => /steth/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('LayoutList:', icons.filter\\(k => /layoutlist/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Scissors:', icons.filter\\(k => /scissors/i.test\\(k\\)\\).join\\(', '\\)\\)\")",
+      "Bash(node -e \"const lr = require\\('/Users/dannyyy/Documents/nuclii_web/node_modules/lucide-react'\\); const icons = Object.keys\\(lr\\); console.log\\('Zap:', icons.filter\\(k => /zap/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Tag:', icons.filter\\(k => /^Tag/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Package:', icons.filter\\(k => /package/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('Globe:', icons.filter\\(k => /globe/i.test\\(k\\)\\).join\\(', '\\)\\); console.log\\('TicketCheck:', icons.filter\\(k => /ticketchec/i.test\\(k\\)\\).join\\(', '\\)\\)\")"
+    ]
+  }
+}
