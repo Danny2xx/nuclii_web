@@ -38,6 +38,6 @@ next-env.d.ts
 /memory/
 
 # loose asset files in root
-*.png
-*.jpg
-*.jpeg
+/*.png
+/*.jpg
+/*.jpeg
