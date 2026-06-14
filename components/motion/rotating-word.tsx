@@ -36,7 +36,7 @@ function RotatingWord() {
         <motion.span
           key={WORDS[index]}
           aria-live="polite"
-          className="absolute inset-0 flex items-center"
+          className="absolute inset-0 flex items-center text-primary"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

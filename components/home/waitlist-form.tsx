@@ -13,24 +13,13 @@ function hasJoinedWaitlist() {
   return localStorage.getItem(STORAGE_KEY) === "true";
 }
 
-const ROLE_OPTIONS = [
-  { value: "attendee", label: "attendee" },
-  { value: "host", label: "host" },
-  { value: "talent", label: "talent" },
-  { value: "venue", label: "venue" },
-  { value: "community", label: "society / community" },
-  { value: "other", label: "other" },
-] as const;
-
 const FIELD_CLASS =
-  "min-w-0 rounded-none border border-white/20 bg-black/30 px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-white/45 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/35";
+  "min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/45 focus-visible:bg-white/5";
 
 function WaitlistForm() {
   const isClient = useIsClient();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [city, setCity] = useState("");
-  const [role, setRole] = useState("");
   const [consent, setConsent] = useState(false);
   const [justJoined, setJustJoined] = useState<"new" | "duplicate" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,8 +51,6 @@ function WaitlistForm() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          city: city.trim(),
-          role,
           consent,
         }),
       });
@@ -105,11 +92,11 @@ function WaitlistForm() {
   return (
     <div className="w-full max-w-xl space-y-3">
       <form className="space-y-3" noValidate onSubmit={handleSubmit}>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="flex flex-col border border-white/20 bg-black/30 backdrop-blur-sm transition focus-within:border-primary/60 sm:flex-row">
           <input
             aria-label="Name"
             autoComplete="name"
-            className={FIELD_CLASS}
+            className={`${FIELD_CLASS} border-b border-white/10 sm:border-b-0 sm:border-r`}
             onChange={(e) => { setName(e.target.value); setError(""); }}
             placeholder="your name"
             type="text"
@@ -124,45 +111,8 @@ function WaitlistForm() {
             type="email"
             value={email}
           />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <input
-            aria-label="City"
-            autoComplete="address-level2"
-            className={FIELD_CLASS}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="city (optional)"
-            type="text"
-            value={city}
-          />
-          <select
-            aria-label="Role or interest"
-            className={FIELD_CLASS}
-            onChange={(e) => setRole(e.target.value)}
-            value={role}
-          >
-            <option className="text-foreground" value="">
-              role / interest (optional)
-            </option>
-            {ROLE_OPTIONS.map((option) => (
-              <option className="text-foreground" key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex items-center gap-2 text-xs text-white/60">
-            <input
-              checked={consent}
-              className="size-4 shrink-0 rounded-none border-white/30 bg-black/30 accent-primary"
-              onChange={(e) => { setConsent(e.target.checked); setError(""); }}
-              type="checkbox"
-            />
-            yes, email me when nuclii launches near me.
-          </label>
           <Button
-            className="shrink-0"
+            className="m-1.5 shrink-0"
             disabled={isSubmitting}
             size="lg"
             type="submit"
@@ -170,15 +120,20 @@ function WaitlistForm() {
             {isSubmitting ? "joining…" : "join the waitlist"}
           </Button>
         </div>
+        <label className="flex items-center gap-2 text-xs text-white/60">
+          <input
+            checked={consent}
+            className="size-4 shrink-0 rounded-none border-white/30 bg-black/30 accent-primary"
+            onChange={(e) => { setConsent(e.target.checked); setError(""); }}
+            type="checkbox"
+          />
+          yes, email me when nuclii launches near me. no spam, ever.
+        </label>
       </form>
 
       {error && (
         <p className="text-xs text-destructive" role="alert">{error}</p>
       )}
-
-      <p className="text-xs text-white/45">
-        no spam. first look when we launch.
-      </p>
     </div>
   );
 }
