@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { footerNavGroups, mobileNavItems } from "@/lib/navigation";
+import { footerNavGroups, sideNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 function MobileNav() {
@@ -25,6 +25,7 @@ function MobileNav() {
       <Button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+        className="fixed right-4 top-4 z-50"
         onClick={() => setOpen((current) => !current)}
         size="icon"
         type="button"
@@ -34,59 +35,62 @@ function MobileNav() {
       </Button>
 
       {open && (
-        <div className="fixed inset-x-0 top-[4.75rem] z-40 max-h-[calc(100dvh-4.75rem)] overflow-y-auto overscroll-contain border-b border-border bg-background/98 shadow-card backdrop-blur-xl">
-          <nav aria-label="Mobile navigation" className="flex flex-col px-4 pb-8 pt-4 sm:px-6">
+        <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-background/98 backdrop-blur-xl">
+          <nav aria-label="Mobile navigation" className="flex min-h-full flex-col px-6 pb-8 pt-24">
 
             {/* Primary CTA */}
             <Button asChild className="w-full" size="lg">
-              <Link href="/early-access" onClick={() => setOpen(false)}>
-                Join Early Access
+              <Link href="/#waitlist" onClick={() => setOpen(false)}>
+                Join the waitlist
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
 
             {/* Main pages */}
-            <div className="mt-5 flex flex-col gap-1">
-              {mobileNavItems.map((item) => {
-                const active = pathname === item.href;
+            <div className="mt-8 flex flex-col gap-5">
+              {sideNavItems.map((item) => {
+                const active =
+                  item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+
                 return (
-                  <Link
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "group flex items-center justify-between rounded-2xl px-4 py-4 transition",
-                      "hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "bg-primary/8 text-primary" : "text-foreground",
+                  <div key={item.href}>
+                    <Link
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "text-3xl font-extrabold tracking-tight transition-colors hover:text-white",
+                        active ? "text-white" : "text-white/55",
+                      )}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+
+                    {item.children && (
+                      <div className="mt-2 flex flex-col gap-2 pl-1">
+                        {item.children.map((child) => (
+                          <Link
+                            className="text-sm text-white/40 transition-colors hover:text-white/80"
+                            href={child.href}
+                            key={child.href}
+                            onClick={() => setOpen(false)}
+                          >
+                            ↳ {child.label}
+                          </Link>
+                        ))}
+                      </div>
                     )}
-                    href={item.href}
-                    key={item.href}
-                    onClick={() => setOpen(false)}
-                  >
-                    <div>
-                      <p className={cn(
-                        "text-sm font-semibold",
-                        active ? "text-primary" : "text-foreground",
-                      )}>
-                        {item.label}
-                      </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {item.description}
-                      </p>
-                    </div>
-                    <ArrowRight
-                      aria-hidden="true"
-                      className="size-4 shrink-0 text-muted-foreground/40 transition group-hover:translate-x-0.5 group-hover:text-primary"
-                    />
-                  </Link>
+                  </div>
                 );
               })}
             </div>
 
             {/* Legal links */}
-            <div className="mt-6 border-t border-border pt-5">
-              <p className="mb-3 px-4 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground/50">
+            <div className="mt-auto border-t border-border pt-5 mt-8">
+              <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground/50">
                 Legal
               </p>
-              <div className="flex flex-wrap gap-x-4 gap-y-2 px-4">
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {legalLinks.map((link) => (
                   <Link
                     className="text-xs text-muted-foreground transition hover:text-primary"

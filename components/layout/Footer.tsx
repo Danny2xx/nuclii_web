@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 
 import { LegalDrawer } from "@/components/layout/legal-drawer";
 import { SocialLinks } from "@/components/social/SocialLinks";
@@ -10,7 +9,7 @@ import {
   privacySections,
   termsSections,
 } from "@/lib/legal-content";
-import { footerNavGroups } from "@/lib/navigation";
+import { footerLinks, footerNavGroups } from "@/lib/navigation";
 
 const LAST_UPDATED = "May 27, 2026";
 
@@ -22,80 +21,66 @@ const legalDrawers: Record<string, { title: string; sections: Parameters<typeof 
 };
 
 function Footer() {
+  const legalLinks = footerNavGroups.find((g) => g.title === "Legal")?.links ?? [];
+
   return (
-    <footer className="border-t border-border bg-background/92">
-      <div className="nuclii-container py-14 sm:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_1.85fr]">
-          {/* Brand column */}
-          <div className="max-w-md">
+    <footer className="border-t border-border bg-background">
+      <div className="nuclii-container flex flex-col items-center gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-10">
+        <Link
+          aria-label="Nuclii home"
+          className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          href="/"
+        >
+          <Image
+            alt="Nuclii"
+            className="h-7 w-auto"
+            height={28}
+            src="/nuclii-logo.png"
+            width={75}
+          />
+        </Link>
+
+        <nav aria-label="Footer navigation" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {footerLinks.map((link) => (
             <Link
-              aria-label="Nuclii home"
-              className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              href="/"
+              className="text-sm text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              href={link.href}
+              key={link.href}
             >
-              <Image
-                alt="Nuclii"
-                className="h-9 w-auto"
-                height={36}
-                src="/nuclii-logo.png"
-                width={96}
-              />
+              {link.label}
             </Link>
-            <p className="mt-5 text-sm leading-7 text-muted-foreground">
-              Discovery, hosting, booking, and access infrastructure for
-              real-world experiences. Preparing for beta launch.
-            </p>
-            <SocialLinks className="mt-6" />
-          </div>
+          ))}
+        </nav>
 
-          {/* Link columns */}
-          <div className="grid gap-8 sm:grid-cols-2">
-            {footerNavGroups.map((group) => (
-              <nav aria-label={group.title} key={group.title}>
-                <h2 className="text-sm font-semibold text-foreground">
-                  {group.title}
-                </h2>
-                <ul className="mt-4 space-y-3">
-                  {group.links.map((link) => {
-                    const drawer = legalDrawers[link.href];
+        <SocialLinks />
+      </div>
 
-                    return (
-                      <li key={link.href + link.label}>
-                        {drawer ? (
-                          <LegalDrawer
-                            lastUpdated={LAST_UPDATED}
-                            sections={drawer.sections}
-                            title={drawer.title}
-                          >
-                            {link.label}
-                          </LegalDrawer>
-                        ) : (
-                          <Link
-                            className="text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            href={link.href}
-                          >
-                            {link.label}
-                          </Link>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-border">
+        <div className="nuclii-container flex flex-col gap-4 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Nuclii. All rights reserved.</p>
-          <div className="flex flex-col gap-1 sm:items-end">
-            <p className="inline-flex items-center gap-2">
-              <MapPin aria-hidden="true" className="size-4 text-primary" />
-              Preparing for beta launch
-            </p>
-            <p className="text-xs text-muted-foreground/60">
-              Pre-launch website. Product features subject to change before beta.
-            </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {legalLinks.map((link) => {
+              const drawer = legalDrawers[link.href];
+
+              return drawer ? (
+                <LegalDrawer
+                  key={link.href}
+                  lastUpdated={LAST_UPDATED}
+                  sections={drawer.sections}
+                  title={drawer.title}
+                >
+                  {link.label}
+                </LegalDrawer>
+              ) : (
+                <Link
+                  className="text-xs text-muted-foreground transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  href={link.href}
+                  key={link.href}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

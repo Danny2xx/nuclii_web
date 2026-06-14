@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   // Base — shared by every variant
-  "inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold leading-snug tracking-normal outline-none transition-[transform,box-shadow,border-color,background-color,opacity] duration-200 ease-out motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-semibold leading-snug tracking-normal outline-none transition-[transform,box-shadow,border-color,background-color,opacity] duration-200 ease-out motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {
-        // Black primary CTA — with glow pulse on hover
+        // Blue gradient primary CTA — with glow pulse on hover
         default:
-          "bg-[#0a0a0b] !text-[#ffffff] [&_svg]:!text-[#ffffff] shadow-[0_0_18px_rgba(91,140,255,0.18),inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-[#1c1c22] hover:shadow-[0_0_44px_rgba(91,140,255,0.48),0_8px_24px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.12)] hover:[&_svg:last-child]:translate-x-0.5 hover:animate-[nuclii-btn-pulse_2s_ease-in-out_infinite]",
+          "bg-gradient-to-br from-[#4f46e5] to-[#5b8cff] !text-[#ffffff] [&_svg]:!text-[#ffffff] shadow-[0_0_28px_rgba(91,140,255,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-[#5b51f5] hover:to-[#7c9bff] hover:shadow-[0_0_48px_rgba(91,140,255,0.55),0_8px_24px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.3)] hover:[&_svg:last-child]:translate-x-0.5 hover:animate-[nuclii-btn-pulse_2s_ease-in-out_infinite]",
 
         // Dark-surface filled — secondary emphasis
         secondary:

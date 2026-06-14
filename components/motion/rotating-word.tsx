@@ -5,16 +5,16 @@ import { AnimatePresence, motion } from "motion/react";
 
 // Widest word determines reserved layout width — prevents headline reflow
 const WORDS = [
-  "Event",
-  "Workshop",
-  "Pickup",
-  "Gathering",
-  "Pop-up",
-  "Showcase",
-  "Experience",
+  "event",
+  "workshop",
+  "pickup",
+  "gathering",
+  "pop-up",
+  "showcase",
+  "experience",
 ] as const;
 
-const WIDEST = "Experience";
+const WIDEST = "experience";
 
 function RotatingWord() {
   const [index, setIndex] = useState(0);
@@ -36,7 +36,7 @@ function RotatingWord() {
         <motion.span
           key={WORDS[index]}
           aria-live="polite"
-          className="absolute inset-0 flex items-center text-primary"
+          className="absolute inset-0 flex items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

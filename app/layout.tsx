@@ -27,18 +27,10 @@ export default function RootLayout({
     <html
       className={jakartaSans.variable}
       data-scroll-behavior="smooth"
-      data-theme="light"
+      data-theme="dark"
       lang="en"
       suppressHydrationWarning
     >
-      <head>
-        {/* Keep the pre-launch site light-only. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{localStorage.setItem('nuclii-theme','light');}catch(e){}document.documentElement.setAttribute('data-theme','light');})()`,
-          }}
-        />
-      </head>
       <body>
         <PageShell>{children}</PageShell>
         <Analytics />

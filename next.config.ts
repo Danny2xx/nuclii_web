@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/hosts",
-        destination: "/early-access?role=host",
+        destination: "/early-access#hosts",
         permanent: false,
       },
     ];

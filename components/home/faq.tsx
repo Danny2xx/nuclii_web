@@ -106,20 +106,19 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FAQ() {
   return (
-    <section className="nuclii-section border-y border-border">
+    <section className="nuclii-section border-t border-border">
       <div className="nuclii-container">
         <div className="mb-12 max-w-xl">
-          <p className="nuclii-eyebrow mb-5">Questions</p>
-          <h2 className="text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
-            Everything you need to know.
+          <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
+            everything you need to know.
           </h2>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
-            Can't find what you're looking for?{" "}
+            {"can't find what you're looking for? "}
             <a
               className="font-semibold text-primary underline-offset-4 hover:underline"
-              href="/contact"
+              href="mailto:hello@nuclii.co.uk"
             >
-              Send us a message.
+              send us a message.
             </a>
           </p>
         </div>
@@ -127,10 +126,10 @@ function FAQ() {
         <div className="grid gap-x-16 gap-y-10 lg:grid-cols-2">
           {faqs.map(({ category, items }) => (
             <div key={category}>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 {category}
               </p>
-              <div className="divide-y divide-border rounded-2xl border border-border bg-card px-5 sm:px-6">
+              <div className="divide-y divide-border">
                 {items.map(({ q, a }) => (
                   <FAQItem a={a} key={q} q={q} />
                 ))}

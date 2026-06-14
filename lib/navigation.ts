@@ -1,13 +1,20 @@
-export const mainNavItems: readonly { label: string; href: string }[] = [
-  { label: "Investors", href: "/investors" },
-];
+export const sideNavItems: readonly {
+  label: string;
+  href: string;
+  children?: readonly { label: string; href: string }[];
+}[] = [
+  { label: "home", href: "/" },
+  { label: "about us", href: "/about" },
+  { label: "early access", href: "/early-access" },
+  { label: "build with us", href: "/build-with-us" },
+] as const;
 
-export const mobileNavItems: readonly { label: string; href: string; description: string }[] = [
-  { label: "Early Access",  href: "/early-access",  description: "Join the first wave"              },
-  { label: "Investors",     href: "/investors",      description: "Investor information"             },
-  { label: "Careers",       href: "/build-with-us",  description: "Build with Nuclii"               },
-  { label: "Contact",       href: "/contact",        description: "Get in touch"                    },
-];
+export const footerLinks: readonly { label: string; href: string }[] = [
+  { label: "about us", href: "/about" },
+  { label: "early access", href: "/early-access" },
+  { label: "build with us", href: "/build-with-us" },
+  { label: "get in touch", href: "mailto:hello@nuclii.co.uk" },
+] as const;
 
 export const socialLinks = [
   { label: "Instagram", href: "https://www.instagram.com/wearenuclii/" },
@@ -17,15 +24,6 @@ export const socialLinks = [
 ] as const;
 
 export const footerNavGroups = [
-  {
-    title: "Nuclii",
-    links: [
-      { label: "Early Access", href: "/early-access" },
-      { label: "Investors", href: "/investors" },
-      { label: "Careers", href: "/build-with-us" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
   {
     title: "Legal",
     links: [
