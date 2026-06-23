@@ -30,7 +30,6 @@ function PolicyPage({
   return (
     <main className="nuclii-page">
       <section className="relative overflow-hidden py-14 sm:py-20 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_10%,rgba(91,140,255,0.16),transparent_34rem)]" />
         <div className="nuclii-container relative max-w-4xl">
           <Badge>{badge}</Badge>
           <h1 className="mt-6 text-3xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
@@ -41,11 +40,11 @@ function PolicyPage({
           </p>
           <div className="mt-8 rounded-2xl border border-primary/25 bg-primary/10 p-5">
             <p className="text-sm font-semibold text-primary">
-              Draft content
+              Pre-launch policy
             </p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Last updated: {lastUpdated}. This page is placeholder content for
-              the pre-launch website and should be reviewed before public launch.
+              Last updated: {lastUpdated}. These terms cover the pre-launch
+              website and may be updated before beta launch.
             </p>
           </div>
         </div>
@@ -68,9 +67,11 @@ function PolicyPage({
                   {section.items && (
                     <ul className="space-y-3 text-sm leading-7 text-muted-foreground sm:text-base">
                       {section.items.map((item) => (
-                        <li className="flex gap-3" key={item}>
-                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                          <span>{item}</span>
+                        <li
+                          className="border-t border-border pt-3"
+                          key={item}
+                        >
+                          {item}
                         </li>
                       ))}
                     </ul>

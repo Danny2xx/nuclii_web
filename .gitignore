@@ -41,3 +41,13 @@ next-env.d.ts
 /*.png
 /*.jpg
 /*.jpeg
+
+# local tooling / agent artifacts
+/.agents/
+/.codex/
+/.impeccable/
+/.claude/skills/
+/skills-lock.json
+
+# raw source assets (already copied into /public)
+/nuclii_aboutus/

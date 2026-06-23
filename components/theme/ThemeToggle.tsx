@@ -40,12 +40,13 @@ function useTheme(): { theme: Theme; toggle: () => void } {
   return { theme: isClient ? theme : "dark", toggle };
 }
 
-function ThemeToggle() {
+function ThemeToggle({ className }: { className?: string }) {
   const { theme, toggle } = useTheme();
 
   return (
     <Button
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      className={className}
       onClick={toggle}
       size="icon"
       type="button"

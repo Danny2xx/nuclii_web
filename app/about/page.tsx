@@ -1,21 +1,27 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { FadeIn, Reveal } from "@/components/motion";
-import { PhotoPlaceholder } from "@/components/media/photo-placeholder";
+import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "About | Nuclii",
   description:
-    "Nuclii exists to help people discover great things happening in the real world — and bring more people together, in person.",
+    "Nuclii exists to help people discover great things happening in the real world, and bring more people together, in person.",
 };
 
-const beliefs = [
+const heroVideos = [
+  "/videos/about/team1.mp4",
+  "/videos/about/team2.mp4",
+] as const;
+
+const principles = [
   {
     number: "01",
     title: "real-world first",
-    description:
-      "we're here to strengthen offline communities, not replace them.",
+    description: "we strengthen offline communities, not replace them.",
   },
   {
     number: "02",
@@ -25,7 +31,7 @@ const beliefs = [
   {
     number: "03",
     title: "community over audience",
-    description: "we build for people, not metrics.",
+    description: "we build for people, not vanity metrics.",
   },
   {
     number: "04",
@@ -34,20 +40,55 @@ const beliefs = [
   },
 ] as const;
 
+const connections = [
+  {
+    title: "attendees",
+    description: "discover events, communities, and real connections.",
+  },
+  {
+    title: "hosts",
+    description: "create, promote, and manage experiences.",
+  },
+  {
+    title: "venues",
+    description: "fill spaces and connect with the right audiences.",
+  },
+  {
+    title: "talent",
+    description: "get discovered, booked, and supported.",
+  },
+  {
+    title: "communities",
+    description: "bring people together around shared interests.",
+  },
+] as const;
+
 export default function AboutPage() {
   return (
     <main className="nuclii-page">
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[85vh] items-end overflow-hidden sm:min-h-screen">
-        <PhotoPlaceholder className="absolute inset-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10" />
-        <div className="nuclii-container relative pb-16 pt-32 sm:pb-20 lg:pb-24">
+      <section className="relative flex min-h-[85svh] items-end overflow-hidden sm:min-h-svh">
+        <VideoBackgroundCarousel className="absolute inset-0" sources={heroVideos} />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/10" />
+        <div className="nuclii-container relative pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24">
           <FadeIn>
             <h1 className="nuclii-display lowercase text-white">about us.</h1>
             <p className="mt-6 max-w-md text-base leading-7 text-white/70 sm:text-lg">
-              Nuclii exists to help people discover great things happening in
-              the real world — and bring more people together, in person.
+              nuclii exists to help people discover great things happening in
+              the real world, and bring more people together, in person.
             </p>
+            <div className="mt-8">
+              <Button
+                asChild
+                className="nuclii-action-button group w-full justify-center border border-white bg-white lowercase !text-black hover:border-white hover:!text-white sm:w-auto"
+                size="lg"
+              >
+                <a href="/early-access">
+                  <span className="text-current">get early access</span>
+                  <ArrowRight aria-hidden="true" className="!text-current" />
+                </a>
+              </Button>
+            </div>
           </FadeIn>
         </div>
       </section>
@@ -63,50 +104,155 @@ export default function AboutPage() {
           <Reveal delay={0.1}>
             <div className="space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
               <p>
-                real-world connection is fragmented.
+                real connections are fragmented.
                 <br />
                 the best things happening in your city are often hidden in
-                stories, group chats, flyers, and word of mouth.
+                stories, group chats, flyers, forms, and word of mouth.
               </p>
               <p>
-                Nuclii exists to make discovery, hosting, and access simpler
-                and more human.
+                attendees struggle to find what&apos;s actually happening.
+                hosts struggle to reach the right people. venues struggle to
+                fill spaces. talent struggles to get discovered.
               </p>
               <p>
-                {
-                  "we're building the infrastructure for attendees, hosts, venues, and communities to find each other and build culture offline."
-                }
+                nuclii exists to make discovery, hosting, and access simpler,
+                safer, and more human.
               </p>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* ── Beliefs + collage ─────────────────────────────────────────── */}
+      {/* ── Our principles ───────────────────────────────────────────── */}
       <section className="nuclii-section border-t border-border">
-        <div className="nuclii-container grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+        <div className="nuclii-container grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <Reveal>
             <div>
-              {beliefs.map((belief) => (
-                <div className="nuclii-numbered-item" key={belief.number}>
-                  <p className="nuclii-numbered-item__heading">
-                    <span className="nuclii-numbered-item__number">
-                      {belief.number}
-                    </span>
-                    {belief.title} —
-                  </p>
-                  <p className="nuclii-numbered-item__description">
-                    {belief.description}
-                  </p>
-                </div>
-              ))}
+              <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
+                our principles
+              </h2>
+              <div className="mt-8">
+                {principles.map((principle) => (
+                  <div className="nuclii-numbered-item" key={principle.number}>
+                    <p className="nuclii-numbered-item__heading">
+                      <span className="nuclii-numbered-item__number">
+                        {principle.number}
+                      </span>
+                      {principle.title}
+                    </p>
+                    <p className="nuclii-numbered-item__description">
+                      {principle.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="grid grid-cols-2 gap-4">
-              <PhotoPlaceholder className="row-span-2 rounded-2xl border border-border" />
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
+              <div className="relative row-span-2 overflow-hidden rounded-2xl border border-border">
+                <Image
+                  alt="Two people in conversation at a Nuclii gathering"
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 30vw, 50vw"
+                  src="/images/about-conversation.jpg"
+                />
+              </div>
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border">
+                <Image
+                  alt="Friends sharing a meal under string lights"
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  src="/images/about-gathering.jpg"
+                />
+              </div>
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border">
+                <Image
+                  alt="A community group sitting together in a circle"
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  src="/images/about-circle.jpg"
+                />
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── What nuclii connects ─────────────────────────────────────── */}
+      <section className="nuclii-section border-t border-border">
+        <div className="nuclii-container">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+            <Reveal>
+              <h2 className="max-w-xl text-3xl font-extrabold lowercase sm:text-4xl">
+                what nuclii connects
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div>
+                {connections.map((item) => (
+                  <div
+                    className="grid gap-1 border-t border-border py-5 sm:grid-cols-[11rem_1fr] sm:gap-8 sm:py-6"
+                    key={item.title}
+                  >
+                    <p className="text-lg font-bold lowercase tracking-[-0.02em] sm:text-xl">
+                      {item.title}
+                    </p>
+                    <p className="text-base leading-7 text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+          <Reveal delay={0.15}>
+            <div className="relative mt-12 aspect-[16/7] overflow-hidden rounded-2xl border border-border">
+              <Image
+                alt="A venue lit up for a Nuclii experience"
+                className="object-cover"
+                fill
+                sizes="100vw"
+                src="/images/venue.jpg"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── For every first connection ───────────────────────────────── */}
+      <section className="nuclii-section border-t border-border">
+        <div className="nuclii-container grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
+          <Reveal>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border sm:aspect-video lg:aspect-[4/5]">
+              <Image
+                alt="Someone discovering a creative experience in person"
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                src="/images/talent.jpg"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div>
+              <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
+                for every
+                <br />
+                first connection.
+              </h2>
+              <div className="mt-6 space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
+                <p>nuclii is not just about finding something to do.</p>
+                <p>
+                  it&apos;s about making real life easier to access.
+                  we&apos;re building a connected ecosystem where people,
+                  places, and opportunities can find each other without
+                  relying on scattered DMs, screenshots, and word of mouth.
+                </p>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -123,15 +269,23 @@ export default function AboutPage() {
           <Reveal delay={0.1}>
             <div className="flex flex-col gap-8 lg:pb-4">
               <p className="text-base leading-7 text-muted-foreground sm:text-lg">
-                Nuclii is just getting started.
+                nuclii is just getting started.
                 <br />
-                {
-                  "if you're passionate about real-world connection, we'd love to hear from you."
-                }
+                if you care about real connections, community, events,
+                venues, talent, or culture, we&apos;d love to hear from you.
               </p>
-              <Button asChild className="w-fit lowercase" size="lg" variant="outline">
-                <a href="mailto:hello@nuclii.co.uk">get in touch</a>
-              </Button>
+              <div>
+                <Button
+                  asChild
+                  className="nuclii-action-button group w-full justify-center border border-white bg-white lowercase !text-black hover:border-white hover:!text-white sm:w-auto"
+                  size="lg"
+                >
+                  <a href="mailto:hello@nuclii.co.uk">
+                    <span className="text-current">get in touch</span>
+                    <ArrowUpRight aria-hidden="true" className="!text-current" />
+                  </a>
+                </Button>
+              </div>
             </div>
           </Reveal>
         </div>

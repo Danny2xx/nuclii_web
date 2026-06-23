@@ -1,18 +1,25 @@
+const BUILD_WITH_US_FORM = "https://tally.so/r/xX6O1J";
+
 export const sideNavItems: readonly {
   label: string;
   href: string;
+  external?: boolean;
   children?: readonly { label: string; href: string }[];
 }[] = [
   { label: "home", href: "/" },
   { label: "about us", href: "/about" },
   { label: "early access", href: "/early-access" },
-  { label: "build with us", href: "/build-with-us" },
+  { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
 ] as const;
 
-export const footerLinks: readonly { label: string; href: string }[] = [
-  { label: "about us", href: "/about" },
+export const footerLinks: readonly {
+  label: string;
+  href: string;
+  external?: boolean;
+}[] = [
+  { label: "about", href: "/about" },
   { label: "early access", href: "/early-access" },
-  { label: "build with us", href: "/build-with-us" },
+  { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
   { label: "get in touch", href: "mailto:hello@nuclii.co.uk" },
 ] as const;
 

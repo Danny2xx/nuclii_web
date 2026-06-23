@@ -4,7 +4,7 @@ import { PolicyPage, type PolicySection } from "@/components/content/policy-page
 
 export const metadata: Metadata = {
   title: "Terms of Use | Nuclii",
-  description: "Terms of use for the Nuclii pre-launch website — acceptable use, waitlist, and early-stage disclaimers.",
+  description: "Terms of use for the Nuclii pre-launch website: acceptable use, waitlist, and early-stage disclaimers.",
 };
 
 const sections: PolicySection[] = [

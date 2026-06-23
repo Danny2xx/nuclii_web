@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { footerNavGroups, sideNavItems } from "@/lib/navigation";
@@ -22,26 +22,39 @@ function MobileNav() {
 
   return (
     <div className="lg:hidden">
-      <Button
+      <button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
-        className="fixed right-4 top-4 z-50"
+        className={cn(
+          "nuclii-mobile-menu-button fixed z-[70] flex size-11 items-center justify-center text-white mix-blend-difference transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        )}
         onClick={() => setOpen((current) => !current)}
-        size="icon"
         type="button"
-        variant="ghost"
       >
-        {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-      </Button>
+        <span className="relative block h-4 w-7" aria-hidden="true">
+          <span
+            className={cn(
+              "absolute left-0 top-1 block h-0.5 w-full bg-current transition-transform duration-300",
+              open && "translate-y-[5px] rotate-45",
+            )}
+          />
+          <span
+            className={cn(
+              "absolute bottom-1 left-0 block h-0.5 w-full bg-current transition-transform duration-300",
+              open && "-translate-y-[5px] -rotate-45",
+            )}
+          />
+        </span>
+      </button>
 
       {open && (
-        <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-background/98 backdrop-blur-xl">
-          <nav aria-label="Mobile navigation" className="flex min-h-full flex-col px-6 pb-8 pt-24">
+        <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-white text-black">
+          <nav aria-label="Mobile navigation" className="nuclii-mobile-drawer flex min-h-full flex-col px-6">
 
             {/* Primary CTA */}
-            <Button asChild className="w-full" size="lg">
+            <Button asChild className="w-full bg-black text-white hover:bg-black/85" size="lg">
               <Link href="/#waitlist" onClick={() => setOpen(false)}>
-                Join the waitlist
+                join the waitlist
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
@@ -57,20 +70,28 @@ function MobileNav() {
                     <Link
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "text-3xl font-extrabold tracking-tight transition-colors hover:text-white",
-                        active ? "text-white" : "text-white/55",
+                        "inline-flex items-center gap-2 text-4xl font-extrabold lowercase leading-none tracking-[-0.04em] transition-colors hover:text-black/60",
+                        active ? "text-black" : "text-black/55",
                       )}
                       href={item.href}
                       onClick={() => setOpen(false)}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      target={item.external ? "_blank" : undefined}
                     >
                       {item.label}
+                      {item.external && (
+                        <>
+                          <ArrowUpRight aria-hidden="true" className="size-6" />
+                          <span className="sr-only">(opens in new tab)</span>
+                        </>
+                      )}
                     </Link>
 
                     {item.children && (
                       <div className="mt-2 flex flex-col gap-2 pl-1">
                         {item.children.map((child) => (
                           <Link
-                            className="text-sm text-white/40 transition-colors hover:text-white/80"
+                            className="text-xl font-extrabold lowercase tracking-[-0.04em] text-black/55 transition-colors hover:text-black/70"
                             href={child.href}
                             key={child.href}
                             onClick={() => setOpen(false)}
@@ -86,14 +107,14 @@ function MobileNav() {
             </div>
 
             {/* Legal links */}
-            <div className="mt-auto border-t border-border pt-5 mt-8">
-              <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground/50">
-                Legal
+            <div className="mt-8 border-t border-black/12 pt-5">
+              <p className="mb-3 text-xs font-semibold lowercase text-black/35">
+                legal
               </p>
               <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {legalLinks.map((link) => (
                   <Link
-                    className="text-xs text-muted-foreground transition hover:text-primary"
+                    className="text-xs font-semibold lowercase text-black/60 transition hover:text-black"
                     href={link.href}
                     key={link.href}
                     onClick={() => setOpen(false)}

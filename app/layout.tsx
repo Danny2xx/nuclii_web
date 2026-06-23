@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Fredoka, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 import { PageShell } from "@/components/layout/PageShell";
@@ -12,10 +12,24 @@ const jakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+// Display headline font — rounded to echo the logo's wordmark
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-fredoka",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Nuclii - Every event starts here",
   description:
     "Nuclii is a platform for discovering, hosting, booking, and managing real-world experiences.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -25,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={jakartaSans.variable}
+      className={`${jakartaSans.variable} ${fredoka.variable}`}
       data-scroll-behavior="smooth"
       data-theme="dark"
       lang="en"

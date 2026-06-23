@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 import { LegalDrawer } from "@/components/layout/legal-drawer";
 import { SocialLinks } from "@/components/social/SocialLinks";
@@ -33,9 +34,9 @@ function Footer() {
         >
           <Image
             alt="Nuclii"
-            className="h-7 w-auto"
             height={28}
             src="/nuclii-logo.png"
+            style={{ height: "1.75rem", width: "auto" }}
             width={75}
           />
         </Link>
@@ -43,11 +44,19 @@ function Footer() {
         <nav aria-label="Footer navigation" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           {footerLinks.map((link) => (
             <Link
-              className="text-sm text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex items-center gap-1 text-sm text-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               href={link.href}
               key={link.href}
+              rel={link.external ? "noopener noreferrer" : undefined}
+              target={link.external ? "_blank" : undefined}
             >
               {link.label}
+              {link.external && (
+                <>
+                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                  <span className="sr-only">(opens in new tab)</span>
+                </>
+              )}
             </Link>
           ))}
         </nav>

@@ -66,22 +66,24 @@ function WhoItsForScroll({ roles }: { roles: readonly Role[] }) {
       <div className="space-y-4">
         {roles.map((role, index) => (
           <div
-            className="group relative aspect-[4/5] overflow-hidden rounded-2xl border border-border sm:aspect-video"
+            className="space-y-3"
             key={role.number}
             ref={(panel) => {
               panelRefs.current[index] = panel;
             }}
           >
-            <Image
-              alt={role.title}
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              src={role.image}
-            />
-            <div className="absolute bottom-4 left-4 rounded-full bg-black/40 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm">
-              {role.title}
+            <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl border border-border sm:aspect-video">
+              <Image
+                alt={role.title}
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={role.image}
+              />
             </div>
+            <p className="text-sm font-semibold lowercase text-muted-foreground">
+              {role.title}
+            </p>
           </div>
         ))}
       </div>

@@ -12,7 +12,7 @@ const faqs = [
     items: [
       {
         q: "What is Nuclii?",
-        a: "Nuclii is an infrastructure platform for real-world experiences. It connects people who want to discover local events and experiences with those who host, organise, or facilitate them — without needing social media followers, group chats, or fragmented tools. Think of it as the coordination layer that sits underneath real-world activity.",
+        a: "Nuclii is an infrastructure platform for real-world experiences. It connects people who want to discover local events and experiences with those who host, organise, or facilitate them, without needing social media followers, group chats, or fragmented tools. Think of it as the coordination layer that sits underneath real-world activity.",
       },
       {
         q: "Who is Nuclii for?",
@@ -20,11 +20,11 @@ const faqs = [
       },
       {
         q: "How is Nuclii different from Eventbrite or Facebook Events?",
-        a: "Nuclii is not a social media platform and not just a ticketing tool. It is infrastructure — connecting every side of the real-world experience ecosystem in one structured place. There are no public attendee lists, no follower counts, and no algorithmic feeds. Privacy is built in from the start. Location reveal controls, QR access, and eligibility settings mean both hosts and attendees have more control than any existing platform offers.",
+        a: "Nuclii is not a social media platform and not just a ticketing tool. It is infrastructure, connecting every side of the real-world experience ecosystem in one structured place. There are no public attendee lists, no follower counts, and no algorithmic feeds. Privacy is built in from the start. Location reveal controls, QR access, and eligibility settings mean both hosts and attendees have more control than any existing platform offers.",
       },
       {
         q: "What kinds of experiences does Nuclii support?",
-        a: "Nuclii is designed for a wide range of real-world experiences — workshops, social events, society nights, food pickups and collection windows, private gatherings, pop-up markets, talent showcases, service appointments, and more. If it happens in the real world and involves more than one person, Nuclii can support it.",
+        a: "Nuclii is designed for a wide range of real-world experiences: workshops, social events, society nights, food pickups and collection windows, private gatherings, pop-up markets, talent showcases, service appointments, and more. If it happens in the real world and involves more than one person, Nuclii can support it.",
       },
     ],
   },
@@ -33,19 +33,19 @@ const faqs = [
     items: [
       {
         q: "Is Nuclii available to use now?",
-        a: "Not yet. Nuclii is in pre-launch and we are building the early community of attendees, hosts, societies, and talent before beta. If you join early access, you will be among the first to use the platform when it opens — and your feedback will shape what it becomes.",
+        a: "Not yet. Nuclii is in pre-launch and we are building the early community of attendees, hosts, societies, and talent before beta. If you join the waitlist, you will be among the first to use the platform when it opens, and your feedback will shape what it becomes.",
       },
       {
         q: "What is the difference between the waitlist and early access?",
-        a: "The waitlist is for general interest — put your email in and you will be notified when Nuclii launches. Early access is for people who want to be actively involved before launch: as a host, a society, a talent, or a collaborator. Early access applications are reviewed personally and selected applicants will be onboarded directly.",
+        a: "The waitlist is for general interest: put your email in and you will be notified when Nuclii launches. Early access is for people who want to be actively involved before launch: as a host, a society, a talent, or a collaborator. Early access applications are reviewed personally and selected applicants will be onboarded directly.",
       },
       {
         q: "Is it free?",
         a: "Joining the waitlist and applying for early access is completely free. We will share full platform pricing details before beta launch. Early hosts and communities who join now will be the first to know.",
       },
       {
-        q: "What happens after I join early access?",
-        a: "Every application is reviewed personally. We do not auto-approve. Selected early users, hosts, societies, and communities are contacted directly before beta launch with access details, onboarding steps, and a direct line to the Nuclii team. You will not be left wondering — if you are selected, you will hear from us.",
+        q: "What happens after I join the waitlist?",
+        a: "Every application is reviewed personally. We do not auto-approve. Selected early users, hosts, societies, and communities are contacted directly before beta launch with access details, onboarding steps, and a direct line to the Nuclii team. You will not be left wondering. If you are selected, you will hear from us.",
       },
       {
         q: "Is my information safe?",

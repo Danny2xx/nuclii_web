@@ -1,22 +1,28 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
+import { WaitlistForm } from "@/components/home/waitlist-form";
 import { FadeIn, Reveal } from "@/components/motion";
-import { PhotoPlaceholder } from "@/components/media/photo-placeholder";
 import { Button } from "@/components/ui/button";
+
+const photoRow = [
+  { src: "/images/attendee.jpg", alt: "An attendee at a Nuclii event" },
+  { src: "/images/host.jpg", alt: "A host managing a Nuclii listing" },
+  { src: "/images/venue.jpg", alt: "A venue hosting a Nuclii experience" },
+  { src: "/images/talent.jpg", alt: "Talent showcasing their work" },
+] as const;
 
 export const metadata: Metadata = {
   title: "Early Access | Nuclii",
   description:
-    "Apply for early access to Nuclii — host events, list your venue, offer your talent, or run your community's events before public launch.",
+    "Apply for early access to Nuclii: host events, list your venue, offer your talent, or run your community's events before public launch.",
 };
-
-const TALLY_EARLY_ACCESS_URL = "https://tally.so/r/RGjlyp";
 
 const steps = [
   {
     label: "what it is",
     description:
-      "invite-based access before public launch — applications are reviewed personally.",
+      "invite-based access before public launch. applications are reviewed personally.",
   },
   {
     label: "what you'll do",
@@ -44,19 +50,19 @@ const roles = [
       "tools, support, and early opportunities to grow your community and reach.",
   },
   {
-    id: "",
+    id: "venues",
     label: "venues",
     description:
       "curated exposure, new audiences, and flexible ways to activate your space.",
   },
   {
-    id: "",
+    id: "talent",
     label: "talent",
     description:
       "early access to gigs, collaborations, and a network that moves with you.",
   },
   {
-    id: "",
+    id: "collaborators",
     label: "collaborators",
     description:
       "partner with purpose, test ideas, and co-create real-world experiences.",
@@ -67,7 +73,7 @@ export default function EarlyAccessPage() {
   return (
     <main className="nuclii-page">
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-24">
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pb-24">
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start lg:gap-16">
           <FadeIn>
             <h1 className="nuclii-display lowercase">
@@ -87,6 +93,13 @@ export default function EarlyAccessPage() {
                   {step.description}
                 </p>
               ))}
+              <div className="pt-2" id="early-access-form">
+                <WaitlistForm
+                  source="early access"
+                  submitLabel="join the waitlist"
+                  successMessage="application received. we'll review it and reach out when nuclii opens near you."
+                />
+              </div>
             </div>
           </Reveal>
         </div>
@@ -97,10 +110,20 @@ export default function EarlyAccessPage() {
         <div className="nuclii-container">
           <Reveal>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
-              <PhotoPlaceholder className="aspect-square rounded-2xl border border-border" />
+              {photoRow.map((photo) => (
+                <div
+                  className="relative aspect-square overflow-hidden rounded-2xl border border-border"
+                  key={photo.src}
+                >
+                  <Image
+                    alt={photo.alt}
+                    className="object-cover"
+                    fill
+                    sizes="(min-width: 640px) 25vw, 50vw"
+                    src={photo.src}
+                  />
+                </div>
+              ))}
             </div>
           </Reveal>
         </div>
@@ -112,7 +135,7 @@ export default function EarlyAccessPage() {
           <Reveal>
             <div className="max-w-2xl">
               <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
-                who you are and what you get:
+                who early access is for
               </h2>
               <div className="mt-8 space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
                 {roles.map((role) => (
@@ -128,10 +151,10 @@ export default function EarlyAccessPage() {
               </div>
               <Button
                 asChild
-                className="mt-10 w-fit lowercase"
+                className="mt-10 w-full lowercase sm:w-fit"
                 size="lg"
               >
-                <a href={TALLY_EARLY_ACCESS_URL}>apply for early access</a>
+                <a href="#early-access-form">join the waitlist</a>
               </Button>
             </div>
           </Reveal>

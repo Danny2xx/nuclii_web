@@ -1,9 +1,9 @@
-import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
+import { ExperienceLayersScroll } from "@/components/home/experience-layers-scroll";
 import { FadeIn, Reveal, RotatingWord } from "@/components/motion";
-import { FAQ } from "@/components/home/faq";
 import { WaitlistForm } from "@/components/home/waitlist-form";
-import { WhoItsForScroll } from "@/components/home/who-its-for-scroll";
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { Button } from "@/components/ui/button";
 
@@ -15,203 +15,174 @@ const heroVideos = [
   "/videos/workshop.mp4",
 ] as const;
 
-const roles = [
+const experienceLayers = [
   {
     number: "01",
     title: "attendees",
     description:
-      "find what's happening near you — without needing to be in the right group chat.",
+      "discover what is happening around you without needing to be in the right group chat first.",
     image: "/images/attendee.jpg",
+    alt: "Attendees gathered at a real-world experience",
   },
   {
     number: "02",
     title: "hosts",
     description:
-      "create listings, manage capacity, and coordinate access without the operational chaos.",
+      "create listings, manage interest, coordinate access, and bring people together with less chaos.",
     image: "/images/host.jpg",
+    alt: "A host coordinating a real-world experience",
   },
   {
     number: "03",
-    title: "talent",
+    title: "venues",
     description:
-      "get discovered for showcases, bookings, and live collaborations near you.",
-    image: "/images/talent.jpg",
+      "connect spaces with hosts, communities, talent, and real-world activity before launch.",
+    image: "/images/venue.jpg",
+    alt: "A venue prepared for a real-world experience",
   },
   {
     number: "04",
+    title: "talents",
+    description:
+      "get discovered for showcases, performances, sessions, creative services, and collaborations.",
+    image: "/images/talent.jpg",
+    alt: "Talent performing at a real-world experience",
+  },
+] as const;
+
+const audienceRows = [
+  {
+    number: "01",
+    title: "attendees",
+    description:
+      "discover real things to do nearby without waiting for an invite or chasing a story post.",
+  },
+  {
+    number: "02",
+    title: "hosts",
+    description:
+      "publish with structure, manage demand, and keep the operational details in one place.",
+  },
+  {
+    number: "03",
     title: "venues",
     description:
-      "connect with hosts and communities looking for the right space, and manage bookings without the back-and-forth.",
-    image: "/images/venue.jpg",
+      "make your space easier for hosts, communities, and real-world activity to find.",
   },
-] as const;
-
-const howItWorks = [
   {
-    number: "01",
-    title: "discover",
+    number: "04",
+    title: "talents",
     description:
-      "browse what's happening near you, filtered by city, category, and who's hosting.",
-  },
-  {
-    number: "02",
-    title: "host or join",
-    description:
-      "create a listing or request access in minutes — no spreadsheets, no dm chains.",
-  },
-  {
-    number: "03",
-    title: "show up",
-    description:
-      "qr access and privacy controls mean you get in without public lists or social pressure.",
-  },
-] as const;
-
-const safetyPoints = [
-  {
-    number: "01",
-    title: "no public attendee lists",
-    description: "people can discover and attend without public pressure.",
-  },
-  {
-    number: "02",
-    title: "location reveal controls",
-    description: "hosts keep exact locations private until the right moment.",
-  },
-  {
-    number: "03",
-    title: "qr access",
-    description:
-      "check-in confirms access without exposing unnecessary details.",
+      "turn showcases, creative services, sessions, and collaborations into discoverable experiences.",
   },
 ] as const;
 
 export default function Home() {
   return (
     <main className="nuclii-page">
-      {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[85vh] items-end overflow-hidden sm:min-h-screen" id="waitlist">
+      <section className="relative min-h-[112svh] overflow-hidden" id="waitlist">
         <VideoBackgroundCarousel className="absolute inset-0" sources={heroVideos} />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10" />
-        <div className="nuclii-container relative pb-16 pt-32 sm:pb-20 lg:pb-24">
-          <FadeIn>
-            <h1 className="nuclii-display lowercase text-white">
-              every
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/70 to-transparent" />
+
+        <div className="nuclii-container relative z-10 flex min-h-[112svh] items-start pt-[50svh] md:items-end md:pb-[11rem] md:pt-0">
+          <FadeIn className="w-full">
+            <h1 className="max-w-[54rem] text-[clamp(3.25rem,7.6vw,7.25rem)] font-extrabold lowercase leading-[0.91] tracking-[-0.02em] text-white text-balance">
+              for every first
               <br />
               <RotatingWord />
-              <br />
-              starts here.
             </h1>
-            <p className="mt-6 max-w-md text-base leading-7 text-white/70 sm:text-lg">
-              discover and host real-world experiences near you, without
-              followers, group chats, or social pressure.
-            </p>
-            <div className="mt-8">
-              <WaitlistForm />
+            <div className="mt-12 grid max-w-[68rem] gap-7 border-t border-white/15 pt-6 sm:mt-14 md:grid-cols-[minmax(18rem,27rem)_minmax(28rem,1fr)] md:items-start md:gap-10">
+              <p className="max-w-[31rem] text-base font-normal lowercase leading-relaxed tracking-[-0.01em] text-white/68 sm:text-lg">
+                every event starts here. discover, host, book, and access the
+                real-world moments that usually get lost in chats, stories, and
+                scattered links.
+              </p>
+              <WaitlistForm layout="hero" source="home hero" />
             </div>
           </FadeIn>
         </div>
-        <FadeIn className="absolute inset-x-0 bottom-6 hidden justify-center sm:flex" delay={0.6}>
-          <div className="flex flex-col items-center gap-2 text-xs text-white/50">
-            <span className="lowercase tracking-wide">scroll</span>
-            <ChevronDown aria-hidden="true" className="size-4 animate-bounce" />
-          </div>
-        </FadeIn>
       </section>
 
-      {/* ── Why nuclii exists ─────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
-        <div className="nuclii-container grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <Reveal>
-            <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
-              why nuclii exists
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div className="space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
-              <p>
-                real life still runs on screenshots and group chats.
-                <br />
-                finding something to do, getting into the right place, and
-                hosting without chaos all still depend on scattered DMs,
-                stories, forms, and spreadsheets.
-              </p>
-              <p>
-                nuclii brings discovery, hosting, and access into one place —
-                so you can find what&apos;s happening, get in, and host
-                without the back-and-forth.
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── How it works ─────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
-        <div className="nuclii-container">
-          <Reveal>
-            <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
-              how it works
-            </h2>
-          </Reveal>
-          <div className="mt-8 grid gap-8 sm:grid-cols-3 lg:gap-12">
-            {howItWorks.map((step, index) => (
-              <Reveal delay={index * 0.1} key={step.number}>
-                <div className="nuclii-numbered-item">
-                  <p className="nuclii-numbered-item__heading">
-                    <span className="nuclii-numbered-item__number">
-                      {step.number}
-                    </span>
-                    {step.title}
-                  </p>
-                  <p className="nuclii-numbered-item__description">
-                    {step.description}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Who it's for ─────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
-        <div className="nuclii-container">
-          <WhoItsForScroll roles={roles} />
-        </div>
-      </section>
-
-      {/* ── Safety and privacy ───────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
-        <div className="nuclii-container grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <Reveal>
-            <div>
-              <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
-                safety and privacy
+      <section className="border-t border-border px-[var(--container-x)] pb-20 pt-28 md:pb-48 md:pt-56">
+        <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-24 md:gap-72">
+          <div className="grid gap-8 md:grid-cols-[0.8fr_1fr] md:items-start md:gap-20">
+            <Reveal>
+              <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+                why we exist
               </h2>
-              <div className="mt-6 space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="max-w-[42rem] space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/78 sm:text-xl">
                 <p>
-                  nuclii is built for real experiences, without unnecessary
-                  exposure.
+                  real life still runs on screenshots, group chats, stories,
+                  private links, and word of mouth.
                 </p>
                 <p>
-                  privacy is not a setting. it is how nuclii works by default.
+                  people do not lack ideas, communities, services, talent, or
+                  places to gather. they lack one calm layer that turns those
+                  moments into something people can discover, book, access, and
+                  manage.
+                </p>
+                <p>
+                  nuclii exists to make that layer feel simple enough for a
+                  first host and serious enough for the communities, venues, and
+                  partners around them.
                 </p>
               </div>
-            </div>
+            </Reveal>
+          </div>
+
+          <ExperienceLayersScroll layers={experienceLayers} />
+        </div>
+      </section>
+
+      <section className="pb-24 md:pb-48">
+        <div className="nuclii-container">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,28rem)_minmax(0,36rem)] md:items-end md:justify-center md:gap-24">
+            <Reveal>
+              <h2 className="text-[clamp(3.5rem,9vw,7.5rem)] font-black lowercase leading-[0.86] tracking-[-0.03em] text-balance">
+                built for real life
+              </h2>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="space-y-7 text-base leading-relaxed tracking-[-0.02em] text-white/78 sm:text-xl">
+                <p className="text-3xl font-extrabold leading-tight tracking-[-0.03em] text-white sm:text-5xl">
+                  not a feed. not a flyer wall. not another group chat.
+                </p>
+                <p>
+                  nuclii is for the moments that need structure: society events,
+                  workshops, food drops, appointment slots, pop-ups, private
+                  gatherings, talent showcases, and venue-led experiences.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-20 md:py-36">
+        <div className="nuclii-container grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-20">
+          <Reveal>
+            <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+              who you are and what you get
+            </h2>
           </Reveal>
-          <Reveal delay={0.1}>
+          <Reveal delay={0.08}>
             <div>
-              {safetyPoints.map((point) => (
-                <div className="nuclii-numbered-item" key={point.number}>
+              {audienceRows.map((row) => (
+                <div
+                  className="nuclii-numbered-item group/role transition duration-200 ease-out hover:border-white/45"
+                  key={row.number}
+                >
                   <p className="nuclii-numbered-item__heading">
-                    <span className="nuclii-numbered-item__number">
-                      {point.number}
+                    <span className="nuclii-numbered-item__number transition-transform duration-200 group-hover/role:-translate-y-0.5">
+                      {row.number}
                     </span>
-                    {point.title}
+                    {row.title}
                   </p>
                   <p className="nuclii-numbered-item__description">
-                    {point.description}
+                    {row.description}
                   </p>
                 </div>
               ))}
@@ -220,25 +191,62 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────────── */}
-      <FAQ />
+      <section className="border-t border-border py-20 md:py-36">
+        <div className="nuclii-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <Reveal>
+            <div>
+              <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+                privacy by default
+              </h2>
+              <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
+                <p>
+                  discovery should not require unnecessary public exposure.
+                  hosting should not require public attendee lists.
+                </p>
+                <p>
+                  exact locations, eligibility, and access can be handled with
+                  more care, so people can show up in real life without turning
+                  every moment into a social performance.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[10px] bg-white/10 sm:aspect-video lg:aspect-[5/4]">
+              <Image
+                alt="People meeting at a real-world community experience"
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 50vw, calc(100vw - 2rem)"
+                src="/images/about-gathering.jpg"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-      {/* ── Final CTA ────────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section className="border-t border-border py-20 md:py-36">
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end lg:gap-16">
           <Reveal>
-            <h2 className="nuclii-display max-w-3xl lowercase">
-              be part of the nuclii community.
+            <h2 className="nuclii-display max-w-4xl lowercase">
+              be part of the first nuclii community.
             </h2>
           </Reveal>
-          <Reveal delay={0.1}>
+          <Reveal delay={0.08}>
             <div className="flex flex-col gap-8 lg:pb-4">
-              <p className="text-base leading-7 text-muted-foreground sm:text-lg">
-                be one of the first in — help shape how people discover,
-                host, and access real-world experiences near them.
+              <p className="text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
+                join early and help shape how people discover, host, book,
+                access, and coordinate real-world experiences.
               </p>
-              <Button asChild className="w-fit lowercase" size="lg">
-                <a href="#waitlist">join the waitlist</a>
+              <Button
+                asChild
+                className="nuclii-action-button group w-full justify-center border border-white bg-white px-5 lowercase !text-black hover:border-white hover:!text-white sm:w-fit sm:min-w-[13rem] sm:justify-between"
+                size="lg"
+              >
+                <a href="#waitlist">
+                  <span className="text-current">join the waitlist</span>
+                  <ArrowRight aria-hidden="true" className="!text-current" />
+                </a>
               </Button>
             </div>
           </Reveal>

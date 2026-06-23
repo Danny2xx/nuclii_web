@@ -10,24 +10,24 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Blue gradient primary CTA — with glow pulse on hover
+        // Solid fill primary CTA — flat, no gradient, no glow
         default:
-          "bg-gradient-to-br from-[#4f46e5] to-[#5b8cff] !text-[#ffffff] [&_svg]:!text-[#ffffff] shadow-[0_0_28px_rgba(91,140,255,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-[#5b51f5] hover:to-[#7c9bff] hover:shadow-[0_0_48px_rgba(91,140,255,0.55),0_8px_24px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.3)] hover:[&_svg:last-child]:translate-x-0.5 hover:animate-[nuclii-btn-pulse_2s_ease-in-out_infinite]",
+          "bg-primary text-primary-foreground [&_svg]:text-primary-foreground hover:bg-primary/85 hover:[&_svg:last-child]:translate-x-0.5",
 
         // Dark-surface filled — secondary emphasis
         secondary:
-          "border border-border/80 bg-secondary/60 text-secondary-foreground hover:border-primary/40 hover:bg-primary/8 hover:text-foreground hover:shadow-[0_4px_20px_rgba(91,140,255,0.1)]",
+          "border border-border/80 bg-secondary/60 text-secondary-foreground hover:border-foreground/40 hover:bg-foreground/8 hover:text-foreground",
 
         // Transparent — used for secondary CTAs alongside a primary
         outline:
-          "border border-border/80 bg-transparent text-foreground hover:border-primary/45 hover:bg-primary/8 hover:shadow-[0_4px_20px_rgba(91,140,255,0.1)] hover:[&_svg:last-child]:translate-x-0.5",
+          "border border-border/80 bg-transparent text-foreground hover:border-foreground/45 hover:bg-foreground/8 hover:[&_svg:last-child]:translate-x-0.5",
 
         // No border, no background — navigation / low-emphasis actions
         ghost:
-          "text-foreground hover:bg-primary/10 hover:text-primary",
+          "text-foreground hover:bg-foreground/10",
 
         // Inline link
-        link: "min-h-0 rounded-none p-0 text-primary underline-offset-4 hover:underline",
+        link: "min-h-0 rounded-none p-0 text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default: "px-5 py-2.5",

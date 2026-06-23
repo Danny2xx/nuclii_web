@@ -7,6 +7,17 @@ const TO_EMAIL = process.env.NUCLII_EMAIL ?? "team@nuclii.com";
 const FROM_EMAIL = process.env.NUCLII_FROM_EMAIL ?? "onboarding@resend.dev";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ROLE_LABELS: Record<string, string> = {
+  attendee: "attendee",
+  host: "host",
+  "society-community": "society / community",
+  "service-provider": "service provider",
+  "talent-creative": "talent / creative",
+  "venue-business": "venue / business",
+  partner: "partner",
+  investor: "investor",
+  "team-contributor": "team / contributor",
+};
 
 function escapeHtml(value: string) {
   return value
@@ -17,17 +28,28 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#39;");
 }
 
+function cleanPlainText(value: string | undefined, maxLength: number) {
+  return (value ?? "").replace(/[\r\n]+/g, " ").trim().replace(/\s+/g, " ").slice(0, maxLength);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as {
       name?: string;
       email?: string;
+      role?: string;
+      ageConfirmed?: boolean;
       consent?: boolean;
+      source?: string;
     };
 
-    const name = body.name?.trim() ?? "";
+    const name = cleanPlainText(body.name, 120);
     const email = body.email?.trim() ?? "";
+    const role = body.role?.trim() ?? "";
+    const roleLabel = ROLE_LABELS[role];
+    const ageConfirmed = body.ageConfirmed === true;
     const consent = body.consent === true;
+    const source = cleanPlainText(body.source, 80) || "waitlist";
 
     if (!name) {
       return NextResponse.json({ error: "please enter your name." }, { status: 400 });
@@ -37,12 +59,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "enter a valid email address." }, { status: 400 });
     }
 
+    if (!roleLabel) {
+      return NextResponse.json({ error: "choose the path that best describes you." }, { status: 400 });
+    }
+
+    if (!ageConfirmed) {
+      return NextResponse.json({ error: "please confirm you're 16 or older." }, { status: 400 });
+    }
+
     if (!consent) {
       return NextResponse.json({ error: "please confirm you'd like to receive updates." }, { status: 400 });
     }
 
     if (!process.env.RESEND_API_KEY) {
-      console.warn("[Nuclii] RESEND_API_KEY not set — waitlist signup not saved:", email);
+      console.warn("[Nuclii] RESEND_API_KEY not set, waitlist signup not saved:", email, source);
       return NextResponse.json({ success: true, warn: "no_key" });
     }
 
@@ -71,19 +101,21 @@ export async function POST(request: NextRequest) {
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
     const safeFirstName = escapeHtml(firstName);
+    const safeRole = escapeHtml(roleLabel);
+    const safeSource = escapeHtml(source);
 
-    // The contact is already saved at this point — don't fail the signup
+    // The contact is already saved at this point, so don't fail the signup
     // over an email hiccup (e.g. sending domain not yet verified).
     const emailResult = await Promise.allSettled([
       // Notify admin
       resend.emails.send({
         from: `Nuclii <${FROM_EMAIL}>`,
         to: [TO_EMAIL],
-        subject: `Waitlist signup — ${name}`,
+        subject: `Waitlist signup (${source}): ${name}`,
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:28px 24px;background:#0a0a0b;color:#f7f7fa;border-radius:16px">
             <div style="margin-bottom:20px">
-              <span style="background:#5b8cff22;color:#5b8cff;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.04em">WAITLIST</span>
+              <span style="background:#ffffff1a;color:#f7f7fa;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.04em">WAITLIST</span>
             </div>
             <h1 style="font-size:20px;font-weight:700;margin:0 0 12px">New waitlist signup</h1>
             <p style="font-size:15px;color:#a1a1aa;margin:0 0 20px">Someone just joined the Nuclii waitlist.</p>
@@ -91,9 +123,13 @@ export async function POST(request: NextRequest) {
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Name</p>
               <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeName}</p>
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Email</p>
-              <p style="margin:0;font-size:16px;font-weight:600">${safeEmail}</p>
+              <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeEmail}</p>
+              <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Joining as</p>
+              <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeRole}</p>
+              <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Source</p>
+              <p style="margin:0;font-size:16px;font-weight:600">${safeSource}</p>
             </div>
-            <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">Submitted via nuclii.com — added to your Resend audience.</p>
+            <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">Submitted via nuclii.com, added to your Resend audience.</p>
           </div>
         `,
       }),
@@ -106,15 +142,15 @@ export async function POST(request: NextRequest) {
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:28px 24px;background:#0a0a0b;color:#f7f7fa;border-radius:16px">
             <div style="margin-bottom:20px">
-              <span style="background:#5b8cff22;color:#5b8cff;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.04em">WAITLIST</span>
+              <span style="background:#ffffff1a;color:#f7f7fa;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.04em">WAITLIST</span>
             </div>
             <h1 style="font-size:20px;font-weight:700;margin:0 0 12px">you're on the list, ${safeFirstName}.</h1>
             <p style="font-size:15px;color:#a1a1aa;line-height:1.6;margin:0 0 20px">
-              every workshop, pop-up, and meetup starts here. we'll email you the moment nuclii launches near you — no spam, just the first look.
+              every workshop, pop-up, and meetup starts here. we'll email you the moment nuclii launches near you, no spam, just the first look.
             </p>
             <div style="background:#18191d;border:1px solid #26282f;border-radius:12px;padding:16px 20px">
               <p style="margin:0;font-size:14px;color:#d4d4d8;line-height:1.6">
-                nuclii helps you discover and host real-world experiences near you — without followers, group chats, or social pressure.
+                nuclii helps you discover and host real-world experiences near you, without followers, group chats, or social pressure.
               </p>
             </div>
             <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">you're receiving this because you joined the waitlist at nuclii.com.</p>

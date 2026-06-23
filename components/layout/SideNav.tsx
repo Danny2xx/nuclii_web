@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 
 import { sideNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -12,39 +13,34 @@ function SideNav() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed right-6 top-8 z-50 hidden flex-col items-end gap-2 text-right lg:right-10 lg:flex"
+      className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white mix-blend-difference lg:right-10 lg:top-9 lg:flex"
     >
       {sideNavItems.map((item) => {
         const active =
           item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
         return (
-          <div key={item.href}>
-            <Link
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "text-sm transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active ? "font-semibold text-white" : "text-white/55",
-              )}
-              href={item.href}
-            >
-              {item.label}
-            </Link>
-
-            {item.children && (
-              <div className="mt-1 flex flex-col gap-1">
-                {item.children.map((child) => (
-                  <Link
-                    className="text-xs text-white/40 transition-colors hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    href={child.href}
-                    key={child.href}
-                  >
-                    ↳ {child.label}
-                  </Link>
-                ))}
-              </div>
+          <Link
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "relative inline-flex items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              active
+                ? "text-white after:scale-x-100"
+                : "text-white/55 after:scale-x-0 hover:after:scale-x-100",
             )}
-          </div>
+            href={item.href}
+            key={item.href}
+            rel={item.external ? "noopener noreferrer" : undefined}
+            target={item.external ? "_blank" : undefined}
+          >
+            {item.label}
+            {item.external && (
+              <>
+                <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                <span className="sr-only">(opens in new tab)</span>
+              </>
+            )}
+          </Link>
         );
       })}
     </nav>
