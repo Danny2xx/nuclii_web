@@ -1,11 +1,16 @@
 "use client";
 
-import { useId, useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { ArrowRight, Check, CheckCircle2, Copy, Loader2, Share2 } from "lucide-react";
 import { motion } from "motion/react";
 
 import { useIsClient } from "@/components/motion/use-is-client";
 import { Button } from "@/components/ui/button";
+import {
+  ANALYTICS_EVENTS,
+  captureAnalyticsEvent,
+  getAnalyticsDistinctId,
+} from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "nuclii-waitlist-joined";
@@ -49,12 +54,30 @@ function hasJoinedWaitlist(storageKey: string) {
   return localStorage.getItem(storageKey) === "true";
 }
 
+function getOrCreateRefCode() {
+  if (typeof window === "undefined") return "";
+  let code = window.localStorage.getItem("nuclii-ref");
+  if (!code) {
+    code = Math.random().toString(36).slice(2, 8);
+    window.localStorage.setItem("nuclii-ref", code);
+  }
+  return code;
+}
+
 const FIELD_CLASS =
   "block min-h-12 w-full min-w-0 bg-transparent px-4 pb-3 text-base text-white outline-none transition placeholder:text-white/60 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:bg-white/[0.06] sm:text-sm";
 const LABEL_CLASS = "block px-4 pt-2.5 text-[11px] font-semibold lowercase tracking-wide text-white/70";
 const CHECKBOX_CLASS =
   "mt-0.5 size-4 shrink-0 rounded-none border-white/40 bg-black/50 accent-white disabled:cursor-not-allowed disabled:opacity-60";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function analyticsReason(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80) || "unknown";
+}
 
 function WaitlistForm({
   className = "",
@@ -83,32 +106,126 @@ function WaitlistForm({
   const errorId = `${id}-error`;
   const heroLayout = layout === "hero";
 
+  const [copied, setCopied] = useState(false);
+  // Stable per-visitor referral code (placeholder until backend attribution lands).
+  const refCode = isClient ? getOrCreateRefCode() : "";
+  const canNativeShare =
+    isClient &&
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function";
+
+  const shareUrl = refCode
+    ? `https://nuclii.co.uk/?ref=${refCode}`
+    : "https://nuclii.co.uk";
+  const shareText =
+    "i just joined the nuclii waitlist — every event starts here. join me:";
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+  const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+  const formStarted = useRef(false);
+
+  function analyticsBaseProperties() {
+    return {
+      source: sourceLabel,
+      layout,
+      role: role || "not_selected",
+      has_name: Boolean(name.trim()),
+    };
+  }
+
+  function trackFormStarted(trigger: string) {
+    if (formStarted.current) return;
+
+    formStarted.current = true;
+    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormStarted, {
+      ...analyticsBaseProperties(),
+      trigger,
+    });
+  }
+
+  function setValidationError(message: string, reason: string) {
+    setError(message);
+    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormError, {
+      ...analyticsBaseProperties(),
+      phase: "client_validation",
+      reason,
+    });
+  }
+
+  async function copyShareLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistReferralCopied, {
+        ...analyticsBaseProperties(),
+        channel: "copy",
+      });
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable; the link is still selectable */
+    }
+  }
+
+  function nativeShare() {
+    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
+      ...analyticsBaseProperties(),
+      channel: "native_share",
+    });
+    navigator.share?.({ title: "nuclii", text: shareText, url: shareUrl }).catch(() => {});
+  }
+
+  // Celebrate a genuinely new signup with a single restrained confetti burst —
+  // brand white plus the hero's neon accents. Reduced-motion users are skipped.
+  useEffect(() => {
+    if (justJoined !== "new" || typeof window === "undefined") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    let cancelled = false;
+    void import("canvas-confetti").then(({ default: confetti }) => {
+      if (cancelled) return;
+      confetti({
+        particleCount: 70,
+        spread: 70,
+        startVelocity: 38,
+        ticks: 200,
+        origin: { y: 0.75 },
+        colors: ["#ffffff", "#39FF14", "#4D8DFF", "#FF5FD2", "#FFD84D"],
+        disableForReducedMotion: true,
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [justJoined]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    trackFormStarted("submit");
 
-    if (!name.trim()) {
-      setError("please enter your name.");
-      return;
-    }
     if (!email.trim() || !EMAIL_REGEX.test(email.trim())) {
-      setError("enter a valid email address.");
+      setValidationError("enter a valid email address.", "invalid_email");
       return;
     }
     if (!role) {
-      setError("choose the path that best describes you.");
+      setValidationError("choose the path that best describes you.", "missing_role");
       return;
     }
     if (!ageConfirmed) {
-      setError("please confirm you're 16 or older.");
+      setValidationError("please confirm you're 16 or older.", "missing_age_confirmation");
       return;
     }
     if (!consent) {
-      setError("please confirm you'd like to receive updates.");
+      setValidationError("please confirm you'd like to receive updates.", "missing_marketing_consent");
       return;
     }
 
     setIsSubmitting(true);
     setError("");
+    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistSubmitAttempted, {
+      ...analyticsBaseProperties(),
+      age_confirmed: ageConfirmed,
+      marketing_consent: consent,
+    });
 
     try {
       const response = await fetch("/api/waitlist", {
@@ -121,6 +238,7 @@ function WaitlistForm({
           ageConfirmed,
           consent,
           source: sourceLabel,
+          analyticsDistinctId: getAnalyticsDistinctId(),
         }),
       });
 
@@ -130,10 +248,20 @@ function WaitlistForm({
       }
 
       const data = await response.json() as { duplicate?: boolean };
+      captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistSignupCompleted, {
+        ...analyticsBaseProperties(),
+        outcome: data.duplicate ? "duplicate" : "new",
+      });
       localStorage.setItem(storageKey, "true");
       setJustJoined(data.duplicate ? "duplicate" : "new");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "something went wrong. please try again.");
+      const message = err instanceof Error ? err.message : "something went wrong. please try again.";
+      captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormError, {
+        ...analyticsBaseProperties(),
+        phase: "api",
+        reason: analyticsReason(message),
+      });
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -142,6 +270,11 @@ function WaitlistForm({
   const alreadyOnList = isClient && hasJoinedWaitlist(storageKey);
 
   function resetJoinedState() {
+    captureAnalyticsEvent(ANALYTICS_EVENTS.ctaClicked, {
+      ...analyticsBaseProperties(),
+      cta: "join_with_different_email",
+      location: "waitlist_success",
+    });
     localStorage.removeItem(storageKey);
     setJustJoined(null);
   }
@@ -152,17 +285,85 @@ function WaitlistForm({
     return (
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className={`flex max-w-xl flex-col gap-3 border-t border-white/25 pt-4 text-sm text-white ${className}`}
+        className={`flex max-w-xl flex-col gap-4 border-t border-white/25 pt-4 text-sm text-white ${className}`}
         initial={{ opacity: 0, y: 8 }}
       >
         <div className="flex items-start gap-2.5 font-semibold">
           <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>
-            {isDuplicate
-              ? duplicateMessage
-              : successMessage}
-          </span>
+          <span>{isDuplicate ? duplicateMessage : successMessage}</span>
         </div>
+
+        <div className="flex flex-col gap-3 border border-white/12 bg-white/[0.04] p-4">
+          <div>
+            <p className="font-semibold text-white">skip the line.</p>
+            <p className="mt-1 text-xs leading-5 text-white/65">
+              invite friends — the more who join through your link, the sooner
+              you get in.
+            </p>
+          </div>
+          <div className="flex items-stretch gap-2">
+            <input
+              aria-label="your referral link"
+              className="ph-no-capture min-w-0 flex-1 border border-white/15 bg-black/40 px-3 text-xs text-white/85 outline-none focus-visible:border-white/45"
+              onFocus={(e) => e.currentTarget.select()}
+              readOnly
+              value={shareUrl}
+            />
+            <button
+              className="inline-flex shrink-0 items-center gap-1.5 border border-white bg-white px-3 py-2 text-xs font-semibold lowercase text-black transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              onClick={copyShareLink}
+              type="button"
+            >
+              {copied ? (
+                <Check aria-hidden="true" className="size-3.5" />
+              ) : (
+                <Copy aria-hidden="true" className="size-3.5" />
+              )}
+              {copied ? "copied" : "copy"}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              className="border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              href={whatsappUrl}
+              onClick={() => {
+                captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
+                  ...analyticsBaseProperties(),
+                  channel: "whatsapp",
+                });
+              }}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              whatsapp
+            </a>
+            <a
+              className="border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              href={xUrl}
+              onClick={() => {
+                captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
+                  ...analyticsBaseProperties(),
+                  channel: "x",
+                });
+              }}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              x
+            </a>
+            {canNativeShare && (
+              <button
+                className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                onClick={nativeShare}
+                type="button"
+              >
+                <Share2 aria-hidden="true" className="size-3.5" />
+                share
+              </button>
+            )}
+          </div>
+        </div>
+
         <button
           className="w-fit text-xs font-semibold text-white/65 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={resetJoinedState}
@@ -178,7 +379,7 @@ function WaitlistForm({
     <div className={`w-full max-w-2xl space-y-3 ${className}`}>
       <form
         aria-describedby={error ? errorId : undefined}
-        className="space-y-3"
+        className="ph-no-capture space-y-3"
         noValidate
         onSubmit={handleSubmit}
       >
@@ -189,41 +390,54 @@ function WaitlistForm({
           )}
         >
           <div className="min-w-0 flex-1 border-b border-white/10 sm:border-b-0 sm:border-r">
-            <label className={LABEL_CLASS} htmlFor={nameId}>name</label>
-            <input
-              autoComplete="name"
-              className={FIELD_CLASS}
-              disabled={isSubmitting}
-              id={nameId}
-              onChange={(e) => { setName(e.target.value); setError(""); }}
-              placeholder="priya shah"
-              required
-              type="text"
-              value={name}
-            />
-          </div>
-          <div className="min-w-0 flex-1">
             <label className={LABEL_CLASS} htmlFor={emailId}>email</label>
             <input
               autoComplete="email"
-              className={FIELD_CLASS}
+              className={`${FIELD_CLASS} ph-no-capture`}
               disabled={isSubmitting}
               id={emailId}
-              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              onChange={(e) => { trackFormStarted("email"); setEmail(e.target.value); setError(""); }}
               placeholder="priya@email.com"
               required
               type="email"
               value={email}
             />
           </div>
+          <div className="min-w-0 flex-1">
+            <label className={LABEL_CLASS} htmlFor={nameId}>
+              name <span className="font-normal text-white/40">(optional)</span>
+            </label>
+            <input
+              autoComplete="name"
+              className={`${FIELD_CLASS} ph-no-capture`}
+              disabled={isSubmitting}
+              id={nameId}
+              onChange={(e) => { trackFormStarted("name"); setName(e.target.value); setError(""); }}
+              placeholder="priya shah"
+              type="text"
+              value={name}
+            />
+          </div>
           {!heroLayout && (
             <div className="min-w-0 flex-1 border-t border-white/10 sm:col-span-2 lg:col-span-1 lg:border-l lg:border-t-0">
               <label className={LABEL_CLASS} htmlFor={roleId}>joining as</label>
               <select
-                className={`${FIELD_CLASS} appearance-none text-white [&>option]:bg-black [&>option]:text-white`}
+                className={`${FIELD_CLASS} ph-no-capture appearance-none text-white [&>option]:bg-black [&>option]:text-white`}
                 disabled={isSubmitting}
                 id={roleId}
-                onChange={(e) => { setRole(e.target.value as RoleValue); setError(""); }}
+                onChange={(e) => {
+                  const nextRole = e.target.value as RoleValue;
+                  trackFormStarted("role");
+                  setRole(nextRole);
+                  setError("");
+                  if (nextRole) {
+                    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRoleSelected, {
+                      source: sourceLabel,
+                      layout,
+                      role: nextRole,
+                    });
+                  }
+                }}
                 required
                 value={role}
               >
@@ -243,7 +457,7 @@ function WaitlistForm({
                 checked={ageConfirmed}
                 className={CHECKBOX_CLASS}
                 disabled={isSubmitting}
-                onChange={(e) => { setAgeConfirmed(e.target.checked); setError(""); }}
+                onChange={(e) => { trackFormStarted("age_confirmation"); setAgeConfirmed(e.target.checked); setError(""); }}
                 required
                 type="checkbox"
               />
@@ -254,7 +468,7 @@ function WaitlistForm({
                 checked={consent}
                 className={CHECKBOX_CLASS}
                 disabled={isSubmitting}
-                onChange={(e) => { setConsent(e.target.checked); setError(""); }}
+                onChange={(e) => { trackFormStarted("marketing_consent"); setConsent(e.target.checked); setError(""); }}
                 required
                 type="checkbox"
               />

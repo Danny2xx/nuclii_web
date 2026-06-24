@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { captureServerAnalyticsEvent } from "@/lib/server-analytics";
+
 const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID ?? "";
 const TO_EMAIL = process.env.NUCLII_EMAIL ?? "team@nuclii.com";
 const FROM_EMAIL = process.env.NUCLII_FROM_EMAIL ?? "onboarding@resend.dev";
@@ -18,6 +20,14 @@ const ROLE_LABELS: Record<string, string> = {
   investor: "investor",
   "team-contributor": "team / contributor",
 };
+
+let resendClient: Resend | null = null;
+
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) return null;
+  resendClient ??= new Resend(process.env.RESEND_API_KEY);
+  return resendClient;
+}
 
 function escapeHtml(value: string) {
   return value
@@ -41,6 +51,7 @@ export async function POST(request: NextRequest) {
       ageConfirmed?: boolean;
       consent?: boolean;
       source?: string;
+      analyticsDistinctId?: string;
     };
 
     const name = cleanPlainText(body.name, 120);
@@ -50,29 +61,64 @@ export async function POST(request: NextRequest) {
     const ageConfirmed = body.ageConfirmed === true;
     const consent = body.consent === true;
     const source = cleanPlainText(body.source, 80) || "waitlist";
+    const analyticsDistinctId = cleanPlainText(body.analyticsDistinctId, 180) || undefined;
 
-    if (!name) {
-      return NextResponse.json({ error: "please enter your name." }, { status: 400 });
-    }
+    const analyticsBase = {
+      route: "/api/waitlist",
+      source,
+      role: role || "not_selected",
+      role_label: roleLabel,
+      has_name: Boolean(name),
+      age_confirmed: ageConfirmed,
+      marketing_consent: consent,
+      resend_audience_configured: Boolean(AUDIENCE_ID),
+    };
 
     if (!email || !EMAIL_REGEX.test(email)) {
+      await captureServerAnalyticsEvent(
+        ANALYTICS_EVENTS.waitlistSignupRejected,
+        analyticsDistinctId,
+        { ...analyticsBase, reason: "invalid_email" },
+      );
       return NextResponse.json({ error: "enter a valid email address." }, { status: 400 });
     }
 
     if (!roleLabel) {
+      await captureServerAnalyticsEvent(
+        ANALYTICS_EVENTS.waitlistSignupRejected,
+        analyticsDistinctId,
+        { ...analyticsBase, reason: "invalid_role" },
+      );
       return NextResponse.json({ error: "choose the path that best describes you." }, { status: 400 });
     }
 
     if (!ageConfirmed) {
+      await captureServerAnalyticsEvent(
+        ANALYTICS_EVENTS.waitlistSignupRejected,
+        analyticsDistinctId,
+        { ...analyticsBase, reason: "missing_age_confirmation" },
+      );
       return NextResponse.json({ error: "please confirm you're 16 or older." }, { status: 400 });
     }
 
     if (!consent) {
+      await captureServerAnalyticsEvent(
+        ANALYTICS_EVENTS.waitlistSignupRejected,
+        analyticsDistinctId,
+        { ...analyticsBase, reason: "missing_marketing_consent" },
+      );
       return NextResponse.json({ error: "please confirm you'd like to receive updates." }, { status: 400 });
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("[Nuclii] RESEND_API_KEY not set, waitlist signup not saved:", email, source);
+    const resend = getResendClient();
+
+    if (!resend) {
+      await captureServerAnalyticsEvent(
+        ANALYTICS_EVENTS.waitlistSignupReceived,
+        analyticsDistinctId,
+        { ...analyticsBase, outcome: "accepted_without_resend" },
+      );
+      console.warn("[Nuclii] RESEND_API_KEY not set, waitlist signup not saved:", source);
       return NextResponse.json({ success: true, warn: "no_key" });
     }
 
@@ -83,6 +129,11 @@ export async function POST(request: NextRequest) {
     if (AUDIENCE_ID) {
       const { data: existing } = await resend.contacts.get({ audienceId: AUDIENCE_ID, email });
       if (existing) {
+        await captureServerAnalyticsEvent(
+          ANALYTICS_EVENTS.waitlistSignupReceived,
+          analyticsDistinctId,
+          { ...analyticsBase, outcome: "duplicate" },
+        );
         return NextResponse.json({ success: true, duplicate: true });
       }
     }
@@ -92,7 +143,7 @@ export async function POST(request: NextRequest) {
       await resend.contacts.create({
         audienceId: AUDIENCE_ID,
         email,
-        firstName,
+        firstName: firstName || undefined,
         lastName: lastName || undefined,
         unsubscribed: false,
       });
@@ -111,7 +162,7 @@ export async function POST(request: NextRequest) {
       resend.emails.send({
         from: `Nuclii <${FROM_EMAIL}>`,
         to: [TO_EMAIL],
-        subject: `Waitlist signup (${source}): ${name}`,
+        subject: `Waitlist signup (${source}): ${name || email}`,
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:28px 24px;background:#0a0a0b;color:#f7f7fa;border-radius:16px">
             <div style="margin-bottom:20px">
@@ -121,7 +172,7 @@ export async function POST(request: NextRequest) {
             <p style="font-size:15px;color:#a1a1aa;margin:0 0 20px">Someone just joined the Nuclii waitlist.</p>
             <div style="background:#18191d;border:1px solid #26282f;border-radius:12px;padding:16px 20px">
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Name</p>
-              <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeName}</p>
+              <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeName || "—"}</p>
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Email</p>
               <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeEmail}</p>
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Joining as</p>
@@ -165,9 +216,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    await captureServerAnalyticsEvent(
+      ANALYTICS_EVENTS.waitlistSignupReceived,
+      analyticsDistinctId,
+      { ...analyticsBase, outcome: "new" },
+    );
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("[Nuclii] Waitlist signup error:", error);
+    await captureServerAnalyticsEvent(
+      ANALYTICS_EVENTS.waitlistSignupFailed,
+      undefined,
+      { route: "/api/waitlist", reason: "unhandled_error" },
+    );
     return NextResponse.json({ error: "something went wrong. please try again." }, { status: 500 });
   }
 }

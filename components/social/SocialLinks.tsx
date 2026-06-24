@@ -1,6 +1,10 @@
+"use client";
+
 import type { IconType } from "react-icons";
 import { FaInstagram, FaLinkedinIn, FaThreads, FaTiktok } from "react-icons/fa6";
 
+import { TrackedAnchor } from "@/components/analytics/tracked-link";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { socialLinks } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +33,13 @@ function SocialLinks({
         if (!Icon) return null;
 
         return (
-          <a
+          <TrackedAnchor
             key={label}
+            analyticsEvent={ANALYTICS_EVENTS.socialLinkClicked}
+            analyticsProperties={{
+              label,
+              location: "social_links",
+            }}
             href={href}
             target="_blank"
             rel="noopener noreferrer"
@@ -42,7 +51,7 @@ function SocialLinks({
             )}
           >
             <Icon aria-hidden="true" className={iconSize} />
-          </a>
+          </TrackedAnchor>
         );
       })}
     </div>

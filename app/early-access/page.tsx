@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
+import { TrackedAnchor } from "@/components/analytics/tracked-link";
 import { WaitlistForm } from "@/components/home/waitlist-form";
 import { FadeIn, Reveal } from "@/components/motion";
 import { Button } from "@/components/ui/button";
@@ -96,7 +98,7 @@ export default function EarlyAccessPage() {
               <div className="pt-2" id="early-access-form">
                 <WaitlistForm
                   source="early access"
-                  submitLabel="join the waitlist"
+                  submitLabel="apply for early access"
                   successMessage="application received. we'll review it and reach out when nuclii opens near you."
                 />
               </div>
@@ -137,24 +139,41 @@ export default function EarlyAccessPage() {
               <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
                 who early access is for
               </h2>
-              <div className="mt-8 space-y-5 text-base leading-7 text-muted-foreground sm:text-lg">
+              <div className="mt-8">
                 {roles.map((role) => (
-                  <p id={role.id || undefined} key={role.label}>
-                    <strong className="text-foreground">{role.label}:</strong>{" "}
-                    {role.description}
-                  </p>
+                  <div
+                    className="grid gap-1 border-t border-border py-5 sm:grid-cols-[11rem_1fr] sm:gap-8 sm:py-6"
+                    id={role.id || undefined}
+                    key={role.label}
+                  >
+                    <p className="text-lg font-bold lowercase tracking-[-0.02em] sm:text-xl">
+                      {role.label}
+                    </p>
+                    <p className="text-base leading-7 text-muted-foreground">
+                      {role.description}
+                    </p>
+                  </div>
                 ))}
-                <p>
-                  early access is your way in. contribute, give feedback, and
-                  help build nuclii with the community.
-                </p>
               </div>
+              <p className="mt-8 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
+                early access is your way in. contribute, give feedback, and
+                help build nuclii with the community.
+              </p>
               <Button
                 asChild
-                className="mt-10 w-full lowercase sm:w-fit"
+                className="nuclii-action-button group mt-8 w-full justify-center border border-white bg-white lowercase !text-black hover:border-white hover:!text-white sm:w-auto"
                 size="lg"
               >
-                <a href="#early-access-form">join the waitlist</a>
+                <TrackedAnchor
+                  analyticsProperties={{
+                    cta: "apply_for_early_access",
+                    location: "early_access_roles_section",
+                  }}
+                  href="#early-access-form"
+                >
+                  <span className="text-current">apply for early access</span>
+                  <ArrowRight aria-hidden="true" className="!text-current" />
+                </TrackedAnchor>
               </Button>
             </div>
           </Reveal>

@@ -12,7 +12,9 @@ The website should feel like:
 - a clean pre-launch website
 - energetic but not noisy
 
-The visual identity should be blue / black / white.
+The active campaign identity is black / white / grayscale, with real media and
+hard-edged contrast carrying the brand. Electric blue remains a reserved Nuclii
+token, not the default campaign accent.
 
 Avoid making the site too purple, green, neon-heavy, childish, or club/nightlife-focused.
 
@@ -46,7 +48,7 @@ Secondary text:
 
 `#A1A1AA`
 
-Electric blue:
+Reserved electric blue:
 
 `#5B8CFF`
 
@@ -68,15 +70,10 @@ Muted text on light backgrounds:
 
 Use black and charcoal for most backgrounds.
 
-Use electric blue for:
-
-- primary CTAs
-- active states
-- animated map pins
-- glows
-- selected cards
-- form focus rings
-- important tags
+Use electric blue only when the page intentionally needs a product signal, such
+as a future map, selected state, or app-preview detail. Do not use blue glows,
+blue gradients, or blue hover borders as default decoration in the current
+campaign branch.
 
 Use white for:
 
@@ -98,15 +95,10 @@ Avoid green except for success states.
 
 ## Typography
 
-Preferred typography:
+Active typography:
 
-- Headings: Clash Display or a similar display font
-- Body: Satoshi or Inter
-
-If custom fonts are not available, use:
-
-- Headings: Inter Tight, Space Grotesk, or Geist Sans
-- Body: Inter or Geist Sans
+- Headings: Fredoka
+- Body and UI: Plus Jakarta Sans
 
 Typography style:
 
@@ -127,8 +119,8 @@ Use:
 - strong responsive grid systems
 - generous whitespace
 - max-width containers
-- large rounded cards
-- bento grids
+- spare image-led sections
+- editorial divider rhythms
 - alternating dark/light sections where useful
 - sticky navigation
 - clear section hierarchy
@@ -149,17 +141,17 @@ Recommended section spacing:
 
 ## Cards
 
-Cards should feel premium and soft.
+Cards should feel premium, quiet, and purposeful.
 
 Card style:
 
-- rounded corners: `rounded-2xl` or `rounded-3xl`
+- rounded corners: usually `rounded-2xl`; reserve larger radii for rare brand panels
 - background: dark surface or translucent black
 - border: subtle grey border
-- shadow: soft blue/black shadow
-- hover: slight lift, border blue, background glow
+- shadow: use sparingly, not on every card
+- hover: slight lift or contrast shift, not glow as default
 
-Use glassmorphism sparingly:
+Use blur and glass sparingly:
 
 - navbar
 - floating UI cards
@@ -174,18 +166,17 @@ Avoid making every component glassy.
 
 Primary button:
 
-- electric blue background
-- white text
-- rounded-full or rounded-xl
-- strong hover glow
-- subtle scale or magnetic hover
+- white background on dark surfaces
+- black text
+- hard edges
+- subtle hover lift
 
 Secondary button:
 
 - transparent or dark background
 - subtle border
 - white text
-- blue hover border
+- stronger white/foreground hover contrast
 
 CTA text examples:
 
@@ -206,33 +197,36 @@ Button behaviour:
 
 ## Navigation
 
-Navbar:
+Navigation:
 
-- sticky top
-- blur background
-- Nuclii logo left
-- nav links center or right
-- primary CTA right
-- mobile menu
+- fixed logo at the left
+- fixed right-side desktop navigation
+- safe-area-aware mobile controls and drawer
+- primary early-access CTA first in the mobile drawer
 
 Main nav links:
 
 - Home
-- About
+- About Us
 - Early Access
-- For Hosts
 - Build With Us
+
+CTA/footer-accessible routes:
+
+- For Hosts
 - Get in Touch
 
 Footer links:
 
+- For Hosts
+- Get in Touch
 - Investors
 - Privacy Policy
 - Terms of Use
 - Cookie Policy
 - Community Guidelines
 
-Do not clutter navbar with legal/investor links.
+Do not clutter navbar with legal, investor, host, or contact links. Keep those reachable through CTAs and footer navigation.
 
 ---
 
@@ -244,10 +238,9 @@ Use:
 
 - smooth scroll reveals
 - floating cards
-- subtle map pin pulses
-- glowing gradient orbs
-- animated dotted map background
-- card hover lifts
+- subtle media transitions
+- image and section reveals
+- modest hover lifts
 - form step transitions
 - device mockup parallax
 - accordion transitions
@@ -267,24 +260,24 @@ Motion should feel like a premium product site.
 
 ## Hero Visual System
 
-The hero should include:
+Current hero system:
 
-- dark background
-- blue map-inspired abstract grid
-- floating event/listing cards
-- glowing pins
-- phone/app mockup
+- dark photographic or video background
+- black gradient overlay for legibility
+- large lowercase display headline
+- inline early-access form or clear CTA
 - strong CTA
 
 The waitlist CTA must be impossible to miss.
 
-Do not overcrowd the hero with too many badges or statistics.
+Do not overcrowd the hero with badges, statistics, fake traction, or decorative
+app mockups that imply unfinished product features are live.
 
 ---
 
 ## Product Mockups
 
-Use mockups to suggest the product before launch.
+Use product mockups only when they are honest and useful.
 
 Suggested mock screens:
 
@@ -303,24 +296,24 @@ Do not show features that contradict the product strategy.
 
 ## Forms
 
-Forms should be clean, premium, and multi-step where useful.
+Forms should be clean, premium, and short.
 
 Form style:
 
 - clear labels
 - large input fields
-- rounded corners
+- hard-edged or lightly rounded fields, matching the active campaign
 - strong focus states
 - helpful placeholder text
 - short forms
-- progress indicator for multi-step forms
+- concise helper and error text
 
 Important forms:
 
 - Early Access form
 - Build With Us application form
-- Get in Touch form
-- Investor enquiry form
+- Host application form
+- Contact or investor enquiry routes, if collected directly
 
 Early Access form must include:
 

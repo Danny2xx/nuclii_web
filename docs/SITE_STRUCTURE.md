@@ -7,11 +7,14 @@ The Nuclii website is a clean, animated pre-launch marketing site.
 Main navigation:
 
 1. Home
-2. About
+2. About Us
 3. Early Access
-4. For Hosts
-5. Build With Us
-6. Get in Touch
+4. Build With Us
+
+CTA/footer-accessible routes:
+
+1. For Hosts
+2. Get in Touch
 
 Footer-only pages:
 
@@ -21,7 +24,7 @@ Footer-only pages:
 4. Cookie Policy
 5. Community Guidelines
 
-Do not overload the main navigation. The main user journey should always lead toward Early Access.
+Do not overload the main navigation. The main user journey should always lead toward Early Access. For Hosts and Get in Touch should stay reachable through page CTAs and footer links rather than the main nav.
 
 ---
 

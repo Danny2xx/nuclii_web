@@ -1,8 +1,11 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
+import { TrackedAnchor } from "@/components/analytics/tracked-link";
+import { AudienceRows } from "@/components/home/audience-rows";
 import { ExperienceLayersScroll } from "@/components/home/experience-layers-scroll";
-import { FadeIn, Reveal, RotatingWord } from "@/components/motion";
+import { ExperienceMap } from "@/components/home/experience-map";
+import { FadeIn, MaskReveal, Reveal, RotatingWord } from "@/components/motion";
 import { WaitlistForm } from "@/components/home/waitlist-form";
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { Button } from "@/components/ui/button";
@@ -18,35 +21,35 @@ const heroVideos = [
 const experienceLayers = [
   {
     number: "01",
-    title: "attendees",
+    title: "explorers",
     description:
-      "discover what is happening around you without needing to be in the right group chat first.",
+      "find what is actually happening around you, without needing to be in the right group chat first.",
     image: "/images/attendee.jpg",
-    alt: "Attendees gathered at a real-world experience",
+    alt: "Friends discovering a real-world experience together",
   },
   {
     number: "02",
-    title: "hosts",
+    title: "organisers",
     description:
-      "create listings, manage interest, coordinate access, and bring people together with less chaos.",
+      "spin up a listing, manage interest, coordinate access, and bring people together with less chaos.",
     image: "/images/host.jpg",
-    alt: "A host coordinating a real-world experience",
+    alt: "An organiser setting up a real-world experience",
   },
   {
     number: "03",
-    title: "venues",
+    title: "spaces",
     description:
-      "connect spaces with hosts, communities, talent, and real-world activity before launch.",
+      "open your room, rooftop, or studio to the people and communities who bring it to life.",
     image: "/images/venue.jpg",
-    alt: "A venue prepared for a real-world experience",
+    alt: "A space prepared for a real-world experience",
   },
   {
     number: "04",
-    title: "talents",
+    title: "creatives",
     description:
-      "get discovered for showcases, performances, sessions, creative services, and collaborations.",
+      "get discovered for showcases, performances, sessions, services, and collaborations.",
     image: "/images/talent.jpg",
-    alt: "Talent performing at a real-world experience",
+    alt: "A creative showcasing their work at a real-world experience",
   },
 ] as const;
 
@@ -88,7 +91,7 @@ export default function Home() {
         <div className="nuclii-container relative z-10 flex min-h-[112svh] items-start pt-[50svh] md:items-end md:pb-[11rem] md:pt-0">
           <FadeIn className="w-full">
             <h1 className="max-w-[54rem] text-[clamp(3.25rem,7.6vw,7.25rem)] font-extrabold lowercase leading-[0.91] tracking-[-0.02em] text-white text-balance">
-              for every first
+              find your next
               <br />
               <RotatingWord />
             </h1>
@@ -140,11 +143,11 @@ export default function Home() {
       <section className="pb-24 md:pb-48">
         <div className="nuclii-container">
           <div className="grid gap-10 md:grid-cols-[minmax(0,28rem)_minmax(0,36rem)] md:items-end md:justify-center md:gap-24">
-            <Reveal>
+            <MaskReveal>
               <h2 className="text-[clamp(3.5rem,9vw,7.5rem)] font-black lowercase leading-[0.86] tracking-[-0.03em] text-balance">
                 built for real life
               </h2>
-            </Reveal>
+            </MaskReveal>
             <Reveal delay={0.08}>
               <div className="space-y-7 text-base leading-relaxed tracking-[-0.02em] text-white/78 sm:text-xl">
                 <p className="text-3xl font-extrabold leading-tight tracking-[-0.03em] text-white sm:text-5xl">
@@ -162,32 +165,37 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border py-20 md:py-36">
+        <div className="nuclii-container grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
+          <Reveal>
+            <div>
+              <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+                your city, on one map
+              </h2>
+              <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
+                <p>
+                  every workshop, pop-up, and gathering near you — surfaced the
+                  moment it is happening, not buried in a feed.
+                </p>
+                <p className="text-base text-white/55 sm:text-lg">
+                  exact locations stay private until you are in.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <ExperienceMap />
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-20 md:py-36">
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-20">
           <Reveal>
             <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
               who you are and what you get
             </h2>
           </Reveal>
-          <Reveal delay={0.08}>
-            <div>
-              {audienceRows.map((row) => (
-                <div
-                  className="nuclii-numbered-item group/role transition duration-200 ease-out hover:border-white/45"
-                  key={row.number}
-                >
-                  <p className="nuclii-numbered-item__heading">
-                    <span className="nuclii-numbered-item__number transition-transform duration-200 group-hover/role:-translate-y-0.5">
-                      {row.number}
-                    </span>
-                    {row.title}
-                  </p>
-                  <p className="nuclii-numbered-item__description">
-                    {row.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
+          <AudienceRows rows={audienceRows} />
         </div>
       </section>
 
@@ -243,10 +251,16 @@ export default function Home() {
                 className="nuclii-action-button group w-full justify-center border border-white bg-white px-5 lowercase !text-black hover:border-white hover:!text-white sm:w-fit sm:min-w-[13rem] sm:justify-between"
                 size="lg"
               >
-                <a href="#waitlist">
+                <TrackedAnchor
+                  analyticsProperties={{
+                    cta: "join_waitlist",
+                    location: "home_final_cta",
+                  }}
+                  href="#waitlist"
+                >
                   <span className="text-current">join the waitlist</span>
                   <ArrowRight aria-hidden="true" className="!text-current" />
-                </a>
+                </TrackedAnchor>
               </Button>
             </div>
           </Reveal>

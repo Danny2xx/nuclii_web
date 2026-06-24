@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { footerNavGroups, sideNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -53,10 +54,17 @@ function MobileNav() {
 
             {/* Primary CTA */}
             <Button asChild className="w-full bg-black text-white hover:bg-black/85" size="lg">
-              <Link href="/#waitlist" onClick={() => setOpen(false)}>
+              <TrackedLink
+                analyticsProperties={{
+                  cta: "join_waitlist",
+                  location: "mobile_drawer_primary",
+                }}
+                href="/#waitlist"
+                onClick={() => setOpen(false)}
+              >
                 join the waitlist
                 <ArrowRight aria-hidden="true" />
-              </Link>
+              </TrackedLink>
             </Button>
 
             {/* Main pages */}
@@ -67,7 +75,17 @@ function MobileNav() {
 
                 return (
                   <div key={item.href}>
-                    <Link
+                    <TrackedLink
+                      analyticsEvent={
+                        item.external
+                          ? ANALYTICS_EVENTS.outboundLinkClicked
+                          : ANALYTICS_EVENTS.navigationClicked
+                      }
+                      analyticsProperties={{
+                        label: item.label,
+                        location: "mobile_drawer",
+                        external: Boolean(item.external),
+                      }}
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "inline-flex items-center gap-2 text-4xl font-extrabold lowercase leading-none tracking-[-0.04em] transition-colors hover:text-black/60",
@@ -85,19 +103,24 @@ function MobileNav() {
                           <span className="sr-only">(opens in new tab)</span>
                         </>
                       )}
-                    </Link>
+                    </TrackedLink>
 
                     {item.children && (
                       <div className="mt-2 flex flex-col gap-2 pl-1">
                         {item.children.map((child) => (
-                          <Link
+                          <TrackedLink
+                            analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
+                            analyticsProperties={{
+                              label: child.label,
+                              location: "mobile_drawer_child",
+                            }}
                             className="text-xl font-extrabold lowercase tracking-[-0.04em] text-black/55 transition-colors hover:text-black/70"
                             href={child.href}
                             key={child.href}
                             onClick={() => setOpen(false)}
                           >
                             ↳ {child.label}
-                          </Link>
+                          </TrackedLink>
                         ))}
                       </div>
                     )}
@@ -113,14 +136,19 @@ function MobileNav() {
               </p>
               <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {legalLinks.map((link) => (
-                  <Link
+                  <TrackedLink
+                    analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
+                    analyticsProperties={{
+                      label: link.label,
+                      location: "mobile_drawer_legal",
+                    }}
                     className="text-xs font-semibold lowercase text-black/60 transition hover:text-black"
                     href={link.href}
                     key={link.href}
                     onClick={() => setOpen(false)}
                   >
                     {link.label}
-                  </Link>
+                  </TrackedLink>
                 ))}
               </div>
             </div>

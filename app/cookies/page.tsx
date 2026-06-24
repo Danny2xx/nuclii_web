@@ -18,7 +18,7 @@ const sections: PolicySection[] = [
   },
   {
     title: "Analytics cookies",
-    body: "If analytics are enabled, they may help Nuclii understand page visits, device types, and website performance. Analytics should be configured in a privacy-aware way.",
+    body: "If analytics are enabled, Nuclii may use PostHog or similar tools to understand page visits, referral sources, device types, form journeys, and signup outcomes. Analytics should be configured in a privacy-aware way and should not receive private form content such as names, emails, phone numbers, messages, or organisation text.",
   },
   {
     title: "Marketing cookies",
@@ -39,7 +39,7 @@ export default function CookiesPage() {
     <PolicyPage
       badge="Cookies"
       description="Cookie use on the Nuclii pre-launch website and how to manage preferences."
-      lastUpdated="May 27, 2026"
+      lastUpdated="June 24, 2026"
       sections={sections}
       title="Cookie Policy"
     />

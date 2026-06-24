@@ -65,7 +65,7 @@ function ExperienceLayersScroll({
       ref={sectionRef}
     >
       <div className="lg:sticky lg:top-[30vh] lg:h-fit">
-        <h2 className="sr-only">roles on nuclii</h2>
+        <h2 className="sr-only">who nuclii is for</h2>
         <div className="space-y-0">
           {layers.map((layer, index) => (
             <button

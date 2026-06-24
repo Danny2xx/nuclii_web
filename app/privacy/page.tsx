@@ -20,7 +20,7 @@ const sections: PolicySection[] = [
       "Contact form information, including name, email, enquiry type, organisation, city, and message.",
       "Careers application information, including name, email, area of interest, city, optional portfolio or profile links, and message.",
       "Investor enquiry information submitted through contact or investor interest routes.",
-      "Basic analytics or cookie information if analytics are enabled on the website.",
+      "Privacy-aware analytics information if enabled, such as page visits, referral source, device type, selected audience role, form source, and signup outcome. Nuclii should not send names, emails, phone numbers, messages, or organisation text into analytics.",
     ],
   },
   {
@@ -29,6 +29,7 @@ const sections: PolicySection[] = [
       "To manage early access interest and beta communications.",
       "To understand potential attendees, hosts, societies, service providers, talent, venues, partners, investors, and contributors.",
       "To respond to enquiries and improve the pre-launch website.",
+      "To understand which pages, campaigns, and sources are helping people discover and join Nuclii.",
       "To send Nuclii updates where consent has been given.",
     ],
   },
@@ -51,7 +52,7 @@ export default function PrivacyPage() {
     <PolicyPage
       badge="Privacy"
       description="How Nuclii handles information submitted through the pre-launch website."
-      lastUpdated="May 27, 2026"
+      lastUpdated="June 24, 2026"
       sections={sections}
       title="Privacy Policy"
     />

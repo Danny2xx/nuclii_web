@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { TrackedAnchor } from "@/components/analytics/tracked-link";
 import { FadeIn, Reveal } from "@/components/motion";
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { Button } from "@/components/ui/button";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 
 export const metadata: Metadata = {
   title: "About | Nuclii",
@@ -83,10 +85,16 @@ export default function AboutPage() {
                 className="nuclii-action-button group w-full justify-center border border-white bg-white lowercase !text-black hover:border-white hover:!text-white sm:w-auto"
                 size="lg"
               >
-                <a href="/early-access">
+                <TrackedAnchor
+                  analyticsProperties={{
+                    cta: "get_early_access",
+                    location: "about_hero",
+                  }}
+                  href="/early-access"
+                >
                   <span className="text-current">get early access</span>
                   <ArrowRight aria-hidden="true" className="!text-current" />
-                </a>
+                </TrackedAnchor>
               </Button>
             </div>
           </FadeIn>
@@ -280,10 +288,17 @@ export default function AboutPage() {
                   className="nuclii-action-button group w-full justify-center border border-white bg-white lowercase !text-black hover:border-white hover:!text-white sm:w-auto"
                   size="lg"
                 >
-                  <a href="mailto:hello@nuclii.co.uk">
+                  <TrackedAnchor
+                    analyticsEvent={ANALYTICS_EVENTS.outboundLinkClicked}
+                    analyticsProperties={{
+                      cta: "get_in_touch",
+                      location: "about_final_cta",
+                    }}
+                    href="mailto:hello@nuclii.co.uk"
+                  >
                     <span className="text-current">get in touch</span>
                     <ArrowUpRight aria-hidden="true" className="!text-current" />
-                  </a>
+                  </TrackedAnchor>
                 </Button>
               </div>
             </div>

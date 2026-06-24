@@ -49,7 +49,7 @@ function LegalDrawer({
             <motion.div
               animate={{ opacity: 1 }}
               aria-hidden="true"
-              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm"
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
               onClick={() => setOpen(false)}
@@ -60,7 +60,7 @@ function LegalDrawer({
             <motion.aside
               animate={{ x: 0 }}
               aria-label={title}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-lg flex-col border-l border-border bg-background shadow-[-32px_0_80px_rgba(0,0,0,0.18)]"
+              className="fixed bottom-0 right-0 top-0 z-[80] flex w-full max-w-lg flex-col border-l border-border bg-background shadow-[-32px_0_80px_rgba(0,0,0,0.18)]"
               exit={{ x: "100%" }}
               initial={{ x: "100%" }}
               role="dialog"
