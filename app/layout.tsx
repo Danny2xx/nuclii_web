@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from "react";
 
+import { SiteAnalytics } from "@/components/analytics/site-analytics";
 import { PageShell } from "@/components/layout/PageShell";
 import "./globals.css";
 
@@ -47,6 +49,9 @@ export default function RootLayout({
     >
       <body>
         <PageShell>{children}</PageShell>
+        <Suspense fallback={null}>
+          <SiteAnalytics />
+        </Suspense>
         <Analytics />
       </body>
     </html>

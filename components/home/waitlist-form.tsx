@@ -122,12 +122,25 @@ function WaitlistForm({
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
   const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   const formStarted = useRef(false);
+  const formCompleted = useRef(false);
+  const submitAttempted = useRef(false);
+  const abandonmentProperties = useRef<{
+    source: string;
+    layout: string;
+    role: string;
+    has_email: boolean;
+    has_name: boolean;
+    age_confirmed: boolean;
+    marketing_consent: boolean;
+    submit_attempted: boolean;
+  } | null>(null);
 
   function analyticsBaseProperties() {
     return {
       source: sourceLabel,
       layout,
       role: role || "not_selected",
+      has_email: Boolean(email.trim()),
       has_name: Boolean(name.trim()),
     };
   }
@@ -150,6 +163,30 @@ function WaitlistForm({
       reason,
     });
   }
+
+  useEffect(() => {
+    abandonmentProperties.current = {
+      source: sourceLabel,
+      layout,
+      role: role || "not_selected",
+      has_email: Boolean(email.trim()),
+      has_name: Boolean(name.trim()),
+      age_confirmed: ageConfirmed,
+      marketing_consent: consent,
+      submit_attempted: submitAttempted.current,
+    };
+  }, [ageConfirmed, consent, email, layout, name, role, sourceLabel]);
+
+  useEffect(() => {
+    return () => {
+      if (!formStarted.current || formCompleted.current) return;
+
+      captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormAbandoned, {
+        ...(abandonmentProperties.current ?? {}),
+        reason: "component_unmounted",
+      });
+    };
+  }, []);
 
   async function copyShareLink() {
     try {
@@ -221,6 +258,7 @@ function WaitlistForm({
 
     setIsSubmitting(true);
     setError("");
+    submitAttempted.current = true;
     captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistSubmitAttempted, {
       ...analyticsBaseProperties(),
       age_confirmed: ageConfirmed,
@@ -252,6 +290,7 @@ function WaitlistForm({
         ...analyticsBaseProperties(),
         outcome: data.duplicate ? "duplicate" : "new",
       });
+      formCompleted.current = true;
       localStorage.setItem(storageKey, "true");
       setJustJoined(data.duplicate ? "duplicate" : "new");
     } catch (err) {
@@ -275,6 +314,9 @@ function WaitlistForm({
       cta: "join_with_different_email",
       location: "waitlist_success",
     });
+    formCompleted.current = false;
+    formStarted.current = false;
+    submitAttempted.current = false;
     localStorage.removeItem(storageKey);
     setJustJoined(null);
   }
@@ -457,7 +499,16 @@ function WaitlistForm({
                 checked={ageConfirmed}
                 className={CHECKBOX_CLASS}
                 disabled={isSubmitting}
-                onChange={(e) => { trackFormStarted("age_confirmation"); setAgeConfirmed(e.target.checked); setError(""); }}
+                onChange={(e) => {
+                  trackFormStarted("age_confirmation");
+                  setAgeConfirmed(e.target.checked);
+                  setError("");
+                  captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
+                    ...analyticsBaseProperties(),
+                    field: "age_confirmation",
+                    checked: e.target.checked,
+                  });
+                }}
                 required
                 type="checkbox"
               />
@@ -468,7 +519,16 @@ function WaitlistForm({
                 checked={consent}
                 className={CHECKBOX_CLASS}
                 disabled={isSubmitting}
-                onChange={(e) => { trackFormStarted("marketing_consent"); setConsent(e.target.checked); setError(""); }}
+                onChange={(e) => {
+                  trackFormStarted("marketing_consent");
+                  setConsent(e.target.checked);
+                  setError("");
+                  captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
+                    ...analyticsBaseProperties(),
+                    field: "marketing_consent",
+                    checked: e.target.checked,
+                  });
+                }}
                 required
                 type="checkbox"
               />

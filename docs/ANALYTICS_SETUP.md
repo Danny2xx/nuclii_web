@@ -26,8 +26,12 @@ Allowed analytics properties:
 - role/category selected by the visitor
 - source page
 - UTM/referral source
+- section reached
+- scroll depth reached
+- time-on-page threshold reached
 - device/browser metadata captured by PostHog
 - signup outcome, such as `new`, `duplicate`, or `accepted_without_resend`
+- form friction state, such as missing role or missing consent
 
 Do not send:
 
@@ -40,15 +44,21 @@ Do not send:
 
 ## Current tracked events
 
+- `page_viewed`
+- `page_engaged`
+- `scroll_depth_reached`
+- `section_viewed`
 - `cta_clicked`
 - `navigation_clicked`
 - `outbound_link_clicked`
 - `social_link_clicked`
 - `waitlist_form_started`
 - `waitlist_role_selected`
+- `waitlist_requirement_toggled`
 - `waitlist_submit_attempted`
 - `waitlist_signup_completed`
 - `waitlist_form_error`
+- `waitlist_form_abandoned`
 - `waitlist_signup_received`
 - `waitlist_signup_rejected`
 - `waitlist_signup_failed`
@@ -67,6 +77,10 @@ Create one PostHog dashboard with these headline cards:
 - top CTA locations by completed signup
 - waitlist funnel drop-off
 - form errors by reason
+- section reach by page
+- 50%, 75%, and 90% scroll reach
+- 10s, 30s, and 60s page engagement
+- abandoned forms by source and role
 
 Recommended launch funnel:
 
@@ -79,3 +93,14 @@ page viewed
 ```
 
 Break the funnel down by `source`, `role`, `location`, and device.
+
+Recommended engagement view:
+
+```text
+page_viewed
+-> section_viewed
+-> scroll_depth_reached
+-> page_engaged
+```
+
+Break engagement down by `path`, `section`, `percent`, and acquisition source.

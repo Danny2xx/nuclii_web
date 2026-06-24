@@ -75,7 +75,10 @@ export default function EarlyAccessPage() {
   return (
     <main className="nuclii-page">
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pb-24">
+      <section
+        className="relative overflow-hidden pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pb-24"
+        data-analytics-section="early_access_hero_form"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start lg:gap-16">
           <FadeIn>
             <h1 className="nuclii-display lowercase">
@@ -108,7 +111,10 @@ export default function EarlyAccessPage() {
       </section>
 
       {/* ── Photo row ─────────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="early_access_photo_row"
+      >
         <div className="nuclii-container">
           <Reveal>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -132,7 +138,10 @@ export default function EarlyAccessPage() {
       </section>
 
       {/* ── Who you are and what you get ─────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="early_access_roles"
+      >
         <div className="nuclii-container">
           <Reveal>
             <div className="max-w-2xl">

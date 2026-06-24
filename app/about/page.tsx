@@ -69,7 +69,10 @@ export default function AboutPage() {
   return (
     <main className="nuclii-page">
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[85svh] items-end overflow-hidden sm:min-h-svh">
+      <section
+        className="relative flex min-h-[85svh] items-end overflow-hidden sm:min-h-svh"
+        data-analytics-section="about_hero"
+      >
         <VideoBackgroundCarousel className="absolute inset-0" sources={heroVideos} />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/55 to-[#0a0a0b]/10" />
         <div className="nuclii-container relative pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24">
@@ -102,7 +105,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── Why we exist ─────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="about_why_we_exist"
+      >
         <div className="nuclii-container grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <Reveal>
             <h2 className="text-3xl font-extrabold lowercase sm:text-4xl">
@@ -132,7 +138,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── Our principles ───────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="about_principles"
+      >
         <div className="nuclii-container grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <Reveal>
             <div>
@@ -191,7 +200,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── What nuclii connects ─────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="about_connections"
+      >
         <div className="nuclii-container">
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <Reveal>
@@ -232,7 +244,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── For every first connection ───────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="about_first_connection"
+      >
         <div className="nuclii-container grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <Reveal>
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border sm:aspect-video lg:aspect-[4/5]">
@@ -267,7 +282,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── Final CTA ────────────────────────────────────────────────── */}
-      <section className="nuclii-section border-t border-border">
+      <section
+        className="nuclii-section border-t border-border"
+        data-analytics-section="about_final_cta"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end lg:gap-16">
           <Reveal>
             <h2 className="nuclii-display max-w-3xl lowercase">

@@ -83,7 +83,11 @@ const audienceRows = [
 export default function Home() {
   return (
     <main className="nuclii-page">
-      <section className="relative min-h-[112svh] overflow-hidden" id="waitlist">
+      <section
+        className="relative min-h-[112svh] overflow-hidden"
+        data-analytics-section="home_hero_waitlist"
+        id="waitlist"
+      >
         <VideoBackgroundCarousel className="absolute inset-0" sources={heroVideos} />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/70 to-transparent" />
@@ -107,7 +111,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-border px-[var(--container-x)] pb-20 pt-28 md:pb-48 md:pt-56">
+      <section
+        className="border-t border-border px-[var(--container-x)] pb-20 pt-28 md:pb-48 md:pt-56"
+        data-analytics-section="home_why_we_exist"
+      >
         <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-24 md:gap-72">
           <div className="grid gap-8 md:grid-cols-[0.8fr_1fr] md:items-start md:gap-20">
             <Reveal>
@@ -140,7 +147,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="pb-24 md:pb-48">
+      <section className="pb-24 md:pb-48" data-analytics-section="home_built_for_real_life">
         <div className="nuclii-container">
           <div className="grid gap-10 md:grid-cols-[minmax(0,28rem)_minmax(0,36rem)] md:items-end md:justify-center md:gap-24">
             <MaskReveal>
@@ -164,7 +171,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-border py-20 md:py-36">
+      <section
+        className="border-t border-border py-20 md:py-36"
+        data-analytics-section="home_map_preview"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <Reveal>
             <div>
@@ -188,7 +198,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-border py-20 md:py-36">
+      <section
+        className="border-t border-border py-20 md:py-36"
+        data-analytics-section="home_audience_rows"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-20">
           <Reveal>
             <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
@@ -199,7 +212,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-border py-20 md:py-36">
+      <section
+        className="border-t border-border py-20 md:py-36"
+        data-analytics-section="home_privacy_by_default"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal>
             <div>
@@ -233,7 +249,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-border py-20 md:py-36">
+      <section
+        className="border-t border-border py-20 md:py-36"
+        data-analytics-section="home_final_cta"
+      >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end lg:gap-16">
           <Reveal>
             <h2 className="nuclii-display max-w-4xl lowercase">
