@@ -1,9 +1,16 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowRight, Check, CheckCircle2, Copy, Loader2, Share2 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  CopyIcon,
+  ShareIcon,
+  SparkCheckIcon,
+  SpinnerIcon,
+} from "@/components/ui/icons";
 import { useIsClient } from "@/components/motion/use-is-client";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,9 +74,66 @@ function getOrCreateRefCode() {
 const FIELD_CLASS =
   "block min-h-12 w-full min-w-0 bg-transparent px-4 pb-3 text-base text-white outline-none transition placeholder:text-white/60 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:bg-white/[0.06] sm:text-sm";
 const LABEL_CLASS = "block px-4 pt-2.5 text-[11px] font-semibold lowercase tracking-wide text-white/70";
-const CHECKBOX_CLASS =
-  "mt-0.5 size-4 shrink-0 rounded-none border-white/40 bg-black/50 accent-white disabled:cursor-not-allowed disabled:opacity-60";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Custom checkbox with a spring-pop box and a drawn-in check stroke.
+function AnimatedCheckbox({
+  checked,
+  children,
+  disabled,
+  onChange,
+}: {
+  checked: boolean;
+  children: React.ReactNode;
+  disabled?: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="group flex min-h-11 cursor-pointer items-start gap-2.5 text-xs leading-5 text-white/70 transition-colors hover:text-white/90">
+      <input
+        checked={checked}
+        className="sr-only"
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
+        required
+        type="checkbox"
+      />
+      <motion.span
+        aria-hidden="true"
+        className={cn(
+          "relative mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-[6px] border transition-colors duration-200",
+          checked ? "border-white bg-white" : "border-white/40 bg-black/50 group-hover:border-white/70",
+        )}
+        whileTap={{ scale: 0.82 }}
+      >
+        <AnimatePresence>
+          {checked && (
+            <motion.svg
+              animate={{ opacity: 1 }}
+              className="size-3 text-black"
+              exit={{ opacity: 0 }}
+              fill="none"
+              initial={{ opacity: 0 }}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="3"
+              viewBox="0 0 24 24"
+            >
+              <motion.path
+                animate={{ pathLength: 1 }}
+                d="m4.5 12.5 4.8 4.8L19.5 6.7"
+                initial={{ pathLength: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              />
+            </motion.svg>
+          )}
+        </AnimatePresence>
+      </motion.span>
+      <span>{children}</span>
+    </label>
+  );
+}
 
 function analyticsReason(value: string) {
   return value
@@ -248,7 +312,7 @@ function WaitlistForm({
       return;
     }
     if (!ageConfirmed) {
-      setValidationError("please confirm you're 16 or older.", "missing_age_confirmation");
+      setValidationError("please confirm you're 18 or older.", "missing_age_confirmation");
       return;
     }
     if (!consent) {
@@ -327,15 +391,22 @@ function WaitlistForm({
     return (
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className={`flex max-w-xl flex-col gap-4 border-t border-white/25 pt-4 text-sm text-white ${className}`}
+        className={`flex max-w-xl flex-col gap-4 rounded-2xl border border-white/16 bg-black/35 p-4 text-sm text-white ${className}`}
         initial={{ opacity: 0, y: 8 }}
       >
         <div className="flex items-start gap-2.5 font-semibold">
-          <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+          <motion.span
+            animate={{ scale: 1, rotate: 0 }}
+            className="mt-0.5 shrink-0 text-primary"
+            initial={{ scale: 0, rotate: -30 }}
+            transition={{ type: "spring", stiffness: 320, damping: 16, delay: 0.1 }}
+          >
+            <SparkCheckIcon className="size-4" />
+          </motion.span>
           <span>{isDuplicate ? duplicateMessage : successMessage}</span>
         </div>
 
-        <div className="flex flex-col gap-3 border border-white/12 bg-white/[0.04] p-4">
+        <div className="flex flex-col gap-3 rounded-2xl border border-white/12 bg-white/[0.04] p-4">
           <div>
             <p className="font-semibold text-white">skip the line.</p>
             <p className="mt-1 text-xs leading-5 text-white/65">
@@ -346,27 +417,38 @@ function WaitlistForm({
           <div className="flex items-stretch gap-2">
             <input
               aria-label="your referral link"
-              className="ph-no-capture min-w-0 flex-1 border border-white/15 bg-black/40 px-3 text-xs text-white/85 outline-none focus-visible:border-white/45"
+              className="ph-no-capture min-w-0 flex-1 rounded-xl border border-white/15 bg-black/40 px-3 text-xs text-white/85 outline-none focus-visible:border-white/45"
               onFocus={(e) => e.currentTarget.select()}
               readOnly
               value={shareUrl}
             />
             <button
-              className="inline-flex shrink-0 items-center gap-1.5 border border-white bg-white px-3 py-2 text-xs font-semibold lowercase text-black transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white bg-white px-3 py-2 text-xs font-semibold lowercase text-black transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               onClick={copyShareLink}
               type="button"
             >
-              {copied ? (
-                <Check aria-hidden="true" className="size-3.5" />
-              ) : (
-                <Copy aria-hidden="true" className="size-3.5" />
-              )}
+              <AnimatePresence initial={false} mode="wait">
+                <motion.span
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="inline-flex"
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  key={copied ? "done" : "copy"}
+                  transition={{ duration: 0.18 }}
+                >
+                  {copied ? (
+                    <CheckIcon className="size-3.5" />
+                  ) : (
+                    <CopyIcon className="size-3.5" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
               {copied ? "copied" : "copy"}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
             <a
-              className="border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
               href={whatsappUrl}
               onClick={() => {
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
@@ -380,7 +462,7 @@ function WaitlistForm({
               whatsapp
             </a>
             <a
-              className="border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
               href={xUrl}
               onClick={() => {
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
@@ -395,11 +477,11 @@ function WaitlistForm({
             </a>
             {canNativeShare && (
               <button
-                className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={nativeShare}
                 type="button"
               >
-                <Share2 aria-hidden="true" className="size-3.5" />
+                <ShareIcon className="size-3.5" />
                 share
               </button>
             )}
@@ -427,7 +509,7 @@ function WaitlistForm({
       >
         <div
           className={cn(
-            "grid overflow-hidden border border-white/25 bg-black/55 transition focus-within:border-white/70",
+            "grid overflow-hidden rounded-2xl border border-white/25 bg-black/55 transition focus-within:border-white/70",
             heroLayout ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
           )}
         >
@@ -439,7 +521,7 @@ function WaitlistForm({
               disabled={isSubmitting}
               id={emailId}
               onChange={(e) => { trackFormStarted("email"); setEmail(e.target.value); setError(""); }}
-              placeholder="priya@email.com"
+              placeholder="john.doe@email.com"
               required
               type="email"
               value={email}
@@ -455,7 +537,7 @@ function WaitlistForm({
               disabled={isSubmitting}
               id={nameId}
               onChange={(e) => { trackFormStarted("name"); setName(e.target.value); setError(""); }}
-              placeholder="priya shah"
+              placeholder="john doe"
               type="text"
               value={name}
             />
@@ -494,53 +576,43 @@ function WaitlistForm({
         </div>
         <div className={heroLayout ? "grid gap-4" : "grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end"}>
           <div className="space-y-2">
-            <label className="flex min-h-11 items-start gap-2 text-xs leading-5 text-white/70">
-              <input
-                checked={ageConfirmed}
-                className={CHECKBOX_CLASS}
-                disabled={isSubmitting}
-                onChange={(e) => {
-                  trackFormStarted("age_confirmation");
-                  setAgeConfirmed(e.target.checked);
-                  setError("");
-                  captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
-                    ...analyticsBaseProperties(),
-                    field: "age_confirmation",
-                    checked: e.target.checked,
-                  });
-                }}
-                required
-                type="checkbox"
-              />
-              <span>i confirm i&apos;m 16 or older.</span>
-            </label>
-            <label className="flex min-h-11 items-start gap-2 text-xs leading-5 text-white/70">
-              <input
-                checked={consent}
-                className={CHECKBOX_CLASS}
-                disabled={isSubmitting}
-                onChange={(e) => {
-                  trackFormStarted("marketing_consent");
-                  setConsent(e.target.checked);
-                  setError("");
-                  captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
-                    ...analyticsBaseProperties(),
-                    field: "marketing_consent",
-                    checked: e.target.checked,
-                  });
-                }}
-                required
-                type="checkbox"
-              />
-              <span>
-                yes, email me about nuclii beta access and launch updates.
-              </span>
-            </label>
+            <AnimatedCheckbox
+              checked={ageConfirmed}
+              disabled={isSubmitting}
+              onChange={(checked) => {
+                trackFormStarted("age_confirmation");
+                setAgeConfirmed(checked);
+                setError("");
+                captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
+                  ...analyticsBaseProperties(),
+                  field: "age_confirmation",
+                  checked,
+                });
+              }}
+            >
+              i confirm i&apos;m 18 or older.
+            </AnimatedCheckbox>
+            <AnimatedCheckbox
+              checked={consent}
+              disabled={isSubmitting}
+              onChange={(checked) => {
+                trackFormStarted("marketing_consent");
+                setConsent(checked);
+                setError("");
+                captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
+                  ...analyticsBaseProperties(),
+                  field: "marketing_consent",
+                  checked,
+                });
+              }}
+            >
+              yes, email me about nuclii beta access and launch updates.
+            </AnimatedCheckbox>
           </div>
           <Button
             className={
               heroLayout
-                ? "nuclii-action-button group min-h-14 w-full justify-between border border-white bg-white px-5 text-base lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white"
+                ? "nuclii-action-button group min-h-12 w-full max-w-[22rem] justify-between border border-white bg-white px-4 text-sm lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white sm:max-w-[24rem] sm:px-5"
                 : "w-full lowercase sm:w-auto"
             }
             disabled={isSubmitting}
@@ -549,17 +621,29 @@ function WaitlistForm({
           >
             <span className="text-current">{isSubmitting ? "sending..." : submitLabel}</span>
             {isSubmitting ? (
-              <Loader2 aria-hidden="true" className="!text-current motion-safe:animate-spin" />
+              <SpinnerIcon className="size-4 !text-current motion-safe:animate-spin" />
             ) : (
-              <ArrowRight aria-hidden="true" className="!text-current" />
+              <ArrowRightIcon className="size-4 !text-current transition-transform duration-200 group-hover:translate-x-1" />
             )}
           </Button>
         </div>
       </form>
 
-      {error && (
-        <p className="text-sm font-semibold text-destructive" id={errorId} role="alert">{error}</p>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            animate={{ opacity: 1, x: [0, -8, 7, -5, 4, 0] }}
+            className="text-sm font-semibold text-destructive"
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            id={errorId}
+            initial={{ opacity: 0 }}
+            role="alert"
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

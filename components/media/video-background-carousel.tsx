@@ -15,21 +15,38 @@ type VideoBackgroundCarouselProps = {
 
 function VideoBackgroundCarousel({ className, sources }: VideoBackgroundCarouselProps) {
   const [active, setActive] = useState(0);
+  const [accessibilityMotion, setAccessibilityMotion] = useState("full");
+  const [mediaPaused, setMediaPaused] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const reduceMotion = useReducedMotion();
   const nextActive = (active + 1) % sources.length;
+  const pausePlayback =
+    Boolean(reduceMotion) || accessibilityMotion !== "full" || mediaPaused;
 
   useEffect(() => {
-    if (reduceMotion || sources.length <= 1) return;
+    const syncPreferences = () => {
+      setAccessibilityMotion(document.documentElement.dataset.a11yMotion ?? "full");
+      setMediaPaused(document.documentElement.dataset.a11yMedia === "paused");
+    };
+
+    syncPreferences();
+    window.addEventListener("nuclii-accessibility-preferences-change", syncPreferences);
+    return () => {
+      window.removeEventListener("nuclii-accessibility-preferences-change", syncPreferences);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pausePlayback || sources.length <= 1) return;
 
     const id = setInterval(() => {
       setActive((current) => (current + 1) % sources.length);
     }, CYCLE_MS);
     return () => clearInterval(id);
-  }, [reduceMotion, sources.length]);
+  }, [pausePlayback, sources.length]);
 
   useEffect(() => {
-    if (reduceMotion) {
+    if (pausePlayback) {
       videoRefs.current.forEach((video) => video?.pause());
       return;
     }
@@ -38,7 +55,7 @@ function VideoBackgroundCarousel({ className, sources }: VideoBackgroundCarousel
     if (!video) return;
     video.currentTime = 0;
     video.play().catch(() => {});
-  }, [active, reduceMotion]);
+  }, [active, pausePlayback]);
 
   return (
     <div aria-hidden="true" className={cn("overflow-hidden", className)}>
@@ -46,7 +63,7 @@ function VideoBackgroundCarousel({ className, sources }: VideoBackgroundCarousel
         <video
           className={cn(
             "absolute inset-0 size-full object-cover transition-opacity duration-1000",
-            reduceMotion && "transition-none",
+            pausePlayback && "transition-none",
             index === active ? "opacity-100" : "opacity-0",
           )}
           key={src}
@@ -56,7 +73,7 @@ function VideoBackgroundCarousel({ className, sources }: VideoBackgroundCarousel
             event.currentTarget.playbackRate = PLAYBACK_RATE;
           }}
           playsInline
-          preload={index === active ? "auto" : index === nextActive && !reduceMotion ? "metadata" : "none"}
+          preload={index === active ? "auto" : index === nextActive && !pausePlayback ? "metadata" : "none"}
           ref={(el) => {
             videoRefs.current[index] = el;
           }}

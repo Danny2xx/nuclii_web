@@ -4,47 +4,61 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 const WORDS = [
-  { label: "connection.", className: "text-[#39FF14]" },
-  { label: "workshop.", className: "text-[#4D8DFF]" },
-  { label: "pop-up.", className: "text-[#FF4D4D]" },
-  { label: "run club.", className: "text-[#FFD84D]" },
-  { label: "pickup.", className: "text-[#2BE8FF]" },
-  { label: "showcase.", className: "text-[#FF5FD2]" },
-  { label: "gathering.", className: "text-[#B6FF3C]" },
-  { label: "food drop.", className: "text-[#FF9A3D]" },
-  { label: "society night.", className: "text-[#39FF14]" },
-  { label: "supper club.", className: "text-[#4D8DFF]" },
-  { label: "talent set.", className: "text-[#2BE8FF]" },
-  { label: "day party.", className: "text-[#FF5FD2]" },
-  { label: "live set.", className: "text-[#FFD84D]" },
-  { label: "art class.", className: "text-[#FF9A3D]" },
-  { label: "game night.", className: "text-[#B57BFF]" },
-  { label: "market day.", className: "text-[#4D8DFF]" },
-  { label: "comedy night.", className: "text-[#FF4D4D]" },
-  { label: "open studio.", className: "text-[#2BE8FF]" },
-  { label: "wellness class.", className: "text-[#FF5FD2]" },
-  { label: "rooftop social.", className: "text-[#FFD84D]" },
-  { label: "real experience.", className: "text-[#FF9A3D]" },
+  { label: "connection", className: "text-[#7A9E6E]" },
+  { label: "workshop", className: "text-[#6F89A8]" },
+  { label: "pop-up", className: "text-[#B5736E]" },
+  { label: "run club", className: "text-[#C2A968]" },
+  { label: "pickup", className: "text-[#6E9CA0]" },
+  { label: "showcase", className: "text-[#A87C9C]" },
+  { label: "gathering", className: "text-[#8A9E6B]" },
+  { label: "food drop", className: "text-[#BD8B5E]" },
+  { label: "society night", className: "text-[#7A9E6E]" },
+  { label: "supper club", className: "text-[#6F89A8]" },
+  { label: "talent set", className: "text-[#6E9CA0]" },
+  { label: "day party", className: "text-[#A87C9C]" },
+  { label: "live set", className: "text-[#C2A968]" },
+  { label: "art class", className: "text-[#BD8B5E]" },
+  { label: "game night", className: "text-[#8E7CA8]" },
+  { label: "market day", className: "text-[#6F89A8]" },
+  { label: "comedy night", className: "text-[#B5736E]" },
+  { label: "open studio", className: "text-[#6E9CA0]" },
+  { label: "wellness class", className: "text-[#A87C9C]" },
+  { label: "rooftop social", className: "text-[#C2A968]" },
+  { label: "real experience", className: "text-[#BD8B5E]" },
 ] as const;
 
-const WIDEST = "real experience.";
+const WIDEST = "real experience";
 
 function RotatingWord({ interval = 2100 }: { interval?: number }) {
   const [index, setIndex] = useState(0);
+  const [accessibilityMotion, setAccessibilityMotion] = useState("full");
   const reduceMotion = useReducedMotion();
+  const motionDisabled = Boolean(reduceMotion) || accessibilityMotion !== "full";
 
   useEffect(() => {
-    if (reduceMotion) return;
+    const syncPreferences = () => {
+      setAccessibilityMotion(document.documentElement.dataset.a11yMotion ?? "full");
+    };
+
+    syncPreferences();
+    window.addEventListener("nuclii-accessibility-preferences-change", syncPreferences);
+    return () => {
+      window.removeEventListener("nuclii-accessibility-preferences-change", syncPreferences);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (motionDisabled) return;
 
     const id = setInterval(() => {
       setIndex((current) => (current + 1) % WORDS.length);
     }, interval);
     return () => clearInterval(id);
-  }, [interval, reduceMotion]);
+  }, [interval, motionDisabled]);
 
   const current = WORDS[index];
 
-  if (reduceMotion) {
+  if (motionDisabled) {
     return <span className={WORDS[0].className}>{WORDS[0].label}</span>;
   }
 

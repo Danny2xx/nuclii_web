@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   // Base — shared by every variant
-  "inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-semibold leading-snug tracking-normal outline-none transition-[transform,box-shadow,border-color,background-color,opacity] duration-200 ease-out motion-safe:hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "group inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold leading-snug tracking-normal outline-none transition-[transform,box-shadow,border-color,background-color,opacity] duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.55)] motion-safe:active:translate-y-0 motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 motion-safe:[&_svg:last-child]:group-hover:translate-x-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {
@@ -27,7 +27,7 @@ const buttonVariants = cva(
           "text-foreground hover:bg-foreground/10",
 
         // Inline link
-        link: "min-h-0 rounded-none p-0 text-foreground underline-offset-4 hover:underline",
+        link: "min-h-0 p-0 text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default: "px-5 py-2.5",

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { AccessibilityPreferencesControl } from "@/components/accessibility/accessibility-preferences";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
@@ -66,6 +67,8 @@ function MobileNav() {
                 <ArrowRight aria-hidden="true" />
               </TrackedLink>
             </Button>
+
+            <AccessibilityPreferencesControl placement="mobile" />
 
             {/* Main pages */}
             <div className="mt-8 flex flex-col gap-5">

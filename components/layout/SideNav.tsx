@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 
+import { AccessibilityPreferencesControl } from "@/components/accessibility/accessibility-preferences";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { sideNavItems } from "@/lib/navigation";
@@ -14,7 +15,7 @@ function SideNav() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white mix-blend-difference lg:right-10 lg:top-9 lg:flex"
+      className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white lg:right-10 lg:top-9 lg:flex"
     >
       {sideNavItems.map((item) => {
         const active =
@@ -34,7 +35,7 @@ function SideNav() {
             }}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative inline-flex items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "relative inline-flex items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               active
                 ? "text-white after:scale-x-100"
                 : "text-white/55 after:scale-x-0 hover:after:scale-x-100",
@@ -54,6 +55,7 @@ function SideNav() {
           </TrackedLink>
         );
       })}
+      <AccessibilityPreferencesControl />
     </nav>
   );
 }

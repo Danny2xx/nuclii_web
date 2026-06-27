@@ -31,7 +31,7 @@
   --shadow-card: var(--shadow-card);
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: var(--font-fredoka), ui-sans-serif, system-ui, -apple-system,
+  --font-display: var(--font-display-src), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -429,6 +429,89 @@ strong {
 ::selection {
   background: var(--primary);
   color: var(--primary-foreground);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MARQUEE — testimonials row
+═══════════════════════════════════════════════════════════ */
+
+@keyframes nuclii-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.nuclii-marquee {
+  animation: nuclii-marquee 48s linear infinite;
+  will-change: transform;
+}
+
+.nuclii-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITY PREFERENCES
+═══════════════════════════════════════════════════════════ */
+
+:root[data-a11y-text="large"] {
+  font-size: 112.5%;
+}
+
+:root[data-a11y-text="xl"] {
+  font-size: 125%;
+}
+
+:root[data-a11y-contrast="high"] {
+  --muted-foreground: #d4d4d8;
+  --border: #52525b;
+}
+
+:root[data-a11y-contrast="high"] [class*="text-white/"] {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+:root[data-a11y-contrast="high"] [class*="text-black/"] {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+:root[data-a11y-links="underlined"] a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.11em;
+  text-underline-offset: 0.2em;
+}
+
+:root[data-a11y-focus="enhanced"] :focus-visible {
+  outline: 4px solid #ffd84d !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 2px #0a0a0b;
+}
+
+:root[data-a11y-media="paused"] .nuclii-marquee,
+:root[data-a11y-motion="reduced"] .nuclii-marquee,
+:root[data-a11y-motion="off"] .nuclii-marquee {
+  animation-play-state: paused;
+}
+
+:root[data-a11y-motion="reduced"] *,
+:root[data-a11y-motion="reduced"] *::before,
+:root[data-a11y-motion="reduced"] *::after,
+:root[data-a11y-motion="off"] *,
+:root[data-a11y-motion="off"] *::before,
+:root[data-a11y-motion="off"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+:root[data-a11y-motion="off"] .nuclii-card:hover,
+:root[data-a11y-motion="off"] .nuclii-action-button:active,
+:root[data-a11y-motion="off"] .nuclii-action-button:hover svg {
+  transform: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════

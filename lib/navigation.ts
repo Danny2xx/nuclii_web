@@ -7,8 +7,7 @@ export const sideNavItems: readonly {
   children?: readonly { label: string; href: string }[];
 }[] = [
   { label: "home", href: "/" },
-  { label: "about us", href: "/about" },
-  { label: "early access", href: "/early-access" },
+  { label: "partner with us", href: "/early-access" },
   { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
 ] as const;
 
@@ -17,8 +16,7 @@ export const footerLinks: readonly {
   href: string;
   external?: boolean;
 }[] = [
-  { label: "about", href: "/about" },
-  { label: "early access", href: "/early-access" },
+  { label: "partner with us", href: "/early-access" },
   { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
   { label: "get in touch", href: "mailto:hello@nuclii.co.uk" },
 ] as const;

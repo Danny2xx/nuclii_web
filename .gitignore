@@ -51,3 +51,6 @@ next-env.d.ts
 
 # raw source assets (already copied into /public)
 /nuclii_aboutus/
+
+# confidential business documents (never publish)
+/Finance/

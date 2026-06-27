@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Sora } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 
 import { SiteAnalytics } from "@/components/analytics/site-analytics";
+import { CookieBanner } from "@/components/consent/cookie-banner";
 import { PageShell } from "@/components/layout/PageShell";
 import "./globals.css";
 
@@ -14,11 +15,11 @@ const jakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-// Display headline font — rounded to echo the logo's wordmark
-const fredoka = Fredoka({
+// Display headline font — minimal geometric sans, quiet and serious
+const sora = Sora({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-fredoka",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-display-src",
   display: "swap",
 });
 
@@ -41,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${jakartaSans.variable} ${fredoka.variable}`}
+      className={`${jakartaSans.variable} ${sora.variable}`}
       data-scroll-behavior="smooth"
       data-theme="dark"
       lang="en"
@@ -49,6 +50,7 @@ export default function RootLayout({
     >
       <body>
         <PageShell>{children}</PageShell>
+        <CookieBanner />
         <Suspense fallback={null}>
           <SiteAnalytics />
         </Suspense>

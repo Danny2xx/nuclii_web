@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         analyticsDistinctId,
         { ...analyticsBase, reason: "missing_age_confirmation" },
       );
-      return NextResponse.json({ error: "please confirm you're 16 or older." }, { status: 400 });
+      return NextResponse.json({ error: "please confirm you're 18 or older." }, { status: 400 });
     }
 
     if (!consent) {
