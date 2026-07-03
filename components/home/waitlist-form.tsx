@@ -42,6 +42,11 @@ type WaitlistFormProps = {
   className?: string;
   defaultRole?: FilledRoleValue;
   duplicateMessage?: string;
+  /** When set, the success state shows an "explore" unlock CTA to this href. */
+  exploreHref?: string;
+  exploreLabel?: string;
+  /** Fires when the form enters / leaves its joined (success) state. */
+  onJoinedChange?: (joined: boolean) => void;
   layout?: "default" | "hero";
   source?: string;
   submitLabel?: string;
@@ -147,6 +152,9 @@ function WaitlistForm({
   className = "",
   defaultRole,
   duplicateMessage = "you're already on the list. we'll reach out when nuclii launches.",
+  exploreHref,
+  exploreLabel = "explore nuclii",
+  onJoinedChange,
   layout = "default",
   source,
   submitLabel = "join the waitlist",
@@ -275,7 +283,8 @@ function WaitlistForm({
   }
 
   // Celebrate a genuinely new signup with a single restrained confetti burst —
-  // brand white plus the hero's neon accents. Reduced-motion users are skipped.
+  // the four nuclii brand colours (black omitted — invisible on the dark page).
+  // Reduced-motion users are skipped.
   useEffect(() => {
     if (justJoined !== "new" || typeof window === "undefined") return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -289,7 +298,7 @@ function WaitlistForm({
         startVelocity: 38,
         ticks: 200,
         origin: { y: 0.75 },
-        colors: ["#ffffff", "#39FF14", "#4D8DFF", "#FF5FD2", "#FFD84D"],
+        colors: ["#ffffff", "#92EB08", "#1800AD", "#6A6AF2"],
         disableForReducedMotion: true,
       });
     });
@@ -371,6 +380,11 @@ function WaitlistForm({
   }
 
   const alreadyOnList = isClient && hasJoinedWaitlist(storageKey);
+
+  useEffect(() => {
+    onJoinedChange?.(justJoined !== null || alreadyOnList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [justJoined, alreadyOnList]);
 
   function resetJoinedState() {
     captureAnalyticsEvent(ANALYTICS_EVENTS.ctaClicked, {
@@ -488,6 +502,25 @@ function WaitlistForm({
           </div>
         </div>
 
+        {exploreHref && (
+          <a
+            className="group inline-flex min-h-12 w-full items-center justify-between rounded-xl bg-white px-5 text-sm font-semibold lowercase !text-black transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.55)] active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none"
+            href={exploreHref}
+            onClick={() => {
+              // Remember they've entered, so a future gate can let them straight through.
+              document.cookie = `nuclii-entered=1; path=/; max-age=${60 * 60 * 24 * 180}; samesite=lax`;
+              captureAnalyticsEvent(ANALYTICS_EVENTS.ctaClicked, {
+                ...analyticsBaseProperties(),
+                cta: "explore_after_join",
+                location: "waitlist_success",
+              });
+            }}
+          >
+            {exploreLabel}
+            <ArrowRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+          </a>
+        )}
+
         <button
           className="w-fit text-xs font-semibold text-white/65 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={resetJoinedState}
@@ -509,10 +542,24 @@ function WaitlistForm({
       >
         <div
           className={cn(
-            "grid overflow-hidden rounded-2xl border border-white/25 bg-black/55 transition focus-within:border-white/70",
+            "group relative grid overflow-hidden rounded-2xl border border-white/25 bg-black/55 transition duration-300 focus-within:border-white/70 focus-within:shadow-[0_0_36px_-10px_rgba(255,255,255,0.16)]",
             heroLayout ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
           )}
+          onPointerMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+          }}
         >
+          {/* cursor-follow spotlight */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            style={{
+              background:
+                "radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 0px), rgba(255,255,255,0.06), transparent 44%)",
+            }}
+          />
           <div className="min-w-0 flex-1 border-b border-white/10 sm:border-b-0 sm:border-r">
             <label className={LABEL_CLASS} htmlFor={emailId}>email</label>
             <input
@@ -612,18 +659,33 @@ function WaitlistForm({
           <Button
             className={
               heroLayout
-                ? "nuclii-action-button group min-h-12 w-full max-w-[22rem] justify-between border border-white bg-white px-4 text-sm lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white sm:max-w-[24rem] sm:px-5"
+                ? "nuclii-action-button group relative min-h-12 w-full max-w-[22rem] justify-between overflow-hidden border border-white bg-white px-4 text-sm lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white sm:max-w-[24rem] sm:px-5"
                 : "w-full lowercase sm:w-auto"
             }
             disabled={isSubmitting}
             size="lg"
             type="submit"
           >
-            <span className="text-current">{isSubmitting ? "sending..." : submitLabel}</span>
+            {heroLayout && (
+              <motion.span
+                animate={{ x: "460%" }}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-12 motion-reduce:hidden"
+                initial={{ x: "-160%" }}
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)",
+                }}
+                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 3.6, ease: "easeInOut" }}
+              />
+            )}
+            <span className="relative text-current">
+              {isSubmitting ? "sending..." : submitLabel}
+            </span>
             {isSubmitting ? (
-              <SpinnerIcon className="size-4 !text-current motion-safe:animate-spin" />
+              <SpinnerIcon className="relative size-4 !text-current motion-safe:animate-spin" />
             ) : (
-              <ArrowRightIcon className="size-4 !text-current transition-transform duration-200 group-hover:translate-x-1" />
+              <ArrowRightIcon className="relative size-4 !text-current transition-transform duration-200 group-hover:translate-x-1" />
             )}
           </Button>
         </div>

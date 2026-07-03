@@ -3,6 +3,7 @@ import { Resend } from "resend";
 
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { captureServerAnalyticsEvent } from "@/lib/server-analytics";
+import { incrementWaitlistCount } from "@/lib/waitlist-count";
 
 const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID ?? "";
 const TO_EMAIL = process.env.NUCLII_EMAIL ?? "team@nuclii.com";
@@ -221,6 +222,9 @@ export async function POST(request: NextRequest) {
       analyticsDistinctId,
       { ...analyticsBase, outcome: "new" },
     );
+
+    // Bump the public waitlist counter (base seed + real signups).
+    await incrementWaitlistCount();
 
     return NextResponse.json({ success: true });
   } catch (error) {

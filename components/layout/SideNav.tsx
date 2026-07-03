@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
 function SideNav() {
   const pathname = usePathname();
 
+  // The /join gate is intentionally distraction-free — logo only.
+  if (pathname === "/join") return null;
+
   return (
     <nav
       aria-label="Main navigation"

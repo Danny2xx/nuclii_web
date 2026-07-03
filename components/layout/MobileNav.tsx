@@ -22,6 +22,9 @@ function MobileNav() {
 
   const legalLinks = footerNavGroups.find((g) => g.title === "Legal")?.links ?? [];
 
+  // The /join gate is intentionally distraction-free — logo only.
+  if (pathname === "/join") return null;
+
   return (
     <div className="lg:hidden">
       <button
