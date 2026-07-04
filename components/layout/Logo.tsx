@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
 // nuclii's brand colours. The wordmark's colour follows the visitor's local
 // time — real-world moments happen around the clock.
@@ -11,14 +12,14 @@ type Daypart = "morning" | "day" | "night";
 
 // On-dark logo colour (indigo lifted so it stays legible on near-black).
 const LOGO_COLOR: Record<Daypart, string> = {
-  morning: "#92EB08", // lime
+  morning: EXPERIENCE_ROLES.explorer.signal,
   day: "#FFFFFF",
   night: "#6A6AF2", // brand indigo, lifted for dark surfaces
 };
 
 // Favicon: fill + dot, chosen to stay visible on any browser tab.
 const FAVICON: Record<Daypart, { bg: string; dot: string }> = {
-  morning: { bg: "#92EB08", dot: "#0A0A0B" },
+  morning: { bg: EXPERIENCE_ROLES.explorer.signal, dot: "#0A0A0B" },
   day: { bg: "#0A0A0B", dot: "#FFFFFF" },
   night: { bg: "#1800AD", dot: "#FFFFFF" },
 };
@@ -48,9 +49,13 @@ function Logo() {
   const [color, setColor] = useState<string>(LOGO_COLOR.day);
 
   useEffect(() => {
-    const part = daypart(new Date().getHours());
-    setColor(LOGO_COLOR[part]);
-    setFavicon(part);
+    const id = window.setTimeout(() => {
+      const part = daypart(new Date().getHours());
+      setColor(LOGO_COLOR[part]);
+      setFavicon(part);
+    }, 0);
+
+    return () => window.clearTimeout(id);
   }, []);
 
   return (

@@ -38,7 +38,7 @@ function SideNav() {
             }}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative inline-flex items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "relative inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               active
                 ? "text-white after:scale-x-100"
                 : "text-white/55 after:scale-x-0 hover:after:scale-x-100",

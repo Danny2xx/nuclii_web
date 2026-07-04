@@ -280,7 +280,7 @@ function AccessibilityPreferencesControl({
               </div>
               <button
                 aria-label="Close accessibility preferences"
-                className="-mr-1 -mt-1 grid size-7 shrink-0 place-items-center rounded-lg text-white/55 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="-mr-1 -mt-1 grid size-11 shrink-0 place-items-center rounded-lg text-white/55 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => setOpen(false)}
                 type="button"
               >
@@ -362,7 +362,7 @@ function PreferencesPanel({
 
       <button
         className={cn(
-          "mt-1 min-h-8 w-full rounded-lg border px-3 text-xs font-semibold lowercase transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40",
+          "mt-1 min-h-11 w-full rounded-lg border px-3 text-xs font-semibold lowercase transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40",
           compact
             ? "border-black/14 text-black/65 hover:border-black/35 hover:text-black"
             : "border-white/14 text-white/60 hover:border-white/35 hover:text-white",
@@ -413,7 +413,7 @@ function SegmentedControl({
           <button
             aria-pressed={active}
             className={cn(
-              "relative min-h-7 rounded-[7px] px-2 text-[11px] font-bold lowercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "relative min-h-11 rounded-[7px] px-2 text-[11px] font-bold lowercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               contrast === "light"
                 ? active
                   ? "text-white"

@@ -8,6 +8,7 @@ type ExperienceLayer = {
   title: string;
   description: string;
   image: string;
+  imagePosition?: string;
   alt: string;
 };
 
@@ -85,6 +86,7 @@ function ExperienceLayersScroll({
                         fill
                         sizes="calc(100vw - 2rem)"
                         src={layer.image}
+                        style={{ objectPosition: layer.imagePosition }}
                       />
                     </div>
                   </div>
@@ -116,6 +118,7 @@ function ExperienceLayersScroll({
                       priority={index === 0}
                       sizes="30rem"
                       src={layer.image}
+                      style={{ objectPosition: layer.imagePosition }}
                     />
                   </div>
                 ))}

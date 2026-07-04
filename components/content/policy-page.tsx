@@ -3,7 +3,9 @@ import type { ReactNode } from "react";
 import { TrackedAnchor } from "@/components/analytics/tracked-link";
 import { Reveal } from "@/components/motion";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/marketing-typography";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { routes } from "@/lib/routes";
 
 type PolicySection = {
   title: string;
@@ -33,9 +35,9 @@ function PolicyPage({
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <section className="nuclii-section border-b border-border">
         <div className="nuclii-container max-w-4xl">
-          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold lowercase leading-[0.95] tracking-[-0.03em] text-balance">
+          <PageTitle>
             {title}
-          </h1>
+          </PageTitle>
           <p className="mt-6 max-w-[60ch] text-base leading-8 text-muted-foreground sm:text-lg">
             {description}
           </p>
@@ -103,9 +105,9 @@ function PolicyPage({
                   cta: "get_early_access",
                   location: "policy_footer",
                 }}
-                href="/early-access"
+                href={routes.waitlist}
               >
-                get early access
+                join early access
               </TrackedAnchor>
             </Button>
           </div>

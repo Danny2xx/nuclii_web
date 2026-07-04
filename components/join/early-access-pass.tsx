@@ -2,14 +2,14 @@
 
 import { motion, useReducedMotion } from "motion/react";
 
-import { WaitlistCount } from "@/components/join/waitlist-count";
+import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
 // The nuclii ecosystem, in line order. No counts — the framing carries the FOMO.
 const ROLES = [
-  { name: "explorers", color: "#7A9E6E" },
-  { name: "hosts & organisers", color: "#8E7CA8" },
-  { name: "spaces & venues", color: "#6F89A8" },
-  { name: "talent & makers", color: "#B5736E" },
+  { name: EXPERIENCE_ROLES.explorer.label, color: EXPERIENCE_ROLES.explorer.signal },
+  { name: EXPERIENCE_ROLES.host.label, color: EXPERIENCE_ROLES.host.signal },
+  { name: EXPERIENCE_ROLES.venue.label, color: EXPERIENCE_ROLES.venue.signal },
+  { name: EXPERIENCE_ROLES.talent.label, color: EXPERIENCE_ROLES.talent.signal },
 ] as const;
 
 export function EarlyAccessPass() {
@@ -56,14 +56,7 @@ export function EarlyAccessPass() {
         <h3 className="mt-6 text-[1.7rem] font-extrabold lowercase leading-[0.95] tracking-[-0.03em] text-white">
           the first wave.
         </h3>
-        <p className="mt-3 flex items-baseline gap-2">
-          <WaitlistCount
-            className="text-[1.5rem] font-extrabold tracking-[-0.02em] text-white"
-            fallback={700}
-          />
-          <span className="text-[13px] lowercase text-white/50">already in line</span>
-        </p>
-        <p className="mt-2 text-[13.5px] lowercase leading-6 text-white/55">
+        <p className="mt-3 text-[13.5px] lowercase leading-6 text-white/55">
           early access to nuclii — invite-first, no followers, no queue-jumping
           for money.
         </p>

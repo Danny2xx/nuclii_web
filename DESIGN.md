@@ -18,6 +18,10 @@ colors:
   signal-mauve: "#8E7CA8"
   signal-ochre: "#C2A968"
   signal-teal: "#6E9CA0"
+  partner-host: "#DA4F28"
+  partner-venue: "#8FC9E8"
+  partner-talent: "#E9C44A"
+  brand-indigo: "#6A6AF2"
   danger: "#FF6B6B"
 typography:
   display:
@@ -117,6 +121,13 @@ A dulled, earthy spectrum used sparingly to differentiate categories (events / s
 - **Signal Mauve** (`#8E7CA8`): hosts; the host mascot.
 - **Signal Ochre** (`#C2A968`): warm highlight sparkles, "run club" register.
 - **Signal Teal** (`#6E9CA0`): pickup / secondary spatial accents.
+
+### Partner Accents — the "make the moment" cast
+On the Partner (early-access) page each partner type owns a colour, sampled from its mascot in the composite photos. These are more saturated than the muted signal set because they carry a whole page's identity (headings, glyphs, CTAs, the hero equation cards), but stay short of neon.
+- **Partner Host** (`#DA4F28`): warm red — the host.
+- **Partner Venue** (`#8FC9E8`): sky blue — the venue.
+- **Partner Talent** (`#E9C44A`): warm yellow — talent & makers.
+- **Brand Indigo** (`#6A6AF2`): the nuclii wordmark colour, used as the fourth "nuclii" tone in the hero.
 
 ### Neutral
 - **Ink Black** (`#0A0A0B`): The body background and the primary-button text colour.

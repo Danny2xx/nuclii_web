@@ -1,3 +1,5 @@
+import { routes } from "@/lib/routes";
+
 const BUILD_WITH_US_FORM = "https://tally.so/r/xX6O1J";
 
 export const sideNavItems: readonly {
@@ -6,8 +8,9 @@ export const sideNavItems: readonly {
   external?: boolean;
   children?: readonly { label: string; href: string }[];
 }[] = [
-  { label: "home", href: "/" },
-  { label: "partner with us", href: "/early-access" },
+  { label: "home", href: routes.home },
+  { label: "join early access", href: routes.waitlist },
+  { label: "partner with us", href: routes.partner },
   { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
 ] as const;
 
@@ -16,7 +19,8 @@ export const footerLinks: readonly {
   href: string;
   external?: boolean;
 }[] = [
-  { label: "partner with us", href: "/early-access" },
+  { label: "join early access", href: routes.waitlist },
+  { label: "partner with us", href: routes.partner },
   { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
   { label: "get in touch", href: "mailto:hello@nuclii.co.uk" },
 ] as const;

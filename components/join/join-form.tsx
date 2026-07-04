@@ -18,7 +18,7 @@ export function JoinForm() {
           layout="hero"
           onJoinedChange={setJoined}
           source="join entry"
-          submitLabel="join the waitlist"
+          submitLabel="join early access"
           successMessage="you're in. welcome to the first wave — we'll reach out as nuclii opens near you."
         />
       </Reveal>

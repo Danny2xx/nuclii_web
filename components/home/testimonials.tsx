@@ -1,31 +1,31 @@
 const QUOTES = [
   {
     quote:
-      "I share my work online constantly, yet I struggle to secure a single booking.",
+      "i post my work all the time and still get zero bookings lol. what am i missing?",
     who: "Independent Creative",
   },
   {
     quote:
-      "Our performer withdrew two hours before the event, and we had no way to find a replacement.",
+      "our performer cancelled two hours before doors and we were basically like... okay, now what?",
     who: "Event Organiser",
   },
   {
-    quote: "I would attend far more often if I simply had someone to go with.",
-    who: "Prospective Attendee",
+    quote: "i’d actually go to more events if i knew who else was going. turning up alone? idk.",
+    who: "Potential Attendee",
   },
   {
-    quote: "I continue to miss gatherings I would genuinely have enjoyed.",
+    quote: "why do i always hear about the good events the day after 😭",
     who: "University Student",
   },
   {
     quote:
-      "We receive regular enquiries, yet we are not equipped to manage nightlife bookings.",
+      "people keep trying to book the space through dms and ngl, it gets chaotic fast.",
     who: "Venue Manager",
   },
   {
     quote:
-      "I am eager to host a comedy evening but lack the guidance to begin.",
-    who: "Aspiring Host",
+      "i’ve been saying ‘i should run a comedy night’ for months lol. i just need help starting.",
+    who: "First Time Host",
   },
 ] as const;
 

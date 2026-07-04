@@ -1,9 +1,10 @@
-// A simple persistent waitlist counter: a base seed plus one increment per
-// real signup, stored in a KV store (Vercel KV / Upstash Redis REST — both
-// speak the same REST API). No Resend involved. When no store is configured it
-// gracefully falls back to the base seed, so the app still works everywhere.
+// A simple persistent waitlist counter: an optional configured import plus one
+// increment per real signup, stored in a KV store (Vercel KV / Upstash Redis
+// REST — both speak the same REST API). It defaults to zero so the public count
+// never implies traction that has not been recorded.
 
-const BASE_COUNT = Number.parseInt(process.env.WAITLIST_BASE_COUNT ?? "700", 10) || 700;
+const configuredBaseCount = Number.parseInt(process.env.WAITLIST_BASE_COUNT ?? "0", 10);
+const BASE_COUNT = Number.isFinite(configuredBaseCount) ? configuredBaseCount : 0;
 const KEY = "waitlist:signups";
 
 function kvConfig() {

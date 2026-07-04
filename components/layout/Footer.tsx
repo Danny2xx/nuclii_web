@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { TrackedAnchor, TrackedLink } from "@/components/analytics/tracked-link";
 import { LegalDrawer } from "@/components/layout/legal-drawer";
@@ -23,7 +26,10 @@ const legalDrawers: Record<string, { title: string; sections: Parameters<typeof 
 };
 
 function Footer() {
+  const pathname = usePathname();
   const legalLinks = footerNavGroups.find((g) => g.title === "Legal")?.links ?? [];
+
+  if (pathname === "/join") return null;
 
   return (
     <footer className="border-t border-border bg-background">

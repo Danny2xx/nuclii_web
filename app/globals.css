@@ -393,15 +393,6 @@ strong {
 }
 
 @media (max-width: 639px) {
-  .nuclii-page > section:first-child {
-    padding-block: 3.5rem 3.5rem;
-  }
-
-  .nuclii-page > section:first-child > .nuclii-container {
-    min-height: auto;
-    gap: 2rem;
-  }
-
   .nuclii-display {
     font-size: clamp(2.7rem, 13vw, 4.25rem);
     line-height: 0.98;

@@ -1,112 +1,167 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
-import { motion } from "motion/react";
+import { Fragment, useEffect, useRef, useState, type ComponentType } from "react";
+import { ArrowRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
-import { WaitlistForm } from "@/components/home/waitlist-form";
-import { CheckIcon } from "@/components/ui/icons";
 import {
-  Mascot,
-  MascotFace,
-  MASCOT_TONES,
-  Sparkles,
-  type MascotTone,
-} from "@/components/partner/mascot";
+  WaitlistForm,
+  type WaitlistRoleChoice,
+} from "@/components/home/waitlist-form";
+import { Sparkles } from "@/components/partner/mascot";
+import {
+  AudienceGlyph,
+  BookingGlyph,
+  CapacityGlyph,
+  ClockGlyph,
+  EventGlyph,
+  EyeGlyph,
+  HostGlyph,
+  MegaphoneGlyph,
+  PortfolioGlyph,
+  QrGlyph,
+  SpaceGlyph,
+  TalentGlyph,
+} from "@/components/partner/glyphs";
+import { Button } from "@/components/ui/button";
+import {
+  PageTitle,
+  SectionTitle,
+} from "@/components/ui/marketing-typography";
+import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 import { cn } from "@/lib/utils";
+
+type FeatureGlyph = ComponentType<{ className?: string }>;
 
 type RoleValue = "host" | "venue-business" | "talent-creative";
 
 type Section = {
   id: string;
   label: string;
+  card?: string;
   accent: string;
-  tone: MascotTone;
+  lead: string;
   description: string;
-  features: { title: string; detail: string }[];
+  formLabel: string;
+  formHint: string;
+  features: { label: string; icon: FeatureGlyph }[];
   role: RoleValue;
   cta: string;
-  image: { src: string; alt: string; width: number; height: number };
-  flip?: boolean;
+  image: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    focus?: string;
+    frameRatio?: string;
+    scale?: number;
+  };
 };
 
 const SECTIONS: Section[] = [
   {
     id: "hosts",
-    label: "hosts",
-    accent: "#DA4F28", // the red host mascot in the photo
-    tone: MASCOT_TONES.host,
-    description: "create unforgettable events and grow your community with powerful tools and insights.",
+    label: EXPERIENCE_ROLES.host.shortLabel,
+    accent: EXPERIENCE_ROLES.host.partnerAccent,
+    lead: "from idea to audience",
+    description:
+      "for supper clubs, workshops, socials and showcases. plan the experience, bring in the right people and manage access without stitching together different tools.",
+    formLabel: EXPERIENCE_ROLES.host.formLabel,
+    formHint: "plan the experience, manage access and grow the community around it.",
     features: [
-      { title: "event creation & management", detail: "plan and publish events easily" },
-      { title: "seamless ticketing", detail: "manage sales and attendees in one place" },
-      { title: "grow your audience", detail: "reach new communities and fans" },
-      { title: "performance insights", detail: "track what matters and improve" },
+      { icon: EventGlyph, label: "shape and publish" },
+      { icon: QrGlyph, label: "sell and scan access" },
+      { icon: MegaphoneGlyph, label: "build demand" },
+      { icon: AudienceGlyph, label: "grow your community" },
     ],
     role: "host",
-    cta: "partner as a host",
+    cta: "register as a host",
     image: {
       src: "/partner/host.png",
-      alt: "a nuclii host's open-air paint-and-sip laid out under park trees — easels, fresh canvases and a set table waiting for guests",
+      alt: "A Nuclii host preparing a paint and sip beneath park trees with easels, canvases and a table ready for guests",
       width: 736,
       height: 981,
+      focus: "50% 88%",
     },
   },
   {
     id: "spaces",
-    label: "spaces",
-    accent: "#8FC9E8", // the sky-blue venue mascot in the photo
-    tone: MASCOT_TONES.space,
-    description: "showcase your venue and connect with hosts looking for the perfect space.",
+    label: EXPERIENCE_ROLES.venue.shortLabel,
+    card: "venues",
+    accent: EXPERIENCE_ROLES.venue.partnerAccent,
+    lead: "from underused space to the right booking",
+    description:
+      "for bars, studios, rooftops and galleries. show hosts what the space can hold, when it is free and what kind of experience belongs there.",
+    formLabel: EXPERIENCE_ROLES.venue.formLabel,
+    formHint: "show what your space can hold and hear from hosts whose plans fit.",
     features: [
-      { title: "increase visibility", detail: "get discovered by quality event hosts" },
-      { title: "booking requests", detail: "receive and manage inquiries easily" },
-      { title: "availability management", detail: "keep your calendar up to date" },
-      { title: "collaborate with hosts", detail: "build lasting event relationships" },
+      { icon: EyeGlyph, label: "showcase your space" },
+      { icon: BookingGlyph, label: "receive fitting requests" },
+      { icon: CapacityGlyph, label: "share capacity and amenities" },
+      { icon: ClockGlyph, label: "manage availability" },
     ],
     role: "venue-business",
-    cta: "partner as a space",
+    cta: "register as a venue",
     image: {
       src: "/partner/venue.png",
-      alt: "a nuclii venue lighting up a city bus-stop billboard, a warm restaurant terrace glowing behind it",
+      alt: "A Nuclii venue displayed at a city bus stop with a warmly lit restaurant behind it",
       width: 687,
       height: 811,
+      focus: "50% 62%",
+      frameRatio: "687 / 811",
+      scale: 1.12,
     },
-    flip: true,
   },
   {
     id: "talent",
-    label: "talent",
-    accent: "#E9C44A", // the yellow talent mascot in the photo
-    tone: MASCOT_TONES.talent,
-    description: "showcase your skills, get discovered, and book more opportunities.",
+    label: EXPERIENCE_ROLES.talent.label,
+    card: "talent",
+    accent: EXPERIENCE_ROLES.talent.partnerAccent,
+    lead: "from skill to opportunity",
+    description:
+      "for DJs, chefs, photographers, performers and makers. show the work, share availability and connect with organisers already looking for your skill.",
+    formLabel: EXPERIENCE_ROLES.talent.formLabel,
+    formHint: "show your work and connect with organisers already looking for your skill.",
     features: [
-      { title: "showcase your services", detail: "highlight what makes you unique" },
-      { title: "get discovered", detail: "connect with hosts and venues" },
-      { title: "collaboration requests", detail: "receive and respond to invites" },
-      { title: "more opportunities", detail: "book gigs and grow your career" },
+      { icon: PortfolioGlyph, label: "showcase your work" },
+      { icon: EyeGlyph, label: "get found by hosts" },
+      { icon: BookingGlyph, label: "turn interest into bookings" },
+      { icon: ClockGlyph, label: "share availability" },
     ],
     role: "talent-creative",
-    cta: "partner as talent",
+    cta: "register as talent",
     image: {
       src: "/partner/talent.png",
-      alt: "nuclii talent turning a packed city subway carriage into a moment — balloons up, a small crowd gathered in",
+      alt: "Nuclii talent creating a shared moment inside a busy city train",
       width: 612,
       height: 792,
+      focus: "50% 80%",
     },
   },
 ];
 
-// Each chip wears its partner type's mascot — the same face as the ring and photos.
-const CHIPS = [
-  { label: "hosts", tone: MASCOT_TONES.host, target: "hosts" },
-  { label: "spaces", tone: MASCOT_TONES.space, target: "spaces" },
-  { label: "talent", tone: MASCOT_TONES.talent, target: "talent" },
-];
+const GLYPHS = { hosts: HostGlyph, spaces: SpaceGlyph, talent: TalentGlyph } as const;
+
+const PARTNER_ROLE_CHOICES = SECTIONS.map((section) => ({
+  value: section.role,
+  label: section.formLabel,
+  hint: section.formHint,
+  accent: section.accent,
+  icon: GLYPHS[section.id as keyof typeof GLYPHS],
+})) satisfies readonly WaitlistRoleChoice[];
+
+// Placeholder rotating sets. Swap for the final curated photos per type.
+const HERO_MEDIA: Record<string, string[]> = {
+  hosts: ["/images/host.jpg", "/images/about-gathering.jpg", "/images/attendee.jpg"],
+  spaces: ["/images/venue.jpg", "/images/about-circle.jpg"],
+  talent: ["/images/talent.jpg", "/images/about-conversation.jpg"],
+};
 
 export function PartnerWithUs() {
   const [role, setRole] = useState<RoleValue>("host");
   const formRef = useRef<HTMLDivElement | null>(null);
+  const reduce = useReducedMotion();
 
   function goToApply(nextRole?: RoleValue) {
     if (nextRole) setRole(nextRole);
@@ -118,257 +173,311 @@ export function PartnerWithUs() {
   }
 
   return (
-    <main className="nuclii-page pb-24">
+    <main className="nuclii-page pb-16 sm:pb-24">
       {/* ── Hero ───────────────────────────────────────────── */}
-      <section className="nuclii-container pt-24 sm:pt-28" data-analytics-section="partner_hero">
-        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
+      <section
+        className="nuclii-container pb-14 pt-24 sm:pb-20 sm:pt-28"
+        data-analytics-section="partner_hero"
+      >
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(32rem,1.15fr)] lg:gap-16">
           <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 14 }}
+            animate={{ y: 0 }}
+            initial={reduce ? { y: 0 } : { y: 14 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="text-[clamp(3rem,7vw,5rem)] font-extrabold lowercase leading-[0.95] tracking-[-0.03em]">
-              partner
-              <br />
-              with us
-            </h1>
-            <p className="mt-5 max-w-md text-base leading-7 text-white/70 sm:text-lg">
-              collaborate with nuclii to create better event experiences and stronger
-              connections for communities everywhere.
+            <PageTitle>
+              for the people who make the moment possible.
+            </PageTitle>
+            <p className="mt-5 max-w-[31rem] text-base leading-7 text-white/72 text-pretty sm:text-lg sm:leading-8">
+              bring the idea, the space or the skill. nuclii connects the people and tools
+              that turn each part into something real.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              {CHIPS.map((chip) => (
-                <button
-                  className="group flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.03] px-4 py-3 text-sm font-bold lowercase text-white/85 transition hover:border-white/30 hover:bg-white/[0.06]"
-                  key={chip.label}
-                  onClick={() => scrollTo(chip.target)}
-                  type="button"
-                >
-                  <MascotFace
-                    className="size-7 shrink-0 transition-transform duration-200 group-hover:-rotate-6 motion-reduce:transition-none"
-                    tone={chip.tone}
-                  />
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <button
-                className="rounded-xl bg-white px-6 py-3 text-sm font-semibold lowercase text-black transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.6)] active:translate-y-0 active:scale-[0.97] motion-reduce:transform-none"
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Button
+                className="lowercase"
                 onClick={() => goToApply()}
+                size="lg"
                 type="button"
               >
-                partner with us
-              </button>
-              <button
-                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold lowercase text-white/85 transition hover:border-white/45 hover:text-white"
-                onClick={() => goToApply()}
+                register your interest
+              </Button>
+              <Button
+                className="px-0 lowercase text-white/70 hover:bg-transparent hover:text-white"
+                onClick={() => scrollTo("hosts")}
+                variant="ghost"
                 type="button"
               >
                 choose your partner type
-              </button>
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none"
+                />
+              </Button>
             </div>
           </motion.div>
 
-          <HeroCircle />
+          <PartnerEquation onPick={scrollTo} />
         </div>
       </section>
 
-      {/* ── Role sections ──────────────────────────────────── */}
-      <div className="nuclii-container mt-20 space-y-6 sm:mt-28">
-        {SECTIONS.map((section, index) => (
-          <motion.section
-            className="overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.02] p-6 sm:p-10"
-            data-analytics-section={`partner_${section.id}`}
-            id={section.id}
-            initial={{ opacity: 0, y: 26 }}
-            key={section.id}
-            style={{
-              backgroundImage: `radial-gradient(120% 120% at ${section.flip ? "100%" : "0%"} 0%, ${section.accent}1f, transparent 55%)`,
-            }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-          >
-            <div
-              className={cn(
-                "grid items-center gap-8 lg:grid-cols-2 lg:gap-12",
-                section.flip && "lg:[&>*:first-child]:order-2",
-              )}
+      {/* ── Role sections (editorial bands) ────────────────── */}
+      <div className="nuclii-container">
+        {SECTIONS.map((section, index) => {
+          const Glyph = GLYPHS[section.id as keyof typeof GLYPHS];
+          return (
+            <motion.section
+              className="scroll-mt-24 border-t border-white/10 py-14 lg:py-20"
+              data-analytics-section={`partner_${section.id}`}
+              id={section.id}
+              initial={reduce ? { y: 0 } : { y: 24 }}
+              key={section.id}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true, amount: 0.2 }}
+              whileInView={{ y: 0 }}
             >
-              <div>
-                <div className="flex items-center gap-3">
-                  <MascotFace className="size-12 shrink-0" tone={section.tone} />
-                  <h2
-                    className="text-3xl font-extrabold lowercase tracking-[-0.02em] sm:text-4xl"
+              <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-[clamp(4rem,8vw,8rem)]">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="grid size-10 shrink-0 place-items-center"
+                      style={{ color: section.accent }}
+                    >
+                      <Glyph className="size-8" />
+                    </span>
+                    <h2
+                      className="text-3xl font-extrabold lowercase leading-none tracking-[-0.02em] sm:text-4xl"
+                      style={{ color: section.accent }}
+                    >
+                      {section.label}
+                    </h2>
+                  </div>
+                  <p
+                    className="mt-5 text-[1.05rem] font-semibold lowercase leading-6"
                     style={{ color: section.accent }}
                   >
-                    {section.label}
-                  </h2>
+                    {section.lead}
+                  </p>
+                  <p className="mt-3 max-w-[38rem] text-[0.98rem] leading-[1.65] text-white/70 text-pretty">
+                    {section.description}
+                  </p>
+
+                  <div className="mt-8 grid max-w-[38rem] grid-cols-1 gap-x-8 gap-y-4 border-t border-white/10 pt-6 sm:grid-cols-2">
+                    {section.features.map((feature) => (
+                      <div className="flex items-center gap-2.5" key={feature.label}>
+                        <span className="shrink-0" style={{ color: section.accent }}>
+                          <feature.icon className="size-6" />
+                        </span>
+                        <p className="text-sm font-semibold lowercase leading-snug text-white">
+                          {feature.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
+                    <Button
+                      className="lowercase !text-black hover:brightness-110"
+                      onClick={() => goToApply(section.role)}
+                      style={{ backgroundColor: section.accent }}
+                      type="button"
+                    >
+                      {section.cta}
+                      <ArrowRight
+                        aria-hidden="true"
+                        className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none"
+                      />
+                    </Button>
+                    <p className="max-w-52 text-xs leading-5 text-white/55">
+                      takes about 2 minutes. we&apos;ll confirm next steps by email.
+                    </p>
+                  </div>
                 </div>
-                <p className="mt-4 max-w-md text-base leading-7 text-white/70">
-                  {section.description}
-                </p>
 
-                <ul className="mt-6 space-y-3">
-                  {section.features.map((feature) => (
-                    <li className="flex items-start gap-3" key={feature.title}>
-                      <span className="mt-0.5 shrink-0" style={{ color: section.accent }}>
-                        <CheckIcon className="size-[18px]" />
-                      </span>
-                      <p className="text-sm leading-6 text-white/75">
-                        <span className="font-bold text-white">{feature.title}</span>{" "}
-                        <span className="text-white/45">— {feature.detail}</span>
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  className="mt-8 w-full rounded-xl px-6 py-3.5 text-sm font-semibold lowercase text-[#0A0A0B] transition hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 active:scale-[0.99] motion-reduce:transform-none"
-                  onClick={() => goToApply(section.role)}
-                  style={{ backgroundColor: section.accent }}
-                  type="button"
-                >
-                  {section.cta}
-                </button>
+                <SectionPhoto accent={section.accent} delay={index * 0.1} image={section.image} />
               </div>
-
-              <SectionPhoto
-                accent={section.accent}
-                delay={index * 0.15}
-                image={section.image}
-              />
-            </div>
-          </motion.section>
-        ))}
+            </motion.section>
+          );
+        })}
       </div>
 
       {/* ── Apply form ─────────────────────────────────────── */}
-      <section className="nuclii-container mt-24 scroll-mt-24" id="apply" ref={formRef}>
+      <section
+        className="nuclii-container mt-8 scroll-mt-24 border-t border-white/10 pt-16 sm:mt-12 sm:pt-20"
+        id="apply"
+        ref={formRef}
+      >
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold lowercase tracking-[-0.02em] sm:text-4xl">
+          <SectionTitle size="compact">
             let&apos;s build together
-          </h2>
-          <p className="mt-3 text-base leading-7 text-white/65">
-            tell us how you&apos;d like to partner and we&apos;ll reach out as nuclii opens near you.
+          </SectionTitle>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/70 text-pretty">
+            choose how you want to join, leave your details and we&apos;ll reach out as nuclii
+            opens near you.
+          </p>
+          <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-white/55 text-pretty">
+            early partners get first access, direct onboarding and a voice in how nuclii develops.
           </p>
         </div>
-        <div className="mx-auto mt-8 flex max-w-2xl justify-center">
+        <div className="mx-auto mt-10 flex max-w-2xl justify-center">
           <WaitlistForm
-            defaultRole={role}
-            key={role}
+            onRoleChange={(nextRole) => {
+              if (
+                nextRole === "host" ||
+                nextRole === "venue-business" ||
+                nextRole === "talent-creative"
+              ) {
+                setRole(nextRole);
+              }
+            }}
+            roleChoices={PARTNER_ROLE_CHOICES}
+            selectedRole={role}
             source="partner with us"
-            submitLabel="apply to partner"
-            successMessage="application received. we'll review it and reach out as nuclii opens near you."
+            submitLabel="register your interest"
+            successMessage="you're in. we'll reach out as nuclii opens near you."
           />
         </div>
       </section>
 
-      {/* ── Footer CTA ─────────────────────────────────────── */}
-      <section className="nuclii-container mt-20">
-        <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-10 text-center">
-          <Sparkles
-            items={[
-              { x: 8, y: 30, type: "plus", color: "#DA4F28", size: 14 },
-              { x: 14, y: 70, type: "dot", color: "#8FC9E8", size: 8, delay: 0.4 },
-              { x: 88, y: 35, type: "dot", color: "#E9C44A", size: 10, delay: 0.2 },
-              { x: 93, y: 68, type: "plus", color: "#6A6AF2", size: 12, delay: 0.6 },
-            ]}
-          />
-          <p className="mx-auto max-w-xl text-lg font-semibold lowercase text-white/85 sm:text-xl">
-            together, we can build amazing events and bring people closer.
-          </p>
-          <button
-            className="mt-6 rounded-xl bg-white px-7 py-3 text-sm font-semibold lowercase text-black transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.6)] active:translate-y-0 active:scale-[0.97] motion-reduce:transform-none"
-            onClick={() => goToApply()}
-            type="button"
-          >
-            partner with us
-          </button>
-        </div>
-      </section>
     </main>
   );
 }
 
-const POP = {
-  initial: { opacity: 0, scale: 0.4 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: true, amount: 0.4 },
-};
+/** Crossfades through a set of images on an interval; frozen for reduced motion. */
+function RotatingImage({
+  images,
+  alt,
+  startDelay = 0,
+}: {
+  images: string[];
+  alt: string;
+  startDelay?: number;
+}) {
+  const [active, setActive] = useState(0);
+  const reduce = useReducedMotion();
 
-// Reaching arms so neighbours appear to hold hands around the ring.
-const REACH = {
-  // top mascot reaches down-left and down-right
-  topLeft: "M40 96C18 110 12 150 30 178",
-  topRight: "M160 96C182 110 188 150 170 178",
-  // side mascots reach up-inward and down-inward
-  upIn: "M150 70C176 78 184 120 176 150",
-  downIn: "M150 150C176 142 184 184 168 196",
-};
+  useEffect(() => {
+    if (reduce || images.length < 2) return;
+    let interval: ReturnType<typeof setInterval>;
+    const advance = () => setActive((v) => (v + 1) % images.length);
+    const timeout = setTimeout(() => {
+      advance();
+      interval = setInterval(advance, 4200);
+    }, startDelay + 4200);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [reduce, images.length, startDelay]);
 
-function HeroCircle() {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[34rem]">
-      <svg
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full"
-        fill="none"
-        viewBox="0 0 100 100"
-      >
-        <circle cx="50" cy="50" r="33" stroke="#ffffff" strokeOpacity="0.06" strokeWidth="6" />
-        <circle
-          cx="50"
-          cy="50"
-          r="33"
-          stroke="#ffffff"
-          strokeDasharray="1.5 3"
-          strokeOpacity="0.18"
-          strokeWidth="0.5"
+    <>
+      {images.map((src, index) => (
+        <Image
+          alt={index === 0 ? alt : ""}
+          className={cn(
+            "object-cover transition-opacity duration-[1200ms] ease-out",
+            index === active ? "opacity-100" : "opacity-0",
+          )}
+          fill
+          key={src}
+          priority={index === 0}
+          sizes="(max-width: 640px) 28vw, (max-width: 1024px) 30vw, 22vw"
+          src={src}
         />
-      </svg>
-      <Sparkles
-        items={[
-          { x: 50, y: 2, type: "plus", color: "#6A6AF2", size: 14 },
-          { x: 88, y: 20, type: "dot", color: "#E9C44A", size: 8, delay: 0.3 },
-          { x: 12, y: 28, type: "dot", color: "#DA4F28", size: 9, delay: 0.5 },
-          { x: 92, y: 64, type: "plus", color: "#8FC9E8", size: 12, delay: 0.2 },
-          { x: 6, y: 70, type: "dot", color: "#E9C44A", size: 7, delay: 0.6 },
-          { x: 58, y: 96, type: "plus", color: "#DA4F28", size: 13, delay: 0.4 },
-        ]}
-      />
+      ))}
+    </>
+  );
+}
 
-      <motion.div
-        className="absolute left-1/2 top-0 w-[31%] -translate-x-1/2"
-        transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0 }}
-        {...POP}
-      >
-        <Mascot armLeft={REACH.topLeft} armRight={REACH.topRight} className="w-full" delay={0} tone={MASCOT_TONES.nuclii} />
-      </motion.div>
-      <motion.div
-        className="absolute left-0 top-1/2 w-[31%] -translate-y-1/2"
-        transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.12 }}
-        {...POP}
-      >
-        <Mascot armRight={REACH.upIn} className="w-full" delay={0.6} tone={MASCOT_TONES.host} />
-      </motion.div>
-      <motion.div
-        className="absolute right-0 top-1/2 w-[31%] -translate-y-1/2"
-        transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.18 }}
-        {...POP}
-      >
-        <Mascot armRight={REACH.upIn} className="w-full" delay={0.3} flip tone={MASCOT_TONES.talent} />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-0 left-1/2 w-[31%] -translate-x-1/2"
-        transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.24 }}
-        {...POP}
-      >
-        <Mascot armLeft={REACH.topLeft} armRight={REACH.topRight} className="w-full" delay={0.9} flip tone={MASCOT_TONES.space} />
-      </motion.div>
+// The hero anchor: venues + hosts + talent, an equation of rotating scenes (host featured).
+const EQUATION_ORDER = ["spaces", "hosts", "talent"] as const;
+
+function PartnerEquation({ onPick }: { onPick: (id: string) => void }) {
+  const reduce = useReducedMotion();
+  return (
+    <div className="mx-auto grid w-full max-w-2xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:items-center sm:justify-center sm:gap-3">
+      {EQUATION_ORDER.map((id, index) => {
+        const section = SECTIONS.find((entry) => entry.id === id)!;
+        const Glyph = GLYPHS[id];
+        const featured = id === "hosts";
+        return (
+          <Fragment key={id}>
+            {index > 0 && (
+              <span aria-hidden="true" className="grid shrink-0 place-items-center text-white">
+                <svg
+                  className="size-4 sm:size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="3"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </span>
+            )}
+            <motion.button
+              animate={{ y: 0 }}
+              aria-label={`jump to ${section.card ?? section.label}`}
+              className={cn(
+                "group relative min-h-52 min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] text-left transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B] motion-reduce:transform-none",
+                featured ? "z-10 sm:min-h-[440px] sm:flex-[1.4]" : "sm:min-h-[360px] sm:flex-1",
+              )}
+              initial={reduce ? { y: 0 } : { y: 16 }}
+              onClick={() => onPick(id)}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 + index * 0.1 }}
+              type="button"
+            >
+              {/* rotating photos (gently zoom on hover) */}
+              <span className="absolute inset-0 transition-transform duration-[900ms] ease-out group-hover:scale-[1.06] motion-reduce:transform-none">
+                <RotatingImage
+                  alt={`${section.label} on nuclii`}
+                  images={HERO_MEDIA[id] ?? []}
+                  startDelay={index * 1300}
+                />
+              </span>
+              {/* legibility scrim */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/5"
+              />
+              {/* accent glow from the top */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-2/5 opacity-70"
+                style={{ background: `radial-gradient(80% 100% at 50% 0%, ${section.accent}33, transparent 72%)` }}
+              />
+              {/* accent hairline that lights on hover */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ boxShadow: `inset 0 0 0 1.5px ${section.accent}` }}
+              />
+              {/* label */}
+              <span className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-5">
+                <span
+                  className={cn(
+                    "grid shrink-0 place-items-center",
+                    featured ? "size-7 sm:size-8" : "size-6 sm:size-7",
+                  )}
+                  style={{ color: section.accent }}
+                >
+                  <Glyph className={featured ? "size-6 sm:size-7" : "size-5 sm:size-6"} />
+                </span>
+                <span
+                  className={cn(
+                    "text-sm font-bold lowercase leading-none text-white sm:text-lg",
+                    featured && "sm:text-xl",
+                  )}
+                >
+                  {section.card ?? section.label}
+                </span>
+              </span>
+            </motion.button>
+          </Fragment>
+        );
+      })}
     </div>
   );
 }
@@ -380,41 +489,53 @@ function SectionPhoto({
 }: {
   accent: string;
   delay: number;
-  image: { src: string; alt: string; width: number; height: number };
+  image: {
+    src: string;
+    alt: string;
+    focus?: string;
+    frameRatio?: string;
+    scale?: number;
+  };
 }) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
-      className="relative mx-auto grid w-full max-w-[25rem] place-items-center"
-      initial={{ scale: 0.96, y: 14 }}
+      className="relative mx-auto w-full max-w-[24rem]"
+      initial={reduce ? { scale: 1, y: 0 } : { scale: 0.96, y: 14 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay }}
       viewport={{ once: true, amount: 0.3 }}
       whileInView={{ scale: 1, y: 0 }}
     >
-      {/* accent halo — bleeds through the venue cut-out and rims the framed photos */}
+      {/* accent halo behind the frame */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-3 -z-10 blur-2xl"
-        style={{
-          backgroundImage: `radial-gradient(58% 52% at 50% 50%, ${accent}3d, transparent 72%)`,
-        }}
+        className="pointer-events-none absolute -inset-2 -z-10 rounded-[30px] blur-2xl"
+        style={{ backgroundImage: `radial-gradient(60% 55% at 50% 45%, ${accent}40, transparent 72%)` }}
       />
       <Sparkles
         items={[
-          { x: 3, y: 12, type: "plus", color: accent, size: 13 },
-          { x: 93, y: 18, type: "dot", color: accent, size: 7, delay: 0.3 },
-          { x: 95, y: 80, type: "plus", color: accent, size: 11, delay: 0.5 },
-          { x: 5, y: 84, type: "dot", color: accent, size: 8, delay: 0.2 },
+          { x: 2, y: 10, type: "plus", color: accent, size: 13 },
+          { x: 94, y: 16, type: "dot", color: accent, size: 7, delay: 0.3 },
+          { x: 96, y: 82, type: "plus", color: accent, size: 11, delay: 0.5 },
+          { x: 4, y: 86, type: "dot", color: accent, size: 8, delay: 0.2 },
         ]}
       />
-      <Image
-        alt={image.alt}
-        className="h-auto w-full rounded-[22px]"
-        height={image.height}
-        sizes="(max-width: 1024px) 88vw, 25rem"
-        src={image.src}
-        style={{ filter: "drop-shadow(0 24px 55px rgba(0,0,0,0.5))" }}
-        width={image.width}
-      />
+      <div
+        className="relative w-full overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.03] shadow-[0_26px_60px_-12px_rgba(0,0,0,0.6)]"
+        style={{ aspectRatio: image.frameRatio ?? "1 / 1" }}
+      >
+        <Image
+          alt={image.alt}
+          className="object-cover"
+          fill
+          sizes="(max-width: 1024px) 88vw, 24rem"
+          src={image.src}
+          style={{
+            objectPosition: image.focus ?? "50% 75%",
+            transform: image.scale ? `scale(${image.scale})` : undefined,
+          }}
+        />
+      </div>
     </motion.div>
   );
 }

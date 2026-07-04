@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useMotionValue, useReducedMotion, useSpring } from "motion/react";
 
 /**
- * Live waitlist count (base seed + real signups), rounded down to a clean step
- * and shown as "700+". Rolls up on load.
+ * Live waitlist count, rounded down to a clean step. Rolls up on load.
  */
 export function WaitlistCount({
-  fallback = 700,
+  fallback = 0,
   startValue = 0,
   step = 50,
   className,

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useId, useRef, useState, type ComponentType } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import {
   ArrowRightIcon,
@@ -18,25 +18,34 @@ import {
   captureAnalyticsEvent,
   getAnalyticsDistinctId,
 } from "@/lib/analytics";
+import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "nuclii-waitlist-joined";
 
 const ROLE_OPTIONS = [
   { value: "", label: "choose your path" },
-  { value: "attendee", label: "attendee" },
-  { value: "host", label: "host" },
+  { value: EXPERIENCE_ROLES.explorer.value, label: EXPERIENCE_ROLES.explorer.formLabel },
+  { value: EXPERIENCE_ROLES.host.value, label: EXPERIENCE_ROLES.host.formLabel },
   { value: "society-community", label: "society / community" },
   { value: "service-provider", label: "service provider" },
-  { value: "talent-creative", label: "talent / creative" },
-  { value: "venue-business", label: "venue / business" },
+  { value: EXPERIENCE_ROLES.talent.value, label: EXPERIENCE_ROLES.talent.formLabel },
+  { value: EXPERIENCE_ROLES.venue.value, label: EXPERIENCE_ROLES.venue.formLabel },
   { value: "partner", label: "partner" },
   { value: "investor", label: "investor" },
   { value: "team-contributor", label: "team / contributor" },
 ] as const;
 
 type RoleValue = (typeof ROLE_OPTIONS)[number]["value"];
-type FilledRoleValue = Exclude<RoleValue, "">;
+export type FilledRoleValue = Exclude<RoleValue, "">;
+
+export type WaitlistRoleChoice = {
+  value: FilledRoleValue;
+  label: string;
+  hint: string;
+  accent: string;
+  icon: ComponentType<{ className?: string }>;
+};
 
 type WaitlistFormProps = {
   className?: string;
@@ -47,7 +56,10 @@ type WaitlistFormProps = {
   exploreLabel?: string;
   /** Fires when the form enters / leaves its joined (success) state. */
   onJoinedChange?: (joined: boolean) => void;
+  onRoleChange?: (role: FilledRoleValue) => void;
   layout?: "default" | "hero";
+  roleChoices?: readonly WaitlistRoleChoice[];
+  selectedRole?: FilledRoleValue;
   source?: string;
   submitLabel?: string;
   successMessage?: string;
@@ -94,7 +106,7 @@ function AnimatedCheckbox({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="group flex min-h-11 cursor-pointer items-start gap-2.5 text-xs leading-5 text-white/70 transition-colors hover:text-white/90">
+    <label className="group flex min-h-11 cursor-pointer items-center gap-3 text-sm leading-5 text-white/78 transition-colors hover:text-white">
       <input
         checked={checked}
         className="sr-only"
@@ -106,8 +118,8 @@ function AnimatedCheckbox({
       <motion.span
         aria-hidden="true"
         className={cn(
-          "relative mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-[6px] border transition-colors duration-200",
-          checked ? "border-white bg-white" : "border-white/40 bg-black/50 group-hover:border-white/70",
+          "relative grid size-5 shrink-0 place-items-center rounded-[6px] border transition-colors duration-200",
+          checked ? "border-white bg-white" : "border-white/55 bg-black/50 group-hover:border-white/80",
         )}
         whileTap={{ scale: 0.82 }}
       >
@@ -155,18 +167,25 @@ function WaitlistForm({
   exploreHref,
   exploreLabel = "explore nuclii",
   onJoinedChange,
+  onRoleChange,
   layout = "default",
+  roleChoices,
+  selectedRole,
   source,
-  submitLabel = "join the waitlist",
+  submitLabel = "join early access",
   successMessage = "you're on the list. we'll reach out when nuclii launches.",
 }: WaitlistFormProps) {
   const isClient = useIsClient();
+  const reduce = useReducedMotion();
   const id = useId();
   const sourceLabel = normalizeSource(source);
   const storageKey = getStorageKey(sourceLabel);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<RoleValue>(defaultRole ?? (layout === "hero" ? "attendee" : ""));
+  const [internalRole, setInternalRole] = useState<RoleValue>(
+    defaultRole ?? (layout === "hero" ? "attendee" : ""),
+  );
+  const role = selectedRole ?? internalRole;
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [consent, setConsent] = useState(false);
   const [justJoined, setJustJoined] = useState<"new" | "duplicate" | null>(null);
@@ -177,6 +196,8 @@ function WaitlistForm({
   const roleId = `${id}-role`;
   const errorId = `${id}-error`;
   const heroLayout = layout === "hero";
+  const segmentedRoles = !heroLayout && Boolean(roleChoices?.length);
+  const selectedChoice = roleChoices?.find((choice) => choice.value === role);
 
   const [copied, setCopied] = useState(false);
   // Stable per-visitor referral code (placeholder until backend attribution lands).
@@ -224,6 +245,21 @@ function WaitlistForm({
     captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormStarted, {
       ...analyticsBaseProperties(),
       trigger,
+    });
+  }
+
+  function updateRole(nextRole: RoleValue) {
+    trackFormStarted("role");
+    if (selectedRole === undefined) setInternalRole(nextRole);
+    setError("");
+
+    if (!nextRole) return;
+
+    onRoleChange?.(nextRole);
+    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRoleSelected, {
+      source: sourceLabel,
+      layout,
+      role: nextRole,
     });
   }
 
@@ -298,7 +334,12 @@ function WaitlistForm({
         startVelocity: 38,
         ticks: 200,
         origin: { y: 0.75 },
-        colors: ["#ffffff", "#92EB08", "#1800AD", "#6A6AF2"],
+        colors: [
+          "#ffffff",
+          EXPERIENCE_ROLES.explorer.signal,
+          EXPERIENCE_ROLES.venue.signal,
+          EXPERIENCE_ROLES.talent.signal,
+        ],
         disableForReducedMotion: true,
       });
     });
@@ -536,30 +577,120 @@ function WaitlistForm({
     <div className={`w-full max-w-2xl space-y-3 ${className}`}>
       <form
         aria-describedby={error ? errorId : undefined}
-        className="ph-no-capture space-y-3"
+        className={cn(
+          "ph-no-capture",
+          segmentedRoles ? "space-y-5" : "space-y-3",
+        )}
         noValidate
         onSubmit={handleSubmit}
       >
+        {segmentedRoles && roleChoices && (
+          <fieldset className="space-y-3.5">
+            <legend className="text-sm font-semibold lowercase text-white/80">
+              choose how you&apos;re joining
+            </legend>
+            <div
+              className="grid grid-cols-3 gap-2"
+            >
+              {roleChoices.map((choice) => {
+                const Icon = choice.icon;
+                const selected = role === choice.value;
+
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className="group relative min-h-[4.75rem] min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-3 text-left transition-colors hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-4"
+                    disabled={isSubmitting}
+                    key={choice.value}
+                    onClick={() => updateRole(choice.value)}
+                    type="button"
+                  >
+                    {selected && (
+                      <motion.span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 rounded-xl"
+                        layoutId={`${id}-active-role`}
+                        style={{
+                          backgroundColor: `${choice.accent}1f`,
+                          boxShadow: `inset 0 0 0 1px ${choice.accent}`,
+                        }}
+                        transition={{
+                          duration: reduce ? 0 : 0.22,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                      />
+                    )}
+                    <span className="relative flex min-w-0 items-center gap-2">
+                      <motion.span
+                        animate={{ scale: selected ? 1 : 0.92 }}
+                        className="grid size-7 shrink-0 place-items-center"
+                        style={{ color: selected ? choice.accent : "rgba(255,255,255,0.56)" }}
+                        transition={{
+                          duration: reduce ? 0 : 0.18,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                      >
+                        <Icon className="size-6" />
+                      </motion.span>
+                      <span
+                        className="min-w-0 text-sm font-bold lowercase leading-tight"
+                        style={{ color: selected ? choice.accent : "rgba(255,255,255,0.7)" }}
+                      >
+                        {choice.label}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <AnimatePresence initial={false} mode="wait">
+              {selectedChoice && (
+                <motion.p
+                  animate={{ opacity: 1, y: 0 }}
+                  className="max-w-xl text-sm leading-6 text-white/68 text-pretty"
+                  exit={{ opacity: 0, y: reduce ? 0 : -4 }}
+                  initial={{ opacity: 0, y: reduce ? 0 : 4 }}
+                  key={selectedChoice.value}
+                  transition={{
+                    duration: reduce ? 0 : 0.18,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {selectedChoice.hint}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </fieldset>
+        )}
+
         <div
           className={cn(
             "group relative grid overflow-hidden rounded-2xl border border-white/25 bg-black/55 transition duration-300 focus-within:border-white/70 focus-within:shadow-[0_0_36px_-10px_rgba(255,255,255,0.16)]",
-            heroLayout ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
+            heroLayout || segmentedRoles
+              ? "sm:grid-cols-2"
+              : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
           )}
-          onPointerMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
-            e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
-          }}
+          onPointerMove={
+            segmentedRoles
+              ? undefined
+              : (e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+                  e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+                }
+          }
         >
           {/* cursor-follow spotlight */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            style={{
-              background:
-                "radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 0px), rgba(255,255,255,0.06), transparent 44%)",
-            }}
-          />
+          {!segmentedRoles && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 0px), rgba(255,255,255,0.06), transparent 44%)",
+              }}
+            />
+          )}
           <div className="min-w-0 flex-1 border-b border-white/10 sm:border-b-0 sm:border-r">
             <label className={LABEL_CLASS} htmlFor={emailId}>email</label>
             <input
@@ -589,26 +720,14 @@ function WaitlistForm({
               value={name}
             />
           </div>
-          {!heroLayout && (
+          {!heroLayout && !segmentedRoles && (
             <div className="min-w-0 flex-1 border-t border-white/10 sm:col-span-2 lg:col-span-1 lg:border-l lg:border-t-0">
               <label className={LABEL_CLASS} htmlFor={roleId}>joining as</label>
               <select
                 className={`${FIELD_CLASS} ph-no-capture appearance-none text-white [&>option]:bg-black [&>option]:text-white`}
                 disabled={isSubmitting}
                 id={roleId}
-                onChange={(e) => {
-                  const nextRole = e.target.value as RoleValue;
-                  trackFormStarted("role");
-                  setRole(nextRole);
-                  setError("");
-                  if (nextRole) {
-                    captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRoleSelected, {
-                      source: sourceLabel,
-                      layout,
-                      role: nextRole,
-                    });
-                  }
-                }}
+                onChange={(e) => updateRole(e.target.value as RoleValue)}
                 required
                 value={role}
               >
@@ -621,8 +740,8 @@ function WaitlistForm({
             </div>
           )}
         </div>
-        <div className={heroLayout ? "grid gap-4" : "grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end"}>
-          <div className="space-y-2">
+        <div className={heroLayout ? "grid gap-4" : "grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"}>
+          <div className="space-y-1">
             <AnimatedCheckbox
               checked={ageConfirmed}
               disabled={isSubmitting}
@@ -660,10 +779,17 @@ function WaitlistForm({
             className={
               heroLayout
                 ? "nuclii-action-button group relative min-h-12 w-full max-w-[22rem] justify-between overflow-hidden border border-white bg-white px-4 text-sm lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white sm:max-w-[24rem] sm:px-5"
+                : segmentedRoles
+                  ? "w-full lowercase !text-black hover:brightness-110 disabled:!text-black sm:min-w-64 sm:w-auto"
                 : "w-full lowercase sm:w-auto"
             }
             disabled={isSubmitting}
             size="lg"
+            style={
+              segmentedRoles
+                ? { backgroundColor: selectedChoice?.accent ?? "#ffffff" }
+                : undefined
+            }
             type="submit"
           >
             {heroLayout && (

@@ -9,6 +9,7 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { footerNavGroups, sideNavItems } from "@/lib/navigation";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 function MobileNav() {
@@ -63,10 +64,10 @@ function MobileNav() {
                   cta: "join_waitlist",
                   location: "mobile_drawer_primary",
                 }}
-                href="/#waitlist"
+                href={routes.waitlist}
                 onClick={() => setOpen(false)}
               >
-                join the waitlist
+                join early access
                 <ArrowRight aria-hidden="true" />
               </TrackedLink>
             </Button>
@@ -75,7 +76,7 @@ function MobileNav() {
 
             {/* Main pages */}
             <div className="mt-8 flex flex-col gap-5">
-              {sideNavItems.map((item) => {
+              {sideNavItems.filter((item) => item.href !== routes.waitlist).map((item) => {
                 const active =
                   item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 

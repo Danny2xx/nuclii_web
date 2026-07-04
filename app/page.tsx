@@ -6,6 +6,8 @@ import { Testimonials } from "@/components/home/testimonials";
 import { FadeIn, Reveal, RotatingWord } from "@/components/motion";
 import { WaitlistForm } from "@/components/home/waitlist-form";
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
+import { SectionTitle } from "@/components/ui/marketing-typography";
+import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
 const heroVideos = [
   "/videos/nightlife.mp4",
@@ -18,35 +20,39 @@ const heroVideos = [
 const experienceLayers = [
   {
     number: "01",
-    title: "explorers",
+    title: EXPERIENCE_ROLES.explorer.label,
     description:
       "find what fits your taste, timing and location — from quiet workshops to packed rooms, new scenes and one-off nights.",
-    image: "/images/attendee.jpg",
-    alt: "Friends discovering a real-world experience together",
+    image: "/homepage/explore.jpg",
+    imagePosition: "50% 72%",
+    alt: "Friends sitting together beside the sea",
   },
   {
     number: "02",
-    title: "organisers",
+    title: EXPERIENCE_ROLES.host.label,
     description:
       "shape the idea, build demand, sell access and pull the right venue, talent and support around the moment.",
-    image: "/images/about-gathering.jpg",
-    alt: "People gathered around a hosted table experience",
+    image: "/homepage/hosts.jpg",
+    imagePosition: "50% 48%",
+    alt: "An organiser planning an experience with their team",
   },
   {
     number: "03",
-    title: "spaces & venues",
+    title: EXPERIENCE_ROLES.venue.label,
     description:
       "show what your space can hold — capacity, amenities, atmosphere, availability and the kind of gatherings it was built for.",
-    image: "/images/venue.jpg",
-    alt: "A space prepared for a real-world experience",
+    image: "/homepage/venue.jpg",
+    imagePosition: "48% 50%",
+    alt: "A venue prepared for a gathering",
   },
   {
     number: "04",
-    title: "talent & makers",
+    title: EXPERIENCE_ROLES.talent.label,
     description:
       "put your skill where organisers are already looking — food, decor, sound, styling, performance, workshops, media, craft and hands-on services.",
-    image: "/images/talent.jpg",
-    alt: "A creative showcasing their work at a real-world experience",
+    image: "/homepage/talent.jpg",
+    imagePosition: "72% 50%",
+    alt: "A DJ performing at an outdoor gathering",
   },
 ] as const;
 
@@ -73,16 +79,18 @@ export default function Home() {
               make the memories last.
             </h1>
             <div className="mt-9 grid w-full min-w-0 max-w-[70rem] gap-6 border-t border-white/15 pt-5 sm:mt-10 md:grid-cols-[minmax(16rem,23rem)_minmax(28rem,38rem)] md:items-start md:gap-8">
-              <div className="min-w-0 max-w-full space-y-3 sm:max-w-[28rem]">
-                <p className="text-lg font-bold lowercase tracking-[-0.01em] text-white sm:text-xl">
-                  never miss what matters.
-                </p>
-                <p className="max-w-[20rem] text-base font-normal lowercase leading-[1.58] tracking-[-0.01em] text-white/70 break-words sm:max-w-none">
-                  make new memories, create the rooms you crave, share the
-                  spaces you&apos;ve curated, and nurture every connection
-                  after. nuclii is here at every step.
-                </p>
-                <p className="text-base font-bold lowercase tracking-[0.04em] text-white/90 [word-spacing:0.35em] sm:text-lg">
+              <div className="min-w-0 max-w-full sm:max-w-[28rem]">
+                <div className="space-y-3">
+                  <p className="text-lg font-bold lowercase tracking-[-0.01em] text-white sm:text-xl">
+                    never miss what matters.
+                  </p>
+                  <p className="max-w-[20rem] text-base font-normal lowercase leading-[1.58] tracking-[-0.01em] text-white/70 break-words sm:max-w-none">
+                    make new memories, create the rooms you crave, share the
+                    spaces you&apos;ve curated, and nurture every connection
+                    after. nuclii is here at every step.
+                  </p>
+                </div>
+                <p className="mt-7 text-base font-bold lowercase tracking-[0.04em] text-white/90 [word-spacing:0.35em] sm:mt-8 sm:text-lg">
                   discover. host. collaborate.
                 </p>
               </div>
@@ -99,10 +107,10 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-20 md:gap-36">
           <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-start md:gap-16">
             <Reveal>
-              <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold lowercase leading-[1.03] tracking-[-0.03em] text-balance">
+              <SectionTitle className="text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.03]">
                 great moments should not be hard to find, difficult to build,
                 or easy to forget.
-              </h2>
+              </SectionTitle>
             </Reveal>
             <Reveal delay={0.08}>
               <div className="space-y-6 text-base leading-relaxed tracking-[-0.02em] text-white/78 sm:text-xl md:border-l md:border-white/12 md:pl-12">
@@ -133,15 +141,15 @@ export default function Home() {
       </section>
 
       <section
-        className="border-t border-border py-20 md:py-36"
+        className="nuclii-section border-t border-border"
         data-analytics-section="home_map_preview"
       >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <Reveal>
             <div>
-              <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+              <SectionTitle>
                 a map for more than directions.
-              </h2>
+              </SectionTitle>
               <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
                 <p>
                   search by interest, date, area and vibe. nuclii turns events,
@@ -162,15 +170,15 @@ export default function Home() {
       </section>
 
       <section
-        className="border-t border-border py-20 md:py-36"
+        className="nuclii-section border-t border-border"
         data-analytics-section="home_privacy_by_default"
       >
         <div className="nuclii-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal>
             <div>
-              <h2 className="text-3xl font-extrabold lowercase leading-tight tracking-[-0.03em] sm:text-5xl">
+              <SectionTitle>
                 privacy by default
-              </h2>
+              </SectionTitle>
               <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
                 <p>
                   discovery should not require unnecessary public exposure.

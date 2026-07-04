@@ -97,7 +97,7 @@ Avoid green except for success states.
 
 Active typography:
 
-- Headings: Fredoka
+- Headings: Sora
 - Body and UI: Plus Jakarta Sans
 
 Typography style:

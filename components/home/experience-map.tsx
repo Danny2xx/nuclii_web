@@ -22,7 +22,7 @@ type MapEvent = {
 const EVENTS: readonly MapEvent[] = [
   {
     id: "waterfight",
-    src: "/images/host.jpg",
+    src: "/homepage/hosts.jpg",
     x: 50,
     y: 46,
     ring: "#6F89A8",
@@ -35,7 +35,7 @@ const EVENTS: readonly MapEvent[] = [
   },
   {
     id: "supper",
-    src: "/images/about-gathering.jpg",
+    src: "/homepage/explore.jpg",
     x: 82,
     y: 72,
     ring: "#7A9E6E",
@@ -47,7 +47,7 @@ const EVENTS: readonly MapEvent[] = [
   },
   {
     id: "studio",
-    src: "/images/talent.jpg",
+    src: "/homepage/talent.jpg",
     x: 80,
     y: 30,
     ring: "#8E7CA8",
@@ -59,7 +59,7 @@ const EVENTS: readonly MapEvent[] = [
   },
   {
     id: "warehouse",
-    src: "/images/venue.jpg",
+    src: "/homepage/venue.jpg",
     x: 25,
     y: 73,
     ring: "#6E9CA0",
@@ -71,7 +71,7 @@ const EVENTS: readonly MapEvent[] = [
   },
   {
     id: "rooftop",
-    src: "/images/attendee.jpg",
+    src: "/homepage/explore.jpg",
     x: 18,
     y: 42,
     ring: "#C2A968",
@@ -262,7 +262,7 @@ function ExperienceMap() {
               <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-white/20" />
               <button
                 aria-label="Close"
-                className="absolute right-2.5 top-2.5 grid size-7 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-white/20"
+                className="absolute right-2.5 top-2.5 grid size-11 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-white/20"
                 onClick={() => setSelectedId(null)}
                 type="button"
               >
