@@ -1,31 +1,33 @@
-const QUOTES = [
+const SIGNALS = [
   {
     quote:
-      "i post my work all the time and still get zero bookings lol. what am i missing?",
-    who: "Independent Creative",
-  },
-  {
-    quote:
-      "our performer cancelled two hours before doors and we were basically like... okay, now what?",
-    who: "Event Organiser",
-  },
-  {
-    quote: "i’d actually go to more events if i knew who else was going. turning up alone? idk.",
-    who: "Potential Attendee",
-  },
-  {
-    quote: "why do i always hear about the good events the day after 😭",
-    who: "University Student",
+      "i get likes, but likes do not turn into bookings. people still ask for prices and times in dms.",
+    role: "creative / maker",
   },
   {
     quote:
-      "people keep trying to book the space through dms and ngl, it gets chaotic fast.",
-    who: "Venue Manager",
+      "i can get people excited, but one speaker cancels and suddenly the whole plan is in ten chats.",
+    role: "host / organiser",
   },
   {
     quote:
-      "i’ve been saying ‘i should run a comedy night’ for months lol. i just need help starting.",
-    who: "First Time Host",
+      "i want to find plans near me without asking around or scrolling stories for half an hour.",
+    role: "explorer",
+  },
+  {
+    quote:
+      "our society posts everywhere, and people still say they missed it after the event.",
+    role: "society / community lead",
+  },
+  {
+    quote:
+      "people want the space, but availability lives in email, calls and random voice notes.",
+    role: "venue team",
+  },
+  {
+    quote:
+      "i have the idea and a few people saying they are down. making it real should not feel this long.",
+    role: "first-time host",
   },
 ] as const;
 
@@ -34,7 +36,7 @@ const DOTS = ["#7A9E6E", "#6F89A8", "#8E7CA8", "#C2A968", "#B5736E", "#6E9CA0"];
 
 function Testimonials() {
   // Doubled so the marquee can loop seamlessly at translateX(-50%).
-  const row = [...QUOTES, ...QUOTES];
+  const row = [...SIGNALS, ...SIGNALS];
 
   return (
     <div className="group relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
@@ -42,7 +44,7 @@ function Testimonials() {
         {row.map((item, index) => (
           <li
             className="flex w-[18rem] shrink-0 flex-col justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.04] sm:w-[21rem]"
-            key={`${index}-${item.who}`}
+            key={`${index}-${item.role}`}
           >
             <p className="text-[1.05rem] italic leading-snug text-white/85 sm:text-[1.15rem]">
               &ldquo;{item.quote}&rdquo;
@@ -53,7 +55,7 @@ function Testimonials() {
                 className="size-1.5 shrink-0 rounded-full"
                 style={{ backgroundColor: DOTS[index % DOTS.length] }}
               />
-              {item.who}
+              {item.role}
             </p>
           </li>
         ))}

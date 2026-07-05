@@ -68,7 +68,7 @@ function Logo() {
     >
       <span
         aria-hidden="true"
-        className="block h-[1.4rem] w-[4.28rem] transition-[background-color] duration-500 lg:h-[1.6rem] lg:w-[4.88rem]"
+        className="nuclii-logo-mark block h-[1.4rem] w-[4.28rem] transition-[background-color] duration-500 lg:h-[1.6rem] lg:w-[4.88rem]"
         style={{
           backgroundColor: color,
           WebkitMaskImage: "url(/logo/nuclii-white.png)",

@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type ComponentType } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
+import { celebrateWaitlistSignup } from "@/components/motion/success-confetti";
 import {
   ArrowRightIcon,
   CheckIcon,
@@ -12,7 +13,7 @@ import {
   SpinnerIcon,
 } from "@/components/ui/icons";
 import { useIsClient } from "@/components/motion/use-is-client";
-import { Button } from "@/components/ui/button";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import {
   ANALYTICS_EVENTS,
   captureAnalyticsEvent,
@@ -34,6 +35,7 @@ const ROLE_OPTIONS = [
   { value: "partner", label: "partner" },
   { value: "investor", label: "investor" },
   { value: "team-contributor", label: "team / contributor" },
+  { value: "other", label: "something else" },
 ] as const;
 
 type RoleValue = (typeof ROLE_OPTIONS)[number]["value"];
@@ -49,6 +51,8 @@ export type WaitlistRoleChoice = {
 
 type WaitlistFormProps = {
   className?: string;
+  /** When true, a brief reduced-motion-safe celebration fires after a new signup. */
+  celebrateOnSuccess?: boolean;
   defaultRole?: FilledRoleValue;
   duplicateMessage?: string;
   /** When set, the success state shows an "explore" unlock CTA to this href. */
@@ -60,6 +64,8 @@ type WaitlistFormProps = {
   layout?: "default" | "hero";
   roleChoices?: readonly WaitlistRoleChoice[];
   selectedRole?: FilledRoleValue;
+  /** When false, launch-update consent is offered but does not block signup. */
+  requireConsent?: boolean;
   source?: string;
   submitLabel?: string;
   successMessage?: string;
@@ -75,7 +81,37 @@ function getStorageKey(source: string) {
 }
 
 function hasJoinedWaitlist(storageKey: string) {
-  return localStorage.getItem(storageKey) === "true";
+  if (localStorage.getItem(STORAGE_KEY) === "true" || localStorage.getItem(storageKey) === "true") {
+    return true;
+  }
+
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith(`${STORAGE_KEY}:`) && localStorage.getItem(key) === "true") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function markJoinedWaitlist(storageKey: string) {
+  localStorage.setItem(STORAGE_KEY, "true");
+  localStorage.setItem(storageKey, "true");
+}
+
+function clearJoinedWaitlist() {
+  const sourceKeys: string[] = [];
+
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith(`${STORAGE_KEY}:`)) {
+      sourceKeys.push(key);
+    }
+  }
+
+  localStorage.removeItem(STORAGE_KEY);
+  sourceKeys.forEach((key) => localStorage.removeItem(key));
 }
 
 function getOrCreateRefCode() {
@@ -89,8 +125,10 @@ function getOrCreateRefCode() {
 }
 
 const FIELD_CLASS =
-  "block min-h-12 w-full min-w-0 bg-transparent px-4 pb-3 text-base text-white outline-none transition placeholder:text-white/60 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:bg-white/[0.06] sm:text-sm";
-const LABEL_CLASS = "block px-4 pt-2.5 text-[11px] font-semibold lowercase tracking-wide text-white/70";
+  "block min-h-12 w-full min-w-0 bg-transparent px-4 pb-3 text-base text-white outline-none transition placeholder:text-white/50 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm";
+const FIELD_SHELL_CLASS =
+  "group/field relative min-w-0 flex-1 overflow-hidden bg-black/20 transition-colors duration-200 focus-within:bg-white/[0.045]";
+const LABEL_CLASS = "block px-4 pt-2.5 text-[12px] font-semibold lowercase tracking-wide text-white/72";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Custom checkbox with a spring-pop box and a drawn-in check stroke.
@@ -98,29 +136,36 @@ function AnimatedCheckbox({
   checked,
   children,
   disabled,
+  invalid,
   onChange,
+  required = true,
 }: {
   checked: boolean;
   children: React.ReactNode;
   disabled?: boolean;
+  invalid?: boolean;
   onChange: (checked: boolean) => void;
+  required?: boolean;
 }) {
   return (
     <label className="group flex min-h-11 cursor-pointer items-center gap-3 text-sm leading-5 text-white/78 transition-colors hover:text-white">
       <input
+        aria-invalid={invalid || undefined}
         checked={checked}
-        className="sr-only"
+        className="peer sr-only"
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        required
+        required={required}
         type="checkbox"
       />
       <motion.span
         aria-hidden="true"
         className={cn(
-          "relative grid size-5 shrink-0 place-items-center rounded-[6px] border transition-colors duration-200",
+          "relative grid size-5 shrink-0 place-items-center rounded-[6px] border transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
           checked ? "border-white bg-white" : "border-white/55 bg-black/50 group-hover:border-white/80",
+          invalid && !checked && "border-destructive",
         )}
+        tabIndex={-1}
         whileTap={{ scale: 0.82 }}
       >
         <AnimatePresence>
@@ -162,6 +207,7 @@ function analyticsReason(value: string) {
 
 function WaitlistForm({
   className = "",
+  celebrateOnSuccess = false,
   defaultRole,
   duplicateMessage = "you're already on the list. we'll reach out when nuclii launches.",
   exploreHref,
@@ -171,6 +217,7 @@ function WaitlistForm({
   layout = "default",
   roleChoices,
   selectedRole,
+  requireConsent = true,
   source,
   submitLabel = "join early access",
   successMessage = "you're on the list. we'll reach out when nuclii launches.",
@@ -183,7 +230,7 @@ function WaitlistForm({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [internalRole, setInternalRole] = useState<RoleValue>(
-    defaultRole ?? (layout === "hero" ? "attendee" : ""),
+    defaultRole ?? (roleChoices?.length ? "" : layout === "hero" ? "attendee" : ""),
   );
   const role = selectedRole ?? internalRole;
   const [ageConfirmed, setAgeConfirmed] = useState(false);
@@ -191,12 +238,15 @@ function WaitlistForm({
   const [justJoined, setJustJoined] = useState<"new" | "duplicate" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState<"email" | "role" | "age" | "consent" | "form" | null>(null);
+  const [shareNote, setShareNote] = useState("");
+  const formRef = useRef<HTMLDivElement>(null);
   const nameId = `${id}-name`;
   const emailId = `${id}-email`;
   const roleId = `${id}-role`;
   const errorId = `${id}-error`;
   const heroLayout = layout === "hero";
-  const segmentedRoles = !heroLayout && Boolean(roleChoices?.length);
+  const segmentedRoles = Boolean(roleChoices?.length);
   const selectedChoice = roleChoices?.find((choice) => choice.value === role);
 
   const [copied, setCopied] = useState(false);
@@ -211,7 +261,7 @@ function WaitlistForm({
     ? `https://nuclii.co.uk/?ref=${refCode}`
     : "https://nuclii.co.uk";
   const shareText =
-    "i just joined the nuclii waitlist — every event starts here. join me:";
+    "i just joined nuclii early access — every event starts here. join me:";
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
   const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   const formStarted = useRef(false);
@@ -248,10 +298,15 @@ function WaitlistForm({
     });
   }
 
+  function clearFormError() {
+    setError("");
+    setErrorField(null);
+  }
+
   function updateRole(nextRole: RoleValue) {
     trackFormStarted("role");
     if (selectedRole === undefined) setInternalRole(nextRole);
-    setError("");
+    clearFormError();
 
     if (!nextRole) return;
 
@@ -263,8 +318,13 @@ function WaitlistForm({
     });
   }
 
-  function setValidationError(message: string, reason: string) {
+  function setValidationError(
+    message: string,
+    reason: string,
+    field: "email" | "role" | "age" | "consent" | "form",
+  ) {
     setError(message);
+    setErrorField(field);
     captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistFormError, {
       ...analyticsBaseProperties(),
       phase: "client_validation",
@@ -304,9 +364,10 @@ function WaitlistForm({
         channel: "copy",
       });
       setCopied(true);
+      setShareNote("copied — send it to someone who should be in the first wave.");
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* clipboard unavailable; the link is still selectable */
+      setShareNote("copy is unavailable here. you can select the link manually.");
     }
   }
 
@@ -315,63 +376,34 @@ function WaitlistForm({
       ...analyticsBaseProperties(),
       channel: "native_share",
     });
-    navigator.share?.({ title: "nuclii", text: shareText, url: shareUrl }).catch(() => {});
-  }
-
-  // Celebrate a genuinely new signup with a single restrained confetti burst —
-  // the four nuclii brand colours (black omitted — invisible on the dark page).
-  // Reduced-motion users are skipped.
-  useEffect(() => {
-    if (justJoined !== "new" || typeof window === "undefined") return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-
-    let cancelled = false;
-    void import("canvas-confetti").then(({ default: confetti }) => {
-      if (cancelled) return;
-      confetti({
-        particleCount: 70,
-        spread: 70,
-        startVelocity: 38,
-        ticks: 200,
-        origin: { y: 0.75 },
-        colors: [
-          "#ffffff",
-          EXPERIENCE_ROLES.explorer.signal,
-          EXPERIENCE_ROLES.venue.signal,
-          EXPERIENCE_ROLES.talent.signal,
-        ],
-        disableForReducedMotion: true,
-      });
+    navigator.share?.({ title: "nuclii", text: shareText, url: shareUrl }).catch(() => {
+      setShareNote("sharing was cancelled. your link is still ready below.");
     });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [justJoined]);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     trackFormStarted("submit");
 
     if (!email.trim() || !EMAIL_REGEX.test(email.trim())) {
-      setValidationError("enter a valid email address.", "invalid_email");
+      setValidationError("enter a valid email address.", "invalid_email", "email");
       return;
     }
     if (!role) {
-      setValidationError("choose the path that best describes you.", "missing_role");
+      setValidationError("choose the path that best describes you.", "missing_role", "role");
       return;
     }
     if (!ageConfirmed) {
-      setValidationError("please confirm you're 18 or older.", "missing_age_confirmation");
+      setValidationError("please confirm you're 18 or older.", "missing_age_confirmation", "age");
       return;
     }
-    if (!consent) {
-      setValidationError("please confirm you'd like to receive updates.", "missing_marketing_consent");
+    if (requireConsent && !consent) {
+      setValidationError("please confirm you'd like to receive updates.", "missing_marketing_consent", "consent");
       return;
     }
 
     setIsSubmitting(true);
-    setError("");
+    clearFormError();
     submitAttempted.current = true;
     captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistSubmitAttempted, {
       ...analyticsBaseProperties(),
@@ -405,7 +437,14 @@ function WaitlistForm({
         outcome: data.duplicate ? "duplicate" : "new",
       });
       formCompleted.current = true;
-      localStorage.setItem(storageKey, "true");
+      markJoinedWaitlist(storageKey);
+      if (celebrateOnSuccess) {
+        void celebrateWaitlistSignup({
+          accent: selectedChoice?.accent,
+          anchor: formRef.current,
+          reduceMotion: reduce,
+        });
+      }
       setJustJoined(data.duplicate ? "duplicate" : "new");
     } catch (err) {
       const message = err instanceof Error ? err.message : "something went wrong. please try again.";
@@ -415,6 +454,7 @@ function WaitlistForm({
         reason: analyticsReason(message),
       });
       setError(message);
+      setErrorField("form");
     } finally {
       setIsSubmitting(false);
     }
@@ -436,7 +476,7 @@ function WaitlistForm({
     formCompleted.current = false;
     formStarted.current = false;
     submitAttempted.current = false;
-    localStorage.removeItem(storageKey);
+    clearJoinedWaitlist();
     setJustJoined(null);
   }
 
@@ -446,7 +486,7 @@ function WaitlistForm({
     return (
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className={`flex max-w-xl flex-col gap-4 rounded-2xl border border-white/16 bg-black/35 p-4 text-sm text-white ${className}`}
+        className={`flex max-w-xl flex-col gap-4 rounded-2xl border border-white/16 bg-black/35 p-4 text-sm text-white sm:p-5 ${className}`}
         initial={{ opacity: 0, y: 8 }}
       >
         <div className="flex items-start gap-2.5 font-semibold">
@@ -463,22 +503,22 @@ function WaitlistForm({
 
         <div className="flex flex-col gap-3 rounded-2xl border border-white/12 bg-white/[0.04] p-4">
           <div>
-            <p className="font-semibold text-white">skip the line.</p>
+            <p className="font-semibold text-white">bring someone with you.</p>
             <p className="mt-1 text-xs leading-5 text-white/65">
-              invite friends — the more who join through your link, the sooner
-              you get in.
+              share Nuclii with a friend, host, venue or maker who should see
+              it early too.
             </p>
           </div>
-          <div className="flex items-stretch gap-2">
+          <div className="flex flex-col items-stretch gap-2 min-[420px]:flex-row">
             <input
               aria-label="your referral link"
-              className="ph-no-capture min-w-0 flex-1 rounded-xl border border-white/15 bg-black/40 px-3 text-xs text-white/85 outline-none focus-visible:border-white/45"
+              className="ph-no-capture min-h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-black/40 px-3 text-xs text-white/85 outline-none focus-visible:border-white/45"
               onFocus={(e) => e.currentTarget.select()}
               readOnly
               value={shareUrl}
             />
             <button
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white bg-white px-3 py-2 text-xs font-semibold lowercase text-black transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-white bg-white px-3 py-2 text-xs font-semibold lowercase text-black transition hover:bg-white/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               onClick={copyShareLink}
               type="button"
             >
@@ -501,9 +541,14 @@ function WaitlistForm({
               {copied ? "copied" : "copy"}
             </button>
           </div>
+          {shareNote && (
+            <p aria-live="polite" className="text-xs font-medium lowercase text-white/62">
+              {shareNote}
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <a
-              className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-3 py-2 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               href={whatsappUrl}
               onClick={() => {
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
@@ -517,7 +562,7 @@ function WaitlistForm({
               whatsapp
             </a>
             <a
-              className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-3 py-2 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               href={xUrl}
               onClick={() => {
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistShareClicked, {
@@ -532,7 +577,7 @@ function WaitlistForm({
             </a>
             {canNativeShare && (
               <button
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 px-3 py-1.5 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-white/15 px-3 py-2 text-xs font-medium lowercase text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={nativeShare}
                 type="button"
               >
@@ -563,7 +608,7 @@ function WaitlistForm({
         )}
 
         <button
-          className="w-fit text-xs font-semibold text-white/65 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex min-h-11 w-fit items-center text-xs font-semibold text-white/65 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={resetJoinedState}
           type="button"
         >
@@ -574,23 +619,34 @@ function WaitlistForm({
   }
 
   return (
-    <div className={`w-full max-w-2xl space-y-3 ${className}`}>
+    <div className={`w-full max-w-2xl space-y-3 ${className}`} ref={formRef}>
       <form
         aria-describedby={error ? errorId : undefined}
         className={cn(
           "ph-no-capture",
-          segmentedRoles ? "space-y-5" : "space-y-3",
+          segmentedRoles
+            ? heroLayout
+              ? "space-y-3.5 sm:space-y-4"
+              : "space-y-5"
+            : "space-y-3",
         )}
         noValidate
         onSubmit={handleSubmit}
       >
         {segmentedRoles && roleChoices && (
-          <fieldset className="space-y-3.5">
-            <legend className="text-sm font-semibold lowercase text-white/80">
-              choose how you&apos;re joining
+          <fieldset
+            aria-describedby={errorField === "role" ? errorId : undefined}
+            className={cn("space-y-3.5", heroLayout && "space-y-2.5 sm:space-y-3")}
+          >
+            <legend className={cn("text-sm font-semibold lowercase text-white/80", heroLayout && "w-full text-center")}>
+              i&apos;m here to...
             </legend>
             <div
-              className="grid grid-cols-3 gap-2"
+              className={cn(
+                "grid grid-cols-2 gap-2 sm:flex sm:flex-wrap",
+                heroLayout && roleChoices.length === 3 && "grid-cols-1 min-[420px]:grid-cols-3",
+                heroLayout && "sm:justify-center",
+              )}
             >
               {roleChoices.map((choice) => {
                 const Icon = choice.icon;
@@ -599,7 +655,12 @@ function WaitlistForm({
                 return (
                   <button
                     aria-pressed={selected}
-                    className="group relative min-h-[4.75rem] min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-3 text-left transition-colors hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-4"
+                    className={cn(
+                      "group relative min-h-12 overflow-hidden rounded-xl border border-white/12 bg-white/[0.02] transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      heroLayout ? "px-2.5 py-2.5 sm:px-4" : "px-4 py-3 sm:px-5",
+                      heroLayout && choice.value === "other" && "col-span-2 sm:col-span-1",
+                      errorField === "role" && "border-destructive/70",
+                    )}
                     disabled={isSubmitting}
                     key={choice.value}
                     onClick={() => updateRole(choice.value)}
@@ -620,20 +681,41 @@ function WaitlistForm({
                         }}
                       />
                     )}
-                    <span className="relative flex min-w-0 items-center gap-2">
+                    {!selected && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                        style={{
+                          backgroundColor: `${choice.accent}12`,
+                          boxShadow: `inset 0 0 0 1px ${choice.accent}5c`,
+                        }}
+                      />
+                    )}
+                    <span className="relative flex min-w-0 items-center justify-center gap-2">
                       <motion.span
                         animate={{ scale: selected ? 1 : 0.92 }}
-                        className="grid size-7 shrink-0 place-items-center"
-                        style={{ color: selected ? choice.accent : "rgba(255,255,255,0.56)" }}
+                        className={cn(
+                          "grid shrink-0 place-items-center rounded-lg border",
+                          heroLayout ? "size-7" : "size-8",
+                        )}
+                        style={{
+                          backgroundColor: selected ? `${choice.accent}18` : "rgba(255,255,255,0.035)",
+                          borderColor: selected ? `${choice.accent}70` : "rgba(255,255,255,0.1)",
+                          color: choice.accent,
+                          opacity: selected ? 1 : 0.68,
+                        }}
                         transition={{
                           duration: reduce ? 0 : 0.18,
                           ease: [0.22, 1, 0.36, 1],
                         }}
                       >
-                        <Icon className="size-6" />
+                        <Icon className={heroLayout ? "size-5" : "size-6"} />
                       </motion.span>
                       <span
-                        className="min-w-0 text-sm font-bold lowercase leading-tight"
+                        className={cn(
+                          "min-w-0 font-bold lowercase leading-tight",
+                          heroLayout ? "text-[13px]" : "text-sm",
+                        )}
                         style={{ color: selected ? choice.accent : "rgba(255,255,255,0.7)" }}
                       >
                         {choice.label}
@@ -647,7 +729,7 @@ function WaitlistForm({
               {selectedChoice && (
                 <motion.p
                   animate={{ opacity: 1, y: 0 }}
-                  className="max-w-xl text-sm leading-6 text-white/68 text-pretty"
+                  className={cn("max-w-xl text-xs leading-5 text-white/68 text-pretty sm:text-sm sm:leading-6", heroLayout && "mx-auto text-center")}
                   exit={{ opacity: 0, y: reduce ? 0 : -4 }}
                   initial={{ opacity: 0, y: reduce ? 0 : 4 }}
                   key={selectedChoice.value}
@@ -665,69 +747,79 @@ function WaitlistForm({
 
         <div
           className={cn(
-            "group relative grid overflow-hidden rounded-2xl border border-white/25 bg-black/55 transition duration-300 focus-within:border-white/70 focus-within:shadow-[0_0_36px_-10px_rgba(255,255,255,0.16)]",
+            "grid overflow-hidden rounded-[1.35rem] border border-white/18 bg-black/52 transition-[border-color,box-shadow] duration-200 focus-within:border-white/52 focus-within:shadow-[0_0_0_4px_rgba(255,255,255,0.05)]",
             heroLayout || segmentedRoles
               ? "sm:grid-cols-2"
               : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
           )}
-          onPointerMove={
-            segmentedRoles
-              ? undefined
-              : (e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
-                  e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
-                }
-          }
         >
-          {/* cursor-follow spotlight */}
-          {!segmentedRoles && (
-            <div
+          <div className={cn(FIELD_SHELL_CLASS, "border-b border-white/10 sm:border-b-0 sm:border-r")}>
+            <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              style={{
-                background:
-                  "radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 0px), rgba(255,255,255,0.06), transparent 44%)",
-              }}
+              className={cn(
+                "pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-white/65 to-transparent opacity-0 transition-opacity duration-200 group-focus-within/field:opacity-100",
+                errorField === "email" && "via-destructive opacity-100",
+              )}
             />
-          )}
-          <div className="min-w-0 flex-1 border-b border-white/10 sm:border-b-0 sm:border-r">
             <label className={LABEL_CLASS} htmlFor={emailId}>email</label>
             <input
+              aria-describedby={errorField === "email" ? errorId : undefined}
+              aria-invalid={errorField === "email" || undefined}
               autoComplete="email"
               className={`${FIELD_CLASS} ph-no-capture`}
               disabled={isSubmitting}
               id={emailId}
-              onChange={(e) => { trackFormStarted("email"); setEmail(e.target.value); setError(""); }}
+              onChange={(e) => {
+                trackFormStarted("email");
+                setEmail(e.target.value);
+                clearFormError();
+              }}
               placeholder="john.doe@email.com"
               required
               type="email"
               value={email}
             />
           </div>
-          <div className="min-w-0 flex-1">
+          <div className={FIELD_SHELL_CLASS}>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-white/65 to-transparent opacity-0 transition-opacity duration-200 group-focus-within/field:opacity-100"
+            />
             <label className={LABEL_CLASS} htmlFor={nameId}>
-              name <span className="font-normal text-white/40">(optional)</span>
+              name <span className="font-normal text-white/55">(optional)</span>
             </label>
             <input
               autoComplete="name"
               className={`${FIELD_CLASS} ph-no-capture`}
               disabled={isSubmitting}
               id={nameId}
-              onChange={(e) => { trackFormStarted("name"); setName(e.target.value); setError(""); }}
+              onChange={(e) => {
+                trackFormStarted("name");
+                setName(e.target.value);
+                clearFormError();
+              }}
               placeholder="john doe"
               type="text"
               value={name}
             />
           </div>
           {!heroLayout && !segmentedRoles && (
-            <div className="min-w-0 flex-1 border-t border-white/10 sm:col-span-2 lg:col-span-1 lg:border-l lg:border-t-0">
+            <div className={cn(FIELD_SHELL_CLASS, "border-t border-white/10 sm:col-span-2 lg:col-span-1 lg:border-l lg:border-t-0")}>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-white/65 to-transparent opacity-0 transition-opacity duration-200 group-focus-within/field:opacity-100",
+                  errorField === "role" && "via-destructive opacity-100",
+                )}
+              />
               <label className={LABEL_CLASS} htmlFor={roleId}>joining as</label>
               <select
                 className={`${FIELD_CLASS} ph-no-capture appearance-none text-white [&>option]:bg-black [&>option]:text-white`}
                 disabled={isSubmitting}
                 id={roleId}
                 onChange={(e) => updateRole(e.target.value as RoleValue)}
+                aria-describedby={errorField === "role" ? errorId : undefined}
+                aria-invalid={errorField === "role" || undefined}
                 required
                 value={role}
               >
@@ -740,15 +832,24 @@ function WaitlistForm({
             </div>
           )}
         </div>
-        <div className={heroLayout ? "grid gap-4" : "grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"}>
-          <div className="space-y-1">
+        <div
+          className={cn(
+            heroLayout
+              ? segmentedRoles
+                ? "flex flex-col items-stretch gap-3 sm:items-center sm:gap-3.5"
+                : "flex flex-col items-center gap-4"
+              : "grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center",
+          )}
+        >
+          <div className={cn("space-y-1", heroLayout && segmentedRoles && "w-full max-w-xl sm:max-w-none")}>
             <AnimatedCheckbox
               checked={ageConfirmed}
               disabled={isSubmitting}
+              invalid={errorField === "age"}
               onChange={(checked) => {
                 trackFormStarted("age_confirmation");
                 setAgeConfirmed(checked);
-                setError("");
+                clearFormError();
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
                   ...analyticsBaseProperties(),
                   field: "age_confirmation",
@@ -761,50 +862,39 @@ function WaitlistForm({
             <AnimatedCheckbox
               checked={consent}
               disabled={isSubmitting}
+              invalid={errorField === "consent"}
               onChange={(checked) => {
                 trackFormStarted("marketing_consent");
                 setConsent(checked);
-                setError("");
+                clearFormError();
                 captureAnalyticsEvent(ANALYTICS_EVENTS.waitlistRequirementToggled, {
                   ...analyticsBaseProperties(),
                   field: "marketing_consent",
                   checked,
                 });
               }}
+              required={requireConsent}
             >
-              yes, email me about nuclii beta access and launch updates.
+              email me about Nuclii beta access and launch updates
+              {!requireConsent && " (optional)"}.
             </AnimatedCheckbox>
           </div>
-          <Button
+          <MagneticButton
+            aria-busy={isSubmitting || undefined}
+            accentColor={segmentedRoles ? selectedChoice?.accent ?? "#ffffff" : "#ffffff"}
             className={
-              heroLayout
-                ? "nuclii-action-button group relative min-h-12 w-full max-w-[22rem] justify-between overflow-hidden border border-white bg-white px-4 text-sm lowercase !text-black hover:border-white hover:!text-white disabled:!text-black disabled:hover:bg-white sm:max-w-[24rem] sm:px-5"
-                : segmentedRoles
-                  ? "w-full lowercase !text-black hover:brightness-110 disabled:!text-black sm:min-w-64 sm:w-auto"
-                : "w-full lowercase sm:w-auto"
+              heroLayout && segmentedRoles
+                ? "min-h-[3.25rem] w-full justify-center px-5 text-[15px] shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] disabled:opacity-60"
+                : heroLayout
+                  ? "min-h-12 w-full max-w-[22rem] justify-center px-4 text-sm shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] disabled:opacity-60 sm:max-w-[24rem] sm:px-5"
+                  : segmentedRoles
+                    ? "w-full shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] sm:min-w-64 sm:w-auto"
+                    : "w-full shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] sm:w-auto"
             }
             disabled={isSubmitting}
             size="lg"
-            style={
-              segmentedRoles
-                ? { backgroundColor: selectedChoice?.accent ?? "#ffffff" }
-                : undefined
-            }
             type="submit"
           >
-            {heroLayout && (
-              <motion.span
-                animate={{ x: "460%" }}
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-12 motion-reduce:hidden"
-                initial={{ x: "-160%" }}
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)",
-                }}
-                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 3.6, ease: "easeInOut" }}
-              />
-            )}
             <span className="relative text-current">
               {isSubmitting ? "sending..." : submitLabel}
             </span>
@@ -813,7 +903,7 @@ function WaitlistForm({
             ) : (
               <ArrowRightIcon className="relative size-4 !text-current transition-transform duration-200 group-hover:translate-x-1" />
             )}
-          </Button>
+          </MagneticButton>
         </div>
       </form>
 

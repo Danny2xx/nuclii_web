@@ -12,11 +12,13 @@ function LegalDrawer({
   children,
   lastUpdated,
   sections,
+  triggerClassName = "text-sm text-muted-foreground transition hover:text-primary",
   title,
 }: {
   children: React.ReactNode;
   lastUpdated: string;
   sections: PolicySection[];
+  triggerClassName?: string;
   title: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -35,7 +37,7 @@ function LegalDrawer({
   return (
     <>
       <button
-        className="text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left"
+        className={`${triggerClassName} text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
         onClick={() => setOpen(true)}
         type="button"
       >

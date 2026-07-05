@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -209,27 +209,56 @@ function AccessibilityPreferencesControl({
 
   if (mobile) {
     return (
-      <section className="mt-6 border-t border-black/12 pt-5" aria-labelledby={`${panelId}-mobile-title`}>
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-sm font-extrabold lowercase text-black" id={`${panelId}-mobile-title`}>
-              accessibility
-            </h2>
-            <p className="mt-1 text-xs font-medium lowercase leading-5 text-black/55">
-              adjust motion, text, contrast and focus.
-            </p>
-          </div>
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-black/15 text-black">
-            <A11yIcon className="size-5" />
+      <section className="mt-7 border-t border-black/12 pt-5" aria-labelledby={`${panelId}-mobile-title`}>
+        <button
+          aria-controls={panelId}
+          aria-expanded={open}
+          className="flex min-h-14 w-full items-center justify-between gap-4 text-left text-black transition hover:text-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          onClick={() => setOpen((current) => !current)}
+          type="button"
+        >
+          <span>
+            <span className="block text-sm font-extrabold lowercase" id={`${panelId}-mobile-title`}>
+              accessibility settings
+            </span>
+            <span className="mt-0.5 block text-xs font-medium lowercase leading-5 text-black/55">
+              motion, text, contrast and focus
+            </span>
           </span>
-        </div>
-        <PreferencesPanel
-          activeCount={activeCount}
-          compact
-          onReset={resetPreferences}
-          onUpdate={updatePreferences}
-          preferences={preferences}
-        />
+          <span className="flex shrink-0 items-center gap-2 text-black/60">
+            {activeCount > 0 && (
+              <span className="text-xs font-bold lowercase">
+                {activeCount} active
+              </span>
+            )}
+            <ChevronDown
+              aria-hidden="true"
+              className={cn("size-5 transition-transform duration-200", open && "rotate-180")}
+            />
+          </span>
+        </button>
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              animate={{ height: "auto", opacity: 1 }}
+              className="overflow-hidden"
+              exit={{ height: 0, opacity: 0 }}
+              id={panelId}
+              initial={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="pt-3">
+                <PreferencesPanel
+                  activeCount={activeCount}
+                  compact
+                  onReset={resetPreferences}
+                  onUpdate={updatePreferences}
+                  preferences={preferences}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     );
   }

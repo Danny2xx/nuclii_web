@@ -24,6 +24,7 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nuclii.co.uk"),
   title: "Nuclii - Every event starts here",
   description:
     "Nuclii is a platform for discovering, hosting, booking, and managing real-world experiences.",

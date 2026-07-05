@@ -4,6 +4,7 @@ export const EXPERIENCE_ROLES = {
     formLabel: "attendee",
     value: "attendee",
     signal: "#7A9E6E",
+    partnerAccent: "#8FC97E",
   },
   host: {
     label: "hosts & organisers",

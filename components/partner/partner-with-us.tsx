@@ -29,6 +29,7 @@ import {
   PageTitle,
   SectionTitle,
 } from "@/components/ui/marketing-typography";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 import { cn } from "@/lib/utils";
 
@@ -194,14 +195,13 @@ export function PartnerWithUs() {
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Button
-                className="lowercase"
+              <MagneticButton
                 onClick={() => goToApply()}
                 size="lg"
                 type="button"
               >
                 register your interest
-              </Button>
+              </MagneticButton>
               <Button
                 className="px-0 lowercase text-white/70 hover:bg-transparent hover:text-white"
                 onClick={() => scrollTo("hosts")}
@@ -240,10 +240,13 @@ export function PartnerWithUs() {
                 <div>
                   <div className="flex items-center gap-3">
                     <span
-                      className="grid size-10 shrink-0 place-items-center"
-                      style={{ color: section.accent }}
+                      className="grid size-11 shrink-0 place-items-center rounded-2xl border border-white/12 bg-white/[0.035]"
+                      style={{
+                        color: section.accent,
+                        boxShadow: `inset 0 0 0 1px ${section.accent}18`,
+                      }}
                     >
-                      <Glyph className="size-8" />
+                      <Glyph className="size-7" />
                     </span>
                     <h2
                       className="text-3xl font-extrabold lowercase leading-none tracking-[-0.02em] sm:text-4xl"
@@ -265,8 +268,11 @@ export function PartnerWithUs() {
                   <div className="mt-8 grid max-w-[38rem] grid-cols-1 gap-x-8 gap-y-4 border-t border-white/10 pt-6 sm:grid-cols-2">
                     {section.features.map((feature) => (
                       <div className="flex items-center gap-2.5" key={feature.label}>
-                        <span className="shrink-0" style={{ color: section.accent }}>
-                          <feature.icon className="size-6" />
+                        <span
+                          className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.03]"
+                          style={{ color: section.accent }}
+                        >
+                          <feature.icon className="size-5" />
                         </span>
                         <p className="text-sm font-semibold lowercase leading-snug text-white">
                           {feature.label}
@@ -276,10 +282,9 @@ export function PartnerWithUs() {
                   </div>
 
                   <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
-                    <Button
-                      className="lowercase !text-black hover:brightness-110"
+                    <MagneticButton
+                      accentColor={section.accent}
                       onClick={() => goToApply(section.role)}
-                      style={{ backgroundColor: section.accent }}
                       type="button"
                     >
                       {section.cta}
@@ -287,7 +292,7 @@ export function PartnerWithUs() {
                         aria-hidden="true"
                         className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none"
                       />
-                    </Button>
+                    </MagneticButton>
                     <p className="max-w-52 text-xs leading-5 text-white/55">
                       takes about 2 minutes. we&apos;ll confirm next steps by email.
                     </p>
@@ -303,39 +308,43 @@ export function PartnerWithUs() {
 
       {/* ── Apply form ─────────────────────────────────────── */}
       <section
-        className="nuclii-container mt-8 scroll-mt-24 border-t border-white/10 pt-16 sm:mt-12 sm:pt-20"
+        className="nuclii-container mt-8 scroll-mt-24 border-t border-white/10 py-16 sm:mt-12 sm:py-20 lg:py-24"
         id="apply"
         ref={formRef}
       >
-        <div className="mx-auto max-w-2xl text-center">
-          <SectionTitle size="compact">
-            let&apos;s build together
-          </SectionTitle>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/70 text-pretty">
-            choose how you want to join, leave your details and we&apos;ll reach out as nuclii
-            opens near you.
-          </p>
-          <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-white/55 text-pretty">
-            early partners get first access, direct onboarding and a voice in how nuclii develops.
-          </p>
-        </div>
-        <div className="mx-auto mt-10 flex max-w-2xl justify-center">
-          <WaitlistForm
-            onRoleChange={(nextRole) => {
-              if (
-                nextRole === "host" ||
-                nextRole === "venue-business" ||
-                nextRole === "talent-creative"
-              ) {
-                setRole(nextRole);
-              }
-            }}
-            roleChoices={PARTNER_ROLE_CHOICES}
-            selectedRole={role}
-            source="partner with us"
-            submitLabel="register your interest"
-            successMessage="you're in. we'll reach out as nuclii opens near you."
-          />
+        <div className="mx-auto flex w-full max-w-[48rem] flex-col items-center">
+          <div className="max-w-2xl text-center">
+            <SectionTitle size="compact">
+              let&apos;s build together
+            </SectionTitle>
+            <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/72 text-pretty">
+              choose how you want to join, leave your details and we&apos;ll reach out as nuclii
+              opens near you.
+            </p>
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-white/58 text-pretty">
+              early partners get first access, direct onboarding and a voice in how nuclii develops.
+            </p>
+          </div>
+          <div className="mt-9 flex w-full justify-center sm:mt-10">
+            <WaitlistForm
+              className="mx-auto max-w-[46rem]"
+              layout="hero"
+              onRoleChange={(nextRole) => {
+                if (
+                  nextRole === "host" ||
+                  nextRole === "venue-business" ||
+                  nextRole === "talent-creative"
+                ) {
+                  setRole(nextRole);
+                }
+              }}
+              roleChoices={PARTNER_ROLE_CHOICES}
+              selectedRole={role}
+              source="partner with us"
+              submitLabel="register your interest"
+              successMessage="you're in. we'll reach out as nuclii opens near you."
+            />
+          </div>
         </div>
       </section>
 
@@ -458,8 +467,8 @@ function PartnerEquation({ onPick }: { onPick: (id: string) => void }) {
               <span className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 p-3 sm:gap-2.5 sm:p-5">
                 <span
                   className={cn(
-                    "grid shrink-0 place-items-center",
-                    featured ? "size-7 sm:size-8" : "size-6 sm:size-7",
+                    "grid shrink-0 place-items-center rounded-lg border border-white/15 bg-black/35",
+                    featured ? "size-8 sm:size-9" : "size-7 sm:size-8",
                   )}
                   style={{ color: section.accent }}
                 >

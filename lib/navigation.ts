@@ -9,7 +9,7 @@ export const sideNavItems: readonly {
   children?: readonly { label: string; href: string }[];
 }[] = [
   { label: "home", href: routes.home },
-  { label: "join early access", href: routes.waitlist },
+  { label: "events soon", href: routes.events },
   { label: "partner with us", href: routes.partner },
   { label: "build with us", href: BUILD_WITH_US_FORM, external: true },
 ] as const;

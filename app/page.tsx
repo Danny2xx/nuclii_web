@@ -69,9 +69,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.78)_0%,rgba(0,0,0,0.42)_48%,rgba(0,0,0,0.72)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
-        <div className="nuclii-container relative z-10 flex min-h-[100svh] items-start pb-12 pt-[36svh] md:pb-[clamp(2rem,4vh,3.25rem)] md:pt-[clamp(7rem,14vh,9rem)]">
+        <div className="nuclii-container relative z-10 flex min-h-[100svh] items-start pb-12 pt-[max(8.5rem,28svh)] sm:pt-[32svh] md:pb-[clamp(2rem,4vh,3.25rem)] md:pt-[clamp(7rem,14vh,9rem)]">
           <FadeIn className="w-full">
-            <h1 className="max-w-[22rem] text-[clamp(2.5rem,10.4vw,3rem)] font-extrabold lowercase leading-[0.98] tracking-[-0.02em] text-white text-balance sm:max-w-[58rem] sm:text-[clamp(2.85rem,8vw,4.65rem)] md:text-[clamp(4rem,5.3vw,5.8rem)]">
+            <h1 className="max-w-[22rem] text-[clamp(2.35rem,9.6vw,2.85rem)] font-extrabold lowercase leading-[0.98] tracking-[-0.02em] text-white text-balance sm:max-w-[58rem] sm:text-[clamp(2.85rem,8vw,4.65rem)] md:text-[clamp(4rem,5.3vw,5.8rem)]">
               make the moment happen.
               <br />
               <RotatingWord />
@@ -90,9 +90,13 @@ export default function Home() {
                     after. nuclii is here at every step.
                   </p>
                 </div>
-                <p className="mt-7 text-base font-bold lowercase tracking-[0.04em] text-white/90 [word-spacing:0.35em] sm:mt-8 sm:text-lg">
-                  discover. host. collaborate.
-                </p>
+                <div className="mt-8 border-t border-white/15 pt-4 sm:mt-9">
+                  <p className="flex flex-wrap gap-x-3 gap-y-1 text-base font-extrabold lowercase tracking-[0.05em] text-white/95 sm:text-lg">
+                    <span>discover.</span>
+                    <span>host.</span>
+                    <span>collaborate.</span>
+                  </p>
+                </div>
               </div>
               <WaitlistForm layout="hero" source="home hero" />
             </div>

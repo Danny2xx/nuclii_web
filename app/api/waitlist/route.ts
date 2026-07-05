@@ -20,6 +20,7 @@ const ROLE_LABELS: Record<string, string> = {
   partner: "partner",
   investor: "investor",
   "team-contributor": "team / contributor",
+  other: "something else",
 };
 
 let resendClient: Resend | null = null;
@@ -102,15 +103,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "please confirm you're 18 or older." }, { status: 400 });
     }
 
-    if (!consent) {
-      await captureServerAnalyticsEvent(
-        ANALYTICS_EVENTS.waitlistSignupRejected,
-        analyticsDistinctId,
-        { ...analyticsBase, reason: "missing_marketing_consent" },
-      );
-      return NextResponse.json({ error: "please confirm you'd like to receive updates." }, { status: 400 });
-    }
-
     const resend = getResendClient();
 
     if (!resend) {
@@ -146,7 +138,7 @@ export async function POST(request: NextRequest) {
         email,
         firstName: firstName || undefined,
         lastName: lastName || undefined,
-        unsubscribed: false,
+        unsubscribed: !consent,
       });
     }
 
@@ -179,7 +171,9 @@ export async function POST(request: NextRequest) {
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Joining as</p>
               <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeRole}</p>
               <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Source</p>
-              <p style="margin:0;font-size:16px;font-weight:600">${safeSource}</p>
+              <p style="margin:0 0 14px;font-size:16px;font-weight:600">${safeSource}</p>
+              <p style="margin:0 0 4px;font-size:13px;color:#a1a1aa">Launch updates</p>
+              <p style="margin:0;font-size:16px;font-weight:600">${consent ? "consented" : "not opted in"}</p>
             </div>
             <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">Submitted via nuclii.com, added to your Resend audience.</p>
           </div>
@@ -190,7 +184,7 @@ export async function POST(request: NextRequest) {
         from: `Nuclii <${FROM_EMAIL}>`,
         to: [email],
         replyTo: TO_EMAIL,
-        subject: "you're on the nuclii waitlist",
+        subject: "you're on the nuclii early-access list",
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:28px 24px;background:#0a0a0b;color:#f7f7fa;border-radius:16px">
             <div style="margin-bottom:20px">
@@ -205,7 +199,7 @@ export async function POST(request: NextRequest) {
                 nuclii helps you discover and host real-world experiences near you, without followers, group chats, or social pressure.
               </p>
             </div>
-            <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">you're receiving this because you joined the waitlist at nuclii.com.</p>
+            <p style="margin:24px 0 0;font-size:12px;color:#a1a1aa">you're receiving this because you requested early access at nuclii.com.</p>
           </div>
         `,
       }),

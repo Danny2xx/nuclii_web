@@ -1,79 +1,95 @@
 import type { Metadata } from "next";
 
 import { JoinForm } from "@/components/join/join-form";
-import { Spotlight } from "@/components/join/spotlight";
+import { WaitlistTicker } from "@/components/join/waitlist-ticker";
+import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { FadeIn } from "@/components/motion";
 import { PageTitle } from "@/components/ui/marketing-typography";
 import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
+const ACCENT = EXPERIENCE_ROLES.explorer.partnerAccent;
+
+const title = "Join Early Access | Nuclii";
+const description =
+  "Join the first wave of Nuclii — UK early access for discovering, hosting and accessing real-world experiences without followers, group chats or social pressure.";
+
 export const metadata: Metadata = {
-  title: "Join Early Access | Nuclii",
-  description:
-    "Nuclii is the home for real-world experiences. Join the waitlist and get in before we open.",
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    type: "website",
+    url: "/join",
+    images: [
+      {
+        url: "/homepage/venue.jpg",
+        width: 1200,
+        height: 800,
+        alt: "A venue prepared for a real-world Nuclii experience",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/homepage/venue.jpg"],
+  },
 };
 
-const ROLES = [
-  { name: EXPERIENCE_ROLES.explorer.label, color: EXPERIENCE_ROLES.explorer.signal },
-  { name: EXPERIENCE_ROLES.host.label, color: EXPERIENCE_ROLES.host.signal },
-  { name: EXPERIENCE_ROLES.venue.label, color: EXPERIENCE_ROLES.venue.signal },
-  { name: EXPERIENCE_ROLES.talent.label, color: EXPERIENCE_ROLES.talent.signal },
+const BACKGROUND_VIDEOS = [
+  "/joinwaitlist_videos/art.mp4",
+  "/joinwaitlist_videos/football.mp4",
+  "/joinwaitlist_videos/friends%20chilling.mp4",
+  "/joinwaitlist_videos/games%20night.mp4",
+  "/joinwaitlist_videos/house%20party.mp4",
+  "/joinwaitlist_videos/pop%20up.mp4",
+  "/joinwaitlist_videos/snaptik_7559390501611244822_v3.mp4",
+  "/joinwaitlist_videos/13734741_3840_2160_30fps.mp4",
+  "/joinwaitlist_videos/6145424-uhd_2160_3840_24fps.mp4",
 ] as const;
 
 export default function JoinPage() {
   return (
     <main className="nuclii-page">
       <section
-        className="relative flex min-h-[100svh] items-center overflow-hidden px-[var(--container-x)] py-24"
+        className="relative min-h-[100svh] overflow-hidden px-[var(--container-x)] pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(5.5rem,calc(env(safe-area-inset-top)+4.75rem))] sm:pt-28 lg:pb-20"
         data-analytics-section="join_entry"
       >
-        {/* soft signal wash + spotlight for depth */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            backgroundImage:
-              "radial-gradient(38% 36% at 16% 14%, rgba(111,137,168,0.07), transparent 72%), radial-gradient(42% 42% at 84% 88%, rgba(142,124,168,0.07), transparent 72%)",
-          }}
+        <VideoBackgroundCarousel
+          className="absolute inset-0"
+          cycleMs={6000}
+          playbackRate={1.25}
+          randomize
+          sources={BACKGROUND_VIDEOS}
         />
-        <Spotlight />
+        <div className="absolute inset-0 bg-black/50" />
+        {/* Centered spotlight: darkens behind the hero + form, lets the video breathe at the edges. */}
+        <div className="absolute inset-0 bg-[radial-gradient(78%_62%_at_50%_42%,rgba(10,10,11,0.82)_0%,rgba(10,10,11,0.34)_62%,transparent_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/66 to-transparent" />
 
-        <div className="relative mx-auto w-full max-w-[42rem]">
-          <FadeIn className="flex flex-col items-center text-center">
-            <PageTitle className="text-white">
-              you&apos;re{" "}
-              <span style={{ color: EXPERIENCE_ROLES.venue.signal }}>early!</span>
+        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-8rem)] w-full max-w-2xl flex-col items-center justify-start sm:min-h-[calc(100svh-10rem)] sm:justify-center">
+          <FadeIn className="flex w-full flex-col items-center text-center">
+            <WaitlistTicker />
+
+            <PageTitle className="mt-5 text-[clamp(2.45rem,14vw,3.7rem)] text-white sm:mt-6 sm:text-[clamp(2.5rem,6vw,4.5rem)]">
+              <span className="block">you&apos;re still</span>
+              <span className="block" style={{ color: ACCENT }}>
+                early!
+              </span>
             </PageTitle>
-            <p className="mt-7 max-w-[26rem] text-balance text-[15px] leading-[1.5] tracking-[-0.01em] text-white/65 sm:text-base">
-              the home for real-world experiences. get in before we open.
+
+            <p className="mt-4 max-w-[32rem] text-balance text-[0.95rem] leading-[1.55] text-white/72 sm:mt-5 sm:text-lg">
+              nuclii is the home for real experiences, hidden spaces,
+              pop-ups and the people making your city feel alive. get in
+              before we open.
             </p>
           </FadeIn>
 
-          <JoinForm />
-
-          {/* who's in the first wave — a quiet footer, not a card */}
-          <div className="mx-auto mt-16 max-w-lg">
-            <p className="text-center text-[12px] lowercase tracking-[0.04em] text-white/45">
-              first in line
-            </p>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 text-[13.5px] lowercase">
-              {ROLES.map((role) => (
-                <span className="inline-flex items-center gap-1.5 text-white/55" key={role.name}>
-                  <span
-                    className="size-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: role.color }}
-                  />
-                  {role.name}
-                </span>
-              ))}
-              <span className="inline-flex items-center gap-1.5 font-bold text-white">
-                <span className="relative flex size-2 shrink-0 items-center justify-center">
-                  <span className="absolute inline-flex size-full rounded-full bg-white/50 motion-safe:animate-ping" />
-                  <span className="relative size-2 rounded-full bg-white" />
-                </span>
-                you
-              </span>
-            </div>
-          </div>
+          <FadeIn className="mt-5 w-full sm:mt-7" delay={0.08}>
+            <JoinForm />
+          </FadeIn>
         </div>
       </section>
     </main>

@@ -7,6 +7,7 @@ import { AccessibilityPreferencesControl } from "@/components/accessibility/acce
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { sideNavItems } from "@/lib/navigation";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 function SideNav() {
@@ -15,51 +16,74 @@ function SideNav() {
   // The /join gate is intentionally distraction-free — logo only.
   if (pathname === "/join") return null;
 
-  return (
-    <nav
-      aria-label="Main navigation"
-      className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white lg:right-10 lg:top-9 lg:flex"
-    >
-      {sideNavItems.map((item) => {
-        const active =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+  const eventsItem = sideNavItems.find((item) => item.href === routes.events);
+  const rightItems = sideNavItems.filter((item) => item.href !== routes.events);
+  const eventsActive = Boolean(eventsItem && pathname.startsWith(eventsItem.href));
 
-        return (
-          <TrackedLink
-            analyticsEvent={
-              item.external
-                ? ANALYTICS_EVENTS.outboundLinkClicked
-                : ANALYTICS_EVENTS.navigationClicked
-            }
-            analyticsProperties={{
-              label: item.label,
-              location: "desktop_nav",
-              external: Boolean(item.external),
-            }}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "relative inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              active
-                ? "text-white after:scale-x-100"
-                : "text-white/55 after:scale-x-0 hover:after:scale-x-100",
-            )}
-            href={item.href}
-            key={item.href}
-            rel={item.external ? "noopener noreferrer" : undefined}
-            target={item.external ? "_blank" : undefined}
-          >
-            {item.label}
-            {item.external && (
-              <>
-                <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                <span className="sr-only">(opens in new tab)</span>
-              </>
-            )}
-          </TrackedLink>
-        );
-      })}
-      <AccessibilityPreferencesControl />
-    </nav>
+  return (
+    <>
+      {/* The events page is gated for now, so this reads as a quiet launch signal. */}
+      {eventsItem && (
+        <TrackedLink
+          analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
+          analyticsProperties={{ label: eventsItem.label, location: "desktop_nav_left" }}
+          aria-current={eventsActive ? "page" : undefined}
+          className={cn(
+            "fixed left-[8.6rem] top-9 z-[60] hidden min-h-11 items-center gap-3 py-2 text-xs font-semibold lowercase leading-none text-white/55 mix-blend-difference transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex",
+            eventsActive && "text-white",
+          )}
+          href={eventsItem.href}
+        >
+          <span aria-hidden="true" className="h-3 w-px bg-current opacity-45" />
+          <span>{eventsItem.label}</span>
+        </TrackedLink>
+      )}
+
+      <nav
+        aria-label="Main navigation"
+        className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white lg:right-10 lg:top-9 lg:flex"
+      >
+        {rightItems.map((item) => {
+          const active =
+            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+
+          return (
+            <TrackedLink
+              analyticsEvent={
+                item.external
+                  ? ANALYTICS_EVENTS.outboundLinkClicked
+                  : ANALYTICS_EVENTS.navigationClicked
+              }
+              analyticsProperties={{
+                label: item.label,
+                location: "desktop_nav",
+                external: Boolean(item.external),
+              }}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "relative inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                active
+                  ? "text-white after:scale-x-100"
+                  : "text-white/55 after:scale-x-0 hover:after:scale-x-100",
+              )}
+              href={item.href}
+              key={item.href}
+              rel={item.external ? "noopener noreferrer" : undefined}
+              target={item.external ? "_blank" : undefined}
+            >
+              {item.label}
+              {item.external && (
+                <>
+                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                  <span className="sr-only">(opens in new tab)</span>
+                </>
+              )}
+            </TrackedLink>
+          );
+        })}
+        <AccessibilityPreferencesControl />
+      </nav>
+    </>
   );
 }
 

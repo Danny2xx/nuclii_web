@@ -6,7 +6,6 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { AccessibilityPreferencesControl } from "@/components/accessibility/accessibility-preferences";
 import { TrackedLink } from "@/components/analytics/tracked-link";
-import { Button } from "@/components/ui/button";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { footerNavGroups, sideNavItems } from "@/lib/navigation";
 import { routes } from "@/lib/routes";
@@ -18,7 +17,12 @@ function MobileNav() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    document.documentElement.dataset.mobileNav = open ? "open" : "closed";
+
+    return () => {
+      document.body.style.overflow = "";
+      delete document.documentElement.dataset.mobileNav;
+    };
   }, [open]);
 
   const legalLinks = footerNavGroups.find((g) => g.title === "Legal")?.links ?? [];
@@ -57,25 +61,8 @@ function MobileNav() {
         <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-white text-black">
           <nav aria-label="Mobile navigation" className="nuclii-mobile-drawer flex min-h-full flex-col px-6">
 
-            {/* Primary CTA */}
-            <Button asChild className="w-full bg-black text-white hover:bg-black/85" size="lg">
-              <TrackedLink
-                analyticsProperties={{
-                  cta: "join_waitlist",
-                  location: "mobile_drawer_primary",
-                }}
-                href={routes.waitlist}
-                onClick={() => setOpen(false)}
-              >
-                join early access
-                <ArrowRight aria-hidden="true" />
-              </TrackedLink>
-            </Button>
-
-            <AccessibilityPreferencesControl placement="mobile" />
-
             {/* Main pages */}
-            <div className="mt-8 flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               {sideNavItems.filter((item) => item.href !== routes.waitlist).map((item) => {
                 const active =
                   item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -136,8 +123,24 @@ function MobileNav() {
               })}
             </div>
 
+            <TrackedLink
+              analyticsEvent={ANALYTICS_EVENTS.ctaClicked}
+              analyticsProperties={{
+                cta: "join_waitlist",
+                location: "mobile_drawer_primary",
+              }}
+              className="mt-8 inline-flex min-h-14 w-full items-center justify-between border-y border-black/14 py-4 text-xl font-extrabold lowercase tracking-[-0.03em] text-black transition hover:text-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+              href={routes.waitlist}
+              onClick={() => setOpen(false)}
+            >
+              join early access
+              <ArrowRight aria-hidden="true" className="size-5" />
+            </TrackedLink>
+
+            <AccessibilityPreferencesControl placement="mobile" />
+
             {/* Legal links */}
-            <div className="mt-8 border-t border-black/12 pt-5">
+            <div className="mt-7 border-t border-black/12 pt-5">
               <p className="mb-3 text-xs font-semibold lowercase text-black/35">
                 legal
               </p>

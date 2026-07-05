@@ -19,7 +19,10 @@ export function WaitlistCount({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion();
-  const [target, setTarget] = useState(Math.floor(fallback / step) * step);
+  // The fallback doubles as a floor: the "+" suffix means "at least this many",
+  // so we never show fewer even before / without a live count.
+  const floor = Math.floor(fallback / step) * step;
+  const [target, setTarget] = useState(floor);
 
   const source = useMotionValue(startValue);
   const spring = useSpring(source, { damping: 40, stiffness: 90, mass: 1 });
@@ -39,14 +42,14 @@ export function WaitlistCount({
       .then((r) => r.json())
       .then((data: { count?: number }) => {
         if (active && typeof data.count === "number") {
-          setTarget(Math.floor(data.count / step) * step);
+          setTarget(Math.max(floor, Math.floor(data.count / step) * step));
         }
       })
       .catch(() => {});
     return () => {
       active = false;
     };
-  }, [step]);
+  }, [step, floor]);
 
   // Roll from the start value up to the target (instant when reduced-motion).
   useEffect(() => {

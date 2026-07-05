@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -32,25 +31,36 @@ function Footer() {
   if (pathname === "/join") return null;
 
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="nuclii-container flex flex-col items-center gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-10">
+    <footer className="border-t border-white/12 bg-background">
+      <div className="nuclii-container flex min-h-[28rem] flex-col items-center justify-center gap-9 py-20 text-center sm:min-h-[30rem] sm:py-24">
         <TrackedLink
           aria-label="Nuclii home"
           analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
           analyticsProperties={{ label: "nuclii_home", location: "footer_logo" }}
-          className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex items-center transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           href="/"
         >
-          <Image
-            alt="Nuclii"
-            height={28}
-            src="/nuclii-logo.png"
-            style={{ height: "1.75rem", width: "auto" }}
-            width={75}
+          <span
+            aria-hidden="true"
+            className="block h-[1.65rem] w-[5rem] bg-[#6A6AF2]"
+            style={{
+              WebkitMaskImage: "url(/logo/nuclii-white.png)",
+              maskImage: "url(/logo/nuclii-white.png)",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
           />
+          <span className="sr-only">nuclii</span>
         </TrackedLink>
 
-        <nav aria-label="Footer navigation" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <nav
+          aria-label="Footer navigation"
+          className="mx-auto flex max-w-[44rem] flex-wrap items-center justify-center gap-x-8 gap-y-4"
+        >
           {footerLinks.map((link) => {
             const external = link.external || link.href.startsWith("mailto:");
             const event = external
@@ -62,7 +72,7 @@ function Footer() {
               external,
             };
             const className =
-              "inline-flex items-center gap-1 text-sm text-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+              "inline-flex items-center gap-1 text-[clamp(1.3rem,3.7vw,1.85rem)] font-medium lowercase leading-none tracking-[-0.03em] text-white transition-colors hover:text-white/68 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
             return external ? (
               <TrackedAnchor
@@ -96,13 +106,17 @@ function Footer() {
           })}
         </nav>
 
-        <SocialLinks />
+        <SocialLinks
+          buttonSize="size-12"
+          className="justify-center gap-3"
+          iconSize="size-5"
+        />
       </div>
 
-      <div className="border-t border-border">
-        <div className="nuclii-container flex flex-col gap-4 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-white/12">
+        <div className="nuclii-container flex flex-col gap-6 py-9 text-[clamp(1rem,2.4vw,1.22rem)] font-medium leading-[1.35] tracking-[-0.03em] text-white/52 sm:flex-row sm:items-start sm:justify-between sm:py-10">
           <p>© {new Date().getFullYear()} Nuclii. All rights reserved.</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex max-w-[32rem] flex-wrap gap-x-8 gap-y-3 sm:justify-end">
             {legalLinks.map((link) => {
               const drawer = legalDrawers[link.href];
 
@@ -112,6 +126,7 @@ function Footer() {
                   lastUpdated={LAST_UPDATED}
                   sections={drawer.sections}
                   title={drawer.title}
+                  triggerClassName="text-white/52 transition hover:text-white"
                 >
                   {link.label}
                 </LegalDrawer>
@@ -122,7 +137,7 @@ function Footer() {
                     label: link.label,
                     location: "footer_legal",
                   }}
-                  className="text-xs text-muted-foreground transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="text-white/52 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   href={link.href}
                   key={link.href}
                 >
