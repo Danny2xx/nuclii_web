@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 
 import { useIsClient } from "@/components/motion";
@@ -12,8 +13,11 @@ type TemplateProps = {
 export default function Template({ children }: TemplateProps) {
   const isClient = useIsClient();
   const reduceMotion = useReducedMotion();
+  const pathname = usePathname();
 
-  if (!isClient || reduceMotion) {
+  // the /demo sandbox uses position: fixed chrome; the motion wrapper's
+  // residual filter/transform would turn it into the containing block
+  if (!isClient || reduceMotion || pathname?.startsWith("/demo")) {
     return <>{children}</>;
   }
 

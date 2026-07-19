@@ -1,10 +1,9 @@
-import Image from "next/image";
-
+import { DemoDoorway } from "@/components/home/demo-doorway";
 import { ExperienceLayersScroll } from "@/components/home/experience-layers-scroll";
-import { ExperienceMap } from "@/components/home/experience-map";
+import { FeaturePillars } from "@/components/home/feature-pillars";
 import { Testimonials } from "@/components/home/testimonials";
-import { FadeIn, Reveal, RotatingWord } from "@/components/motion";
 import { WaitlistForm } from "@/components/home/waitlist-form";
+import { FadeIn, Reveal } from "@/components/motion";
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
 import { SectionTitle } from "@/components/ui/marketing-typography";
 import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
@@ -22,7 +21,7 @@ const experienceLayers = [
     number: "01",
     title: EXPERIENCE_ROLES.explorer.label,
     description:
-      "find what fits your taste, timing and location — from quiet workshops to packed rooms, new scenes and one-off nights.",
+      "find events, workshops, services, pickups and private moments around you without needing the right group chat.",
     image: "/homepage/explore.jpg",
     imagePosition: "50% 72%",
     alt: "Friends sitting together beside the sea",
@@ -31,7 +30,7 @@ const experienceLayers = [
     number: "02",
     title: EXPERIENCE_ROLES.host.label,
     description:
-      "shape the idea, build demand, sell access and pull the right venue, talent and support around the moment.",
+      "turn an idea into a listing, manage demand, coordinate access and bring the right people around the moment.",
     image: "/homepage/hosts.jpg",
     imagePosition: "50% 48%",
     alt: "An organiser planning an experience with their team",
@@ -40,7 +39,7 @@ const experienceLayers = [
     number: "03",
     title: EXPERIENCE_ROLES.venue.label,
     description:
-      "show what your space can hold — capacity, amenities, atmosphere, availability and the kind of gatherings it was built for.",
+      "show what your space can hold — capacity, atmosphere, availability and the kind of gatherings it was built for.",
     image: "/homepage/venue.jpg",
     imagePosition: "48% 50%",
     alt: "A venue prepared for a gathering",
@@ -64,51 +63,94 @@ export default function Home() {
         data-analytics-section="home_hero_waitlist"
         id="waitlist"
       >
-        <VideoBackgroundCarousel className="absolute inset-0" sources={heroVideos} />
-        <div className="absolute inset-0 bg-black/36" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.78)_0%,rgba(0,0,0,0.42)_48%,rgba(0,0,0,0.72)_100%)]" />
+        <VideoBackgroundCarousel
+          className="absolute inset-0 [filter:saturate(0.62)_contrast(1.06)_brightness(0.76)]"
+          sources={heroVideos}
+        />
+        <div className="absolute inset-0 bg-black/42" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_48%,rgba(91,140,255,0.11),transparent_32%),linear-gradient(90deg,rgba(0,0,0,0.84)_0%,rgba(0,0,0,0.56)_46%,rgba(0,0,0,0.78)_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-background/86 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
-        <div className="nuclii-container relative z-10 flex min-h-[100svh] items-start pb-12 pt-[max(8.5rem,28svh)] sm:pt-[32svh] md:pb-[clamp(2rem,4vh,3.25rem)] md:pt-[clamp(7rem,14vh,9rem)]">
-          <FadeIn className="w-full">
-            <h1 className="max-w-[22rem] text-[clamp(2.35rem,9.6vw,2.85rem)] font-extrabold lowercase leading-[0.98] tracking-[-0.02em] text-white text-balance sm:max-w-[58rem] sm:text-[clamp(2.85rem,8vw,4.65rem)] md:text-[clamp(4rem,5.3vw,5.8rem)]">
-              make the moment happen.
-              <br />
-              <RotatingWord />
-              <br />
-              make the memories last.
-            </h1>
-            <div className="mt-9 grid w-full min-w-0 max-w-[70rem] gap-6 border-t border-white/15 pt-5 sm:mt-10 md:grid-cols-[minmax(16rem,23rem)_minmax(28rem,38rem)] md:items-start md:gap-8">
-              <div className="min-w-0 max-w-full sm:max-w-[28rem]">
-                <div className="space-y-3">
-                  <p className="text-lg font-bold lowercase tracking-[-0.01em] text-white sm:text-xl">
-                    never miss what matters.
-                  </p>
-                  <p className="max-w-[20rem] text-base font-normal lowercase leading-[1.58] tracking-[-0.01em] text-white/70 break-words sm:max-w-none">
-                    make new memories, create the rooms you crave, share the
-                    spaces you&apos;ve curated, and nurture every connection
-                    after. nuclii is here at every step.
-                  </p>
-                </div>
-                <div className="mt-8 border-t border-white/15 pt-4 sm:mt-9">
-                  <p className="flex flex-wrap gap-x-3 gap-y-1 text-base font-extrabold lowercase tracking-[0.05em] text-white/95 sm:text-lg">
-                    <span>discover.</span>
-                    <span>host.</span>
-                    <span>collaborate.</span>
-                  </p>
-                </div>
+        <div className="nuclii-container relative z-10 flex min-h-[100svh] items-end pb-[clamp(3.25rem,9vh,6rem)] pt-[max(7rem,16svh)] md:pt-[clamp(7rem,14vh,9rem)] lg:items-center">
+          <FadeIn className="grid w-full items-end gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,31rem)] lg:gap-20 xl:gap-24">
+            <div className="max-w-[45rem]">
+              <p className="mb-5 text-sm font-bold lowercase tracking-normal text-white/70 sm:text-base">
+                every event starts here
+              </p>
+              <h1 className="max-w-[17ch] text-[2.5rem] font-extrabold lowercase leading-[0.98] tracking-normal text-white text-balance sm:text-[3.3rem] lg:text-[3.85rem] xl:text-[4.25rem]">
+                nuclii is a new way to discover events, pop-ups and
+                experiences near you.
+              </h1>
+
+              <div className="mt-7 max-w-[38rem] border-t border-white/18 pt-5 sm:mt-8">
+                <p className="text-base font-normal lowercase leading-[1.58] tracking-normal text-white/84 sm:text-lg">
+                  find local events, pop-ups, venues and communities near you
+                  — and, if you host, reach the right people. everything worth
+                  going to, in one place.
+                </p>
               </div>
-              <WaitlistForm layout="hero" source="home hero" />
+            </div>
+
+            <div className="w-full border-t border-white/18 pt-5 lg:ml-auto lg:max-w-[31rem] lg:border-l lg:border-t-0 lg:pl-10">
+              <div className="mb-5">
+                <p className="flex flex-wrap gap-x-3 gap-y-1 text-lg font-extrabold lowercase leading-none tracking-normal text-white sm:text-xl">
+                  <span>discover.</span>
+                  <span>host.</span>
+                  <span>collaborate.</span>
+                </p>
+                <p className="mt-3 max-w-[27rem] text-sm lowercase leading-6 text-white/64 text-pretty">
+                  join the first wave and be first through the door when we
+                  open.
+                </p>
+              </div>
+              <WaitlistForm
+                className="max-w-[31rem]"
+                layout="hero"
+                source="home hero"
+                submitLabel="join waitlist"
+              />
             </div>
           </FadeIn>
         </div>
       </section>
 
       <section
-        className="border-t border-border px-[var(--container-x)] pb-16 pt-28 md:pb-28 md:pt-56"
+        className="border-t border-border px-[var(--container-x)] pb-16 pt-16 md:pb-24 md:pt-24"
+        data-analytics-section="home_experience_layers"
+      >
+        <div className="mx-auto w-full max-w-[92rem]">
+          <div className="mb-10 grid gap-6 md:mb-14 md:grid-cols-[0.85fr_1fr] md:items-end md:gap-16">
+            <Reveal>
+              <SectionTitle className="text-[clamp(2.35rem,5vw,4.4rem)] leading-[1.03]">
+                one platform for every side of the experience.
+              </SectionTitle>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="space-y-4 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
+                <p>
+                  explorers find what is happening. hosts and organisers shape
+                  demand. spaces, venues, talent and service providers become
+                  easier to discover when the moment needs them.
+                </p>
+                <p className="text-base font-bold text-white/88 sm:text-lg">
+                  that ecosystem is the product — not another social feed.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+
+          <ExperienceLayersScroll layers={experienceLayers} />
+        </div>
+      </section>
+
+      <DemoDoorway />
+
+      <section
+        className="border-t border-border px-[var(--container-x)] pb-16 pt-20 md:pb-28 md:pt-28"
         data-analytics-section="home_why_we_exist"
       >
-        <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-20 md:gap-36">
+        <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-16 md:gap-24">
           <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-start md:gap-16">
             <Reveal>
               <SectionTitle className="text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.03]">
@@ -135,80 +177,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section
-        className="px-[var(--container-x)] pb-20 pt-8 md:pb-48 md:pt-12"
-        data-analytics-section="home_experience_layers"
-      >
-        <div className="mx-auto w-full max-w-[92rem]">
-          <ExperienceLayersScroll layers={experienceLayers} />
-        </div>
-      </section>
-
-      <section
-        className="nuclii-section border-t border-border"
-        data-analytics-section="home_map_preview"
-      >
-        <div className="nuclii-container grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
-          <Reveal>
-            <div>
-              <SectionTitle>
-                a map for more than directions.
-              </SectionTitle>
-              <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
-                <p>
-                  search by interest, date, area and vibe. nuclii turns events,
-                  spaces and talent into map cards you can scan, compare and
-                  save.
-                </p>
-                <p className="text-base text-white/55 sm:text-lg">
-                  so you always know what&apos;s on, what fits, and what&apos;s
-                  worth showing up for.
-                </p>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <ExperienceMap />
-          </Reveal>
-        </div>
-      </section>
-
-      <section
-        className="nuclii-section border-t border-border"
-        data-analytics-section="home_privacy_by_default"
-      >
-        <div className="nuclii-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <Reveal>
-            <div>
-              <SectionTitle>
-                privacy by default
-              </SectionTitle>
-              <div className="mt-7 space-y-5 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
-                <p>
-                  discovery should not require unnecessary public exposure.
-                  hosting should not require public attendee lists.
-                </p>
-                <p>
-                  exact locations, eligibility, and access can be handled with
-                  more care, so people can show up in real life without turning
-                  every moment into a social performance.
-                </p>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[10px] bg-white/10 sm:aspect-video lg:aspect-[5/4]">
-              <Image
-                alt="People meeting at a real-world community experience"
-                className="object-cover"
-                fill
-                sizes="(min-width: 1024px) 50vw, calc(100vw - 2rem)"
-                src="/images/about-gathering.jpg"
-              />
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <FeaturePillars />
     </main>
   );
 }

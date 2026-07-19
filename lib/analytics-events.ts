@@ -19,6 +19,13 @@ export const ANALYTICS_EVENTS = {
   waitlistSignupFailed: "waitlist_signup_failed",
   waitlistShareClicked: "waitlist_share_clicked",
   waitlistReferralCopied: "waitlist_referral_link_copied",
+  demoEntered: "demo_entered",
+  demoPersonaSelected: "demo_persona_selected",
+  demoSignupCompleted: "demo_signup_completed",
+  demoEventCreated: "demo_event_created",
+  demoRsvped: "demo_rsvped",
+  demoRequestAnswered: "demo_request_answered",
+  demoPlanUpgraded: "demo_plan_upgraded",
 } as const;
 
 export type AnalyticsEventName =

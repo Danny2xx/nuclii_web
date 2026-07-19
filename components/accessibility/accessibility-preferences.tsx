@@ -27,10 +27,12 @@ function A11yIcon({ className }: { className?: string }) {
 
 type MotionPreference = "full" | "reduced" | "off";
 type TextPreference = "default" | "large" | "xl";
+type FontPreference = "default" | "dyslexic";
 
 type AccessibilityPreferences = {
   motion: MotionPreference;
   text: TextPreference;
+  font: FontPreference;
   contrast: boolean;
   mediaPaused: boolean;
   underlineLinks: boolean;
@@ -47,6 +49,7 @@ const CHANGE_EVENT = "nuclii-accessibility-preferences-change";
 const DEFAULT_PREFERENCES: AccessibilityPreferences = {
   motion: "full",
   text: "default",
+  font: "default",
   contrast: false,
   mediaPaused: false,
   underlineLinks: false,
@@ -78,6 +81,7 @@ function readPreferences() {
       ...parsed,
       motion: isMotionPreference(parsed.motion) ? parsed.motion : DEFAULT_PREFERENCES.motion,
       text: isTextPreference(parsed.text) ? parsed.text : DEFAULT_PREFERENCES.text,
+      font: isFontPreference(parsed.font) ? parsed.font : DEFAULT_PREFERENCES.font,
     };
   } catch {
     return DEFAULT_PREFERENCES;
@@ -92,12 +96,17 @@ function isTextPreference(value: unknown): value is TextPreference {
   return value === "default" || value === "large" || value === "xl";
 }
 
+function isFontPreference(value: unknown): value is FontPreference {
+  return value === "default" || value === "dyslexic";
+}
+
 function applyPreferences(preferences: AccessibilityPreferences) {
   if (typeof document === "undefined") return;
 
   const root = document.documentElement;
   root.dataset.a11yMotion = preferences.motion;
   root.dataset.a11yText = preferences.text;
+  root.dataset.a11yFont = preferences.font;
   root.dataset.a11yContrast = preferences.contrast ? "high" : "default";
   root.dataset.a11yMedia = preferences.mediaPaused ? "paused" : "active";
   root.dataset.a11yLinks = preferences.underlineLinks ? "underlined" : "default";
@@ -186,6 +195,7 @@ function AccessibilityPreferencesControl({
       [
         preferences.motion !== "full",
         preferences.text !== "default",
+        preferences.font !== "default",
         preferences.contrast,
         preferences.mediaPaused,
         preferences.underlineLinks,
@@ -222,7 +232,7 @@ function AccessibilityPreferencesControl({
               accessibility settings
             </span>
             <span className="mt-0.5 block text-xs font-medium lowercase leading-5 text-black/55">
-              motion, text, contrast and focus
+              motion, text, fonts, contrast and focus
             </span>
           </span>
           <span className="flex shrink-0 items-center gap-2 text-black/60">
@@ -363,6 +373,12 @@ function PreferencesPanel({
       </PreferenceGroup>
 
       <div className="grid">
+        <ToggleRow
+          checked={preferences.font === "dyslexic"}
+          contrast={compact ? "light" : "dark"}
+          label="dyslexic fonts"
+          onChange={(checked) => onUpdate({ font: checked ? "dyslexic" : "default" })}
+        />
         <ToggleRow
           checked={preferences.contrast}
           contrast={compact ? "light" : "dark"}

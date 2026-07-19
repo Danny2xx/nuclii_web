@@ -11,19 +11,19 @@ import {
 } from "@/components/home/waitlist-form";
 import { Sparkles } from "@/components/partner/mascot";
 import {
-  AudienceGlyph,
-  BookingGlyph,
-  CapacityGlyph,
-  ClockGlyph,
-  EventGlyph,
-  EyeGlyph,
-  HostGlyph,
-  MegaphoneGlyph,
-  PortfolioGlyph,
-  QrGlyph,
-  SpaceGlyph,
-  TalentGlyph,
-} from "@/components/partner/glyphs";
+  BookingMark,
+  CapacityMark,
+  ClockMark,
+  CommunityMark,
+  HostMark,
+  MegaphoneMark,
+  PortfolioMark,
+  PublishMark,
+  ScanMark,
+  ShowcaseMark,
+  SpaceMark,
+  TalentMark,
+} from "@/components/home/feature-marks";
 import { Button } from "@/components/ui/button";
 import {
   PageTitle,
@@ -33,7 +33,7 @@ import { MagneticButton } from "@/components/ui/magnetic-button";
 import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 import { cn } from "@/lib/utils";
 
-type FeatureGlyph = ComponentType<{ className?: string }>;
+type FeatureGlyph = ComponentType<{ className?: string; accent?: string }>;
 
 type RoleValue = "host" | "venue-business" | "talent-creative";
 
@@ -71,10 +71,10 @@ const SECTIONS: Section[] = [
     formLabel: EXPERIENCE_ROLES.host.formLabel,
     formHint: "plan the experience, manage access and grow the community around it.",
     features: [
-      { icon: EventGlyph, label: "shape and publish" },
-      { icon: QrGlyph, label: "sell and scan access" },
-      { icon: MegaphoneGlyph, label: "build demand" },
-      { icon: AudienceGlyph, label: "grow your community" },
+      { icon: PublishMark, label: "shape and publish" },
+      { icon: ScanMark, label: "sell and scan access" },
+      { icon: MegaphoneMark, label: "build demand" },
+      { icon: CommunityMark, label: "grow your community" },
     ],
     role: "host",
     cta: "register as a host",
@@ -97,10 +97,10 @@ const SECTIONS: Section[] = [
     formLabel: EXPERIENCE_ROLES.venue.formLabel,
     formHint: "show what your space can hold and hear from hosts whose plans fit.",
     features: [
-      { icon: EyeGlyph, label: "showcase your space" },
-      { icon: BookingGlyph, label: "receive fitting requests" },
-      { icon: CapacityGlyph, label: "share capacity and amenities" },
-      { icon: ClockGlyph, label: "manage availability" },
+      { icon: ShowcaseMark, label: "showcase your space" },
+      { icon: BookingMark, label: "receive fitting requests" },
+      { icon: CapacityMark, label: "share capacity and amenities" },
+      { icon: ClockMark, label: "manage availability" },
     ],
     role: "venue-business",
     cta: "register as a venue",
@@ -125,10 +125,10 @@ const SECTIONS: Section[] = [
     formLabel: EXPERIENCE_ROLES.talent.formLabel,
     formHint: "show your work and connect with organisers already looking for your skill.",
     features: [
-      { icon: PortfolioGlyph, label: "showcase your work" },
-      { icon: EyeGlyph, label: "get found by hosts" },
-      { icon: BookingGlyph, label: "turn interest into bookings" },
-      { icon: ClockGlyph, label: "share availability" },
+      { icon: PortfolioMark, label: "showcase your work" },
+      { icon: ShowcaseMark, label: "get found by hosts" },
+      { icon: BookingMark, label: "turn interest into bookings" },
+      { icon: ClockMark, label: "share availability" },
     ],
     role: "talent-creative",
     cta: "register as talent",
@@ -142,7 +142,7 @@ const SECTIONS: Section[] = [
   },
 ];
 
-const GLYPHS = { hosts: HostGlyph, spaces: SpaceGlyph, talent: TalentGlyph } as const;
+const GLYPHS = { hosts: HostMark, spaces: SpaceMark, talent: TalentMark } as const;
 
 const PARTNER_ROLE_CHOICES = SECTIONS.map((section) => ({
   value: section.role,
@@ -238,16 +238,8 @@ export function PartnerWithUs() {
             >
               <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-[clamp(4rem,8vw,8rem)]">
                 <div>
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="grid size-11 shrink-0 place-items-center rounded-2xl border border-white/12 bg-white/[0.035]"
-                      style={{
-                        color: section.accent,
-                        boxShadow: `inset 0 0 0 1px ${section.accent}18`,
-                      }}
-                    >
-                      <Glyph className="size-7" />
-                    </span>
+                  <div className="flex items-center gap-3.5">
+                    <Glyph accent={section.accent} className="size-12 shrink-0" />
                     <h2
                       className="text-3xl font-extrabold lowercase leading-none tracking-[-0.02em] sm:text-4xl"
                       style={{ color: section.accent }}
@@ -265,16 +257,11 @@ export function PartnerWithUs() {
                     {section.description}
                   </p>
 
-                  <div className="mt-8 grid max-w-[38rem] grid-cols-1 gap-x-8 gap-y-4 border-t border-white/10 pt-6 sm:grid-cols-2">
+                  <div className="mt-8 grid max-w-[38rem] grid-cols-1 gap-x-8 gap-y-6 border-t border-white/10 pt-7 sm:grid-cols-2">
                     {section.features.map((feature) => (
-                      <div className="flex items-center gap-2.5" key={feature.label}>
-                        <span
-                          className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.03]"
-                          style={{ color: section.accent }}
-                        >
-                          <feature.icon className="size-5" />
-                        </span>
-                        <p className="text-sm font-semibold lowercase leading-snug text-white">
+                      <div className="flex items-center gap-3.5" key={feature.label}>
+                        <feature.icon accent={section.accent} className="size-11 shrink-0" />
+                        <p className="text-[0.95rem] font-semibold lowercase leading-snug text-white">
                           {feature.label}
                         </p>
                       </div>
@@ -468,11 +455,13 @@ function PartnerEquation({ onPick }: { onPick: (id: string) => void }) {
                 <span
                   className={cn(
                     "grid shrink-0 place-items-center rounded-lg border border-white/15 bg-black/35",
-                    featured ? "size-8 sm:size-9" : "size-7 sm:size-8",
+                    featured ? "size-9 sm:size-10" : "size-8 sm:size-9",
                   )}
-                  style={{ color: section.accent }}
                 >
-                  <Glyph className={featured ? "size-6 sm:size-7" : "size-5 sm:size-6"} />
+                  <Glyph
+                    accent={section.accent}
+                    className={featured ? "size-7 sm:size-8" : "size-6 sm:size-7"}
+                  />
                 </span>
                 <span
                   className={cn(

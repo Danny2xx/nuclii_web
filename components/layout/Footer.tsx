@@ -32,7 +32,7 @@ function Footer() {
 
   return (
     <footer className="border-t border-white/12 bg-background">
-      <div className="nuclii-container flex min-h-[28rem] flex-col items-center justify-center gap-9 py-20 text-center sm:min-h-[30rem] sm:py-24">
+      <div className="nuclii-container flex flex-col items-center gap-7 py-14 text-center sm:py-16">
         <TrackedLink
           aria-label="Nuclii home"
           analyticsEvent={ANALYTICS_EVENTS.navigationClicked}

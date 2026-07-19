@@ -1,5 +1,37 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/opendyslexic/OpenDyslexic-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/opendyslexic/OpenDyslexic-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/opendyslexic/OpenDyslexic-Italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/opendyslexic/OpenDyslexic-BoldItalic.woff2") format("woff2");
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -498,6 +530,50 @@ strong {
   font-size: 125%;
 }
 
+:root[data-a11y-font="dyslexic"] {
+  --font-dyslexic: "OpenDyslexic", "Atkinson Hyperlegible", Verdana, Tahoma, Arial, sans-serif;
+  --font-sans: var(--font-dyslexic);
+  --font-display: var(--font-dyslexic);
+}
+
+:root[data-a11y-font="dyslexic"] body,
+:root[data-a11y-font="dyslexic"] body * {
+  font-family: var(--font-dyslexic) !important;
+  font-variant-ligatures: none;
+  letter-spacing: 0.012em;
+}
+
+:root[data-a11y-font="dyslexic"] h1,
+:root[data-a11y-font="dyslexic"] h2,
+:root[data-a11y-font="dyslexic"] h3,
+:root[data-a11y-font="dyslexic"] h4,
+:root[data-a11y-font="dyslexic"] h5,
+:root[data-a11y-font="dyslexic"] h6,
+:root[data-a11y-font="dyslexic"] .nuclii-display,
+:root[data-a11y-font="dyslexic"] .nuclii-title {
+  font-family: var(--font-sans);
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+:root[data-a11y-font="dyslexic"] p,
+:root[data-a11y-font="dyslexic"] li,
+:root[data-a11y-font="dyslexic"] label,
+:root[data-a11y-font="dyslexic"] input,
+:root[data-a11y-font="dyslexic"] select,
+:root[data-a11y-font="dyslexic"] textarea,
+:root[data-a11y-font="dyslexic"] button {
+  font-variant-ligatures: none;
+  letter-spacing: 0.012em;
+  word-spacing: 0.06em;
+}
+
+:root[data-a11y-font="dyslexic"] p,
+:root[data-a11y-font="dyslexic"] li {
+  line-height: 1.7;
+}
+
 :root[data-a11y-contrast="high"] {
   --muted-foreground: #d4d4d8;
   --border: #52525b;
@@ -581,5 +657,30 @@ strong {
   .nuclii-action-button:hover svg,
   .nuclii-action-button:active {
     transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   /demo SANDBOX APP
+═══════════════════════════════════════════════════════════ */
+
+@keyframes demo-screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.demo-screen-in {
+  animation: demo-screen-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-screen-in {
+    animation: none;
   }
 }

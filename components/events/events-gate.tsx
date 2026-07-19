@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Lock } from "lucide-react";
+import { LockMark } from "@/components/home/feature-marks";
 
 import { unlockEvents, type UnlockState } from "@/app/events/actions";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,7 @@ export function EventsGate() {
 
   return (
     <div className="mx-auto w-full max-w-[26rem] text-center">
-      <span className="mx-auto grid size-12 place-items-center rounded-full border border-white/12 bg-white/[0.04] text-white/80">
-        <Lock aria-hidden="true" className="size-5" />
-      </span>
+      <LockMark className="mx-auto size-12" />
       <h1 className="mt-6 text-3xl font-extrabold lowercase tracking-[-0.02em] sm:text-4xl">
         events
       </h1>

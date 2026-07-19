@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -78,10 +77,24 @@ function FAQItem({ q, a }: { q: string; a: string }) {
             ? "border-primary/50 bg-primary/10 text-primary"
             : "border-border bg-secondary text-muted-foreground",
         )}>
-          {open
-            ? <Minus aria-hidden="true" className="size-3.5" />
-            : <Plus aria-hidden="true" className="size-3.5" />
-          }
+          <svg
+            aria-hidden="true"
+            className="size-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path d="M5 12h14" />
+            <path
+              className={cn(
+                "origin-center transition-transform duration-200 motion-reduce:transition-none",
+                open && "scale-y-0",
+              )}
+              d="M12 5v14"
+            />
+          </svg>
         </span>
       </button>
 

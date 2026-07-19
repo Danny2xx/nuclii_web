@@ -9,12 +9,12 @@ import {
 } from "@/components/home/waitlist-form";
 import { Reveal } from "@/components/motion";
 import {
-  AudienceGlyph,
-  HostGlyph,
-  LinkGlyph,
-  SpaceGlyph,
-  TalentGlyph,
-} from "@/components/partner/glyphs";
+  HostMark,
+  LinkMark,
+  MapMark,
+  SpaceMark,
+  TalentMark,
+} from "@/components/home/feature-marks";
 import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
 const JOIN_ROLE_CHOICES = [
@@ -23,35 +23,35 @@ const JOIN_ROLE_CHOICES = [
     label: "explore",
     hint: "discover workshops, pop-ups, services, gatherings and places around you.",
     accent: EXPERIENCE_ROLES.explorer.partnerAccent,
-    icon: AudienceGlyph,
+    icon: MapMark,
   },
   {
     value: EXPERIENCE_ROLES.host.value,
     label: "host",
     hint: "create demand, manage access and bring people together with less chaos.",
     accent: EXPERIENCE_ROLES.host.partnerAccent,
-    icon: HostGlyph,
+    icon: HostMark,
   },
   {
     value: EXPERIENCE_ROLES.venue.value,
     label: "list a space",
     hint: "connect your space with hosts, communities and moments that fit.",
     accent: EXPERIENCE_ROLES.venue.partnerAccent,
-    icon: SpaceGlyph,
+    icon: SpaceMark,
   },
   {
     value: EXPERIENCE_ROLES.talent.value,
     label: "get booked",
     hint: "show your skill and get discovered by organisers already looking.",
     accent: EXPERIENCE_ROLES.talent.partnerAccent,
-    icon: TalentGlyph,
+    icon: TalentMark,
   },
   {
     value: "other",
     label: "get involved",
     hint: "for societies, service providers, partners, investors and contributors.",
-    accent: "#FFFFFF",
-    icon: LinkGlyph,
+    accent: "#6A6AF2",
+    icon: LinkMark,
   },
 ] satisfies readonly WaitlistRoleChoice[];
 

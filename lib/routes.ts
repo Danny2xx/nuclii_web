@@ -3,4 +3,6 @@ export const routes = {
   waitlist: "/join",
   partner: "/early-access",
   events: "/events",
+  demo: "/demo",
+  demoSection: "/#demo",
 } as const;

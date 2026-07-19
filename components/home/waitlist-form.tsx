@@ -46,7 +46,7 @@ export type WaitlistRoleChoice = {
   label: string;
   hint: string;
   accent: string;
-  icon: ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string; accent?: string }>;
 };
 
 type WaitlistFormProps = {
@@ -693,23 +693,18 @@ function WaitlistForm({
                     )}
                     <span className="relative flex min-w-0 items-center justify-center gap-2">
                       <motion.span
-                        animate={{ scale: selected ? 1 : 0.92 }}
-                        className={cn(
-                          "grid shrink-0 place-items-center rounded-lg border",
-                          heroLayout ? "size-7" : "size-8",
-                        )}
-                        style={{
-                          backgroundColor: selected ? `${choice.accent}18` : "rgba(255,255,255,0.035)",
-                          borderColor: selected ? `${choice.accent}70` : "rgba(255,255,255,0.1)",
-                          color: choice.accent,
-                          opacity: selected ? 1 : 0.68,
-                        }}
+                        animate={{ scale: selected ? 1 : 0.94 }}
+                        className="grid shrink-0 place-items-center"
+                        style={{ opacity: selected ? 1 : 0.72 }}
                         transition={{
                           duration: reduce ? 0 : 0.18,
                           ease: [0.22, 1, 0.36, 1],
                         }}
                       >
-                        <Icon className={heroLayout ? "size-5" : "size-6"} />
+                        <Icon
+                          accent={choice.accent}
+                          className={heroLayout ? "size-8" : "size-9"}
+                        />
                       </motion.span>
                       <span
                         className={cn(
@@ -747,7 +742,10 @@ function WaitlistForm({
 
         <div
           className={cn(
-            "grid overflow-hidden rounded-[1.35rem] border border-white/18 bg-black/52 transition-[border-color,box-shadow] duration-200 focus-within:border-white/52 focus-within:shadow-[0_0_0_4px_rgba(255,255,255,0.05)]",
+            "grid overflow-hidden border transition-[border-color,box-shadow] duration-200",
+            heroLayout
+              ? "rounded-2xl border-white/24 bg-black/44 focus-within:border-white/62 focus-within:shadow-[0_0_0_1px_rgba(255,255,255,0.18)]"
+              : "rounded-[1.35rem] border-white/18 bg-black/52 focus-within:border-white/52 focus-within:shadow-[0_0_0_4px_rgba(255,255,255,0.05)]",
             heroLayout || segmentedRoles
               ? "sm:grid-cols-2"
               : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr]",
@@ -837,11 +835,11 @@ function WaitlistForm({
             heroLayout
               ? segmentedRoles
                 ? "flex flex-col items-stretch gap-3 sm:items-center sm:gap-3.5"
-                : "flex flex-col items-center gap-4"
+                : "flex flex-col items-stretch gap-4"
               : "grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center",
           )}
         >
-          <div className={cn("space-y-1", heroLayout && segmentedRoles && "w-full max-w-xl sm:max-w-none")}>
+          <div className={cn("space-y-1", heroLayout && "w-full", heroLayout && segmentedRoles && "max-w-xl sm:max-w-none")}>
             <AnimatedCheckbox
               checked={ageConfirmed}
               disabled={isSubmitting}
@@ -886,7 +884,7 @@ function WaitlistForm({
               heroLayout && segmentedRoles
                 ? "min-h-[3.25rem] w-full justify-center px-5 text-[15px] shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] disabled:opacity-60"
                 : heroLayout
-                  ? "min-h-12 w-full max-w-[22rem] justify-center px-4 text-sm shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] disabled:opacity-60 sm:max-w-[24rem] sm:px-5"
+                  ? "min-h-14 w-full justify-center px-5 text-[15px] shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] disabled:opacity-60 sm:px-6"
                   : segmentedRoles
                     ? "w-full shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] sm:min-w-64 sm:w-auto"
                     : "w-full shadow-[inset_0_-2px_0_rgba(0,0,0,0.18)] sm:w-auto"
