@@ -6,6 +6,7 @@ import { plansForRole, tierById } from "@/lib/demo/world";
 import { celebrateWaitlistSignup } from "@/components/motion/success-confetti";
 import { cn } from "@/lib/utils";
 import { useWorld } from "../world-store";
+import { useDemoRouter } from "../demo-router";
 import { InitialsAvatar, ScreenSection, StatusChip } from "../primitives";
 import { CheckIcon, ForwardIcon } from "../icons";
 import { HostMark } from "../marks";
@@ -18,6 +19,7 @@ export function SettingsScreen({
   onBecomeHost?: () => void;
 }) {
   const { identity, state, dispatch, hatsOf } = useWorld();
+  const { go } = useDemoRouter();
   const upgradeRef = useRef<HTMLButtonElement>(null);
   const [toggles, setToggles] = useState({ drops: true, reminders: true, digest: false });
 
@@ -191,6 +193,13 @@ export function SettingsScreen({
             className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-muted-foreground transition-colors duration-150 hover:border-foreground/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
           >
             sign out
+          </button>
+          <button
+            type="button"
+            onClick={() => go({ name: "credits" })}
+            className="rounded-lg border border-border px-4 py-2 text-xs font-semibold text-muted-foreground transition-colors duration-150 hover:border-foreground/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            photo credits
           </button>
         </div>
         <p className="mt-2.5 text-xs leading-5 text-muted-foreground">

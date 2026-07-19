@@ -17,6 +17,7 @@ export type Screen =
   | { name: "create" }
   | { name: "inbox"; threadId?: string }
   | { name: "settings" }
+  | { name: "credits" }
   | { name: "plans"; role?: string };
 
 type RouterApi = {

@@ -10,6 +10,7 @@ import { WorldProvider, useWorld } from "./world-store";
 import { AttendeeHome, BrowseScreen, CategoryScreen, LibraryScreen } from "./screens/attendee";
 import { EventDetailScreen } from "./screens/event-detail";
 import { TicketScreen } from "./screens/ticket";
+import { CreditsScreen } from "./screens/credits";
 import { CreateEventFlow, HostDashboard } from "./screens/host";
 import { InboxScreen } from "./screens/inbox";
 import { SettingsScreen } from "./screens/settings";
@@ -66,6 +67,9 @@ function ScreenRenderer() {
     case "settings":
     case "plans":
       body = <SettingsScreen activeHat={activeHat} onBecomeHost={becomeHost} />;
+      break;
+    case "credits":
+      body = <CreditsScreen />;
       break;
   }
 
