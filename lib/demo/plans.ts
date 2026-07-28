@@ -1,9 +1,9 @@
 import type { RolePlans } from "./types";
 
 /**
- * Per-role subscription ladder — nuclii launch pricing (GBP/month unless noted).
+ * Per-role subscription ladder — illustrative naira pricing (per month unless noted).
  * Demand side stays free & frictionless; the optional attendee product and all
- * supply tiers carry the paid packages. Prices mirror the launch pricing sheet.
+ * supply tiers carry the paid packages. Simulated for the lagos demo.
  */
 export const PLAN_LADDER: RolePlans[] = [
   {
@@ -24,7 +24,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "explorer-buddyup",
         name: "buddy up",
-        price: 2.99,
+        price: 500,
         tagline: "bring someone along",
         features: [
           "add a plus-one to member events",
@@ -54,7 +54,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "host-plus",
         name: "host plus",
-        price: 19.99,
+        price: 5000,
         tagline: "for hosts building a following",
         features: [
           "unlimited listings",
@@ -68,7 +68,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "host-premium",
         name: "host premium",
-        price: 49.99,
+        price: 12000,
         tagline: "for hosts who sell out",
         features: [
           "everything in plus",
@@ -80,7 +80,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "host-business",
         name: "host business",
-        price: 99.99,
+        price: 25000,
         tagline: "for teams & event brands",
         features: [
           "everything in premium",
@@ -109,7 +109,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "venue-plus",
         name: "venue plus",
-        price: 19.99,
+        price: 5000,
         tagline: "fill the quiet nights",
         features: [
           "boosted discovery",
@@ -122,7 +122,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "venue-premium",
         name: "venue premium",
-        price: 49.99,
+        price: 12000,
         tagline: "for spaces in demand",
         features: [
           "everything in plus",
@@ -150,7 +150,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "talent-pro",
         name: "talent pro",
-        price: 9.99,
+        price: 2500,
         tagline: "book more of the right gigs",
         features: [
           "priority in search",
@@ -163,7 +163,7 @@ export const PLAN_LADDER: RolePlans[] = [
       {
         id: "talent-premium",
         name: "talent premium",
-        price: 19.99,
+        price: 6000,
         tagline: "for talent in demand",
         features: [
           "everything in pro",
@@ -188,14 +188,14 @@ export function tierById(id: string) {
   return undefined;
 }
 
-/** Optional paid add-ons beyond the role subscriptions — launch pricing. */
+/** Optional paid add-ons beyond the role subscriptions — illustrative naira. */
 export const ADD_ONS = [
-  { name: "three-day boost", price: "£4.99", unit: "per push" },
-  { name: "seven-day boost", price: "£12.99", unit: "per push" },
-  { name: "featured event", price: "£9.99", unit: "per week" },
-  { name: "featured venue", price: "£29.99", unit: "per month" },
-  { name: "featured talent", price: "£9.99", unit: "per week" },
-  { name: "verification", price: "£9.99", unit: "one-off" },
-  { name: "request-to-join", price: "£2.99", unit: "per event" },
-  { name: "host + venue bundle", price: "£129.99", unit: "per month" },
+  { name: "three-day boost", price: "₦2,000", unit: "per push" },
+  { name: "seven-day boost", price: "₦5,000", unit: "per push" },
+  { name: "featured event", price: "₦5,000", unit: "per week" },
+  { name: "featured venue", price: "₦15,000", unit: "per month" },
+  { name: "featured talent", price: "₦5,000", unit: "per week" },
+  { name: "verification", price: "₦5,000", unit: "one-off" },
+  { name: "request-to-join", price: "₦1,000", unit: "per event" },
+  { name: "host + venue bundle", price: "₦8,000", unit: "per month" },
 ] as const;

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { EXPERIENCE_ROLES, type ExperienceRoleKey } from "@/lib/experience-roles";
-import { plansForRole, tierById } from "@/lib/demo/world";
+import { naira, plansForRole, tierById } from "@/lib/demo/world";
 import { celebrateWaitlistSignup } from "@/components/motion/success-confetti";
 import { cn } from "@/lib/utils";
 import { useWorld } from "../world-store";
@@ -106,7 +106,7 @@ export function SettingsScreen({
                       {isCurrent && <StatusChip tone="accent" className="ml-2">your plan</StatusChip>}
                     </p>
                     <p className="text-sm font-bold text-foreground">
-                      {tier.price === 0 ? "free" : `£${tier.price}/mo`}
+                      {tier.price === 0 ? "free" : `${naira(tier.price)}/mo`}
                     </p>
                   </div>
                   <p className="mt-0.5 text-xs text-muted-foreground">{tier.tagline}</p>
@@ -138,7 +138,7 @@ export function SettingsScreen({
             })}
           </div>
           <p className="mt-2.5 text-xs text-muted-foreground">
-            early-access pricing · no card needed in the sandbox
+            illustrative pricing · no card needed in this simulation
           </p>
         </ScreenSection>
       )}
@@ -203,7 +203,7 @@ export function SettingsScreen({
           </button>
         </div>
         <p className="mt-2.5 text-xs leading-5 text-muted-foreground">
-          this preview runs entirely on your device — the full version is in build.
+          a simulation of the full nuclii vision — we launch in lagos, host and attendee first.
         </p>
       </ScreenSection>
     </div>

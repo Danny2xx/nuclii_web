@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { EXPERIENCE_ROLES, type ExperienceRoleKey } from "@/lib/experience-roles";
-import { plansForRole } from "@/lib/demo/world";
+import { naira, plansForRole } from "@/lib/demo/world";
 import { useWorld } from "./world-store";
 import { BackIcon, CheckIcon } from "./icons";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,7 @@ export function SignUpFlow({ onBack }: { onBack: () => void }) {
   const finish = () =>
     dispatch({
       type: "sign-up",
-      guest: { name: name.trim() || "you", area: area.trim() || "london", role: role ?? "explorer", interests: picks },
+      guest: { name: name.trim() || "you", area: area.trim() || "lagos", role: role ?? "explorer", interests: picks },
     });
 
   return (
@@ -112,7 +112,7 @@ export function SignUpFlow({ onBack }: { onBack: () => void }) {
                 <input
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
-                  placeholder="peckham, london"
+                  placeholder="lekki, lagos"
                   className="h-11 w-full rounded-lg border border-border bg-input px-3.5 text-sm text-foreground placeholder:text-foreground/45 outline-none transition-colors duration-150 focus-visible:border-foreground/50 focus-visible:ring-2 focus-visible:ring-ring/30"
                 />
               </label>
@@ -223,7 +223,7 @@ export function SignUpFlow({ onBack }: { onBack: () => void }) {
               pick your plan
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              early-access pricing. start free — change any time.
+              illustrative pricing. start free — change any time.
             </p>
             <ul className="mt-6 space-y-2.5">
               {rolePlans.tiers.map((tier) => (
@@ -243,7 +243,7 @@ export function SignUpFlow({ onBack }: { onBack: () => void }) {
                       </span>
                     </span>
                     <span className="shrink-0 text-sm font-bold text-foreground">
-                      {tier.price === 0 ? "free" : `£${tier.price}/mo`}
+                      {tier.price === 0 ? "free" : `${naira(tier.price)}/mo`}
                     </span>
                   </button>
                 </li>

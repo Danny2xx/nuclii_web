@@ -11,7 +11,7 @@ import { SignUpFlow } from "./sign-up";
 
 /** the lived-in one-liner under each persona door */
 const PERSONA_LIFE: Record<string, string> = {
-  maya: "vol. 9 on sale · vinyl & supper nearly full",
+  maya: "vol. 9 on sale · jollof & vinyl nearly full",
   sofia: "2 nights coming up · 6 events this month",
   priya: "2 booking requests waiting · a busy week ahead",
   jerome: "3 booking requests · 2 gigs confirmed",
@@ -106,7 +106,7 @@ export function SignInScreen() {
         </div>
 
         <p className="text-xs leading-5 text-muted-foreground">
-          sandbox preview — the full version is in build.{" "}
+          a simulation of the full nuclii vision — launching in lagos.{" "}
           <span className="text-foreground/70">everything you do here stays on this device.</span>
         </p>
       </div>
@@ -118,7 +118,7 @@ export function SignInScreen() {
             or step into a life already in motion
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            four people, one week in london. every side sees the same world differently.
+            four people, one week in lagos. every side sees the same world differently.
           </p>
 
           <ul className="mt-6 space-y-2.5">

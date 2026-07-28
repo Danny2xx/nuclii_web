@@ -2,6 +2,7 @@
 
 import {
   countdownLabel,
+  naira,
   resolveDate,
   talentById,
   tierById,
@@ -25,7 +26,7 @@ function RequestCard({ request, unit }: { request: BookingRequest; unit: string 
         <div className="min-w-0">
           <p className="truncate text-sm font-bold lowercase text-foreground">{request.eventTitle}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            from {request.fromName} · {dateLabel} · £{request.fee} {unit}
+            from {request.fromName} · {dateLabel} · {naira(request.fee)} {unit}
           </p>
         </div>
         <StatusChip tone="attention">new request</StatusChip>
@@ -116,7 +117,7 @@ export function VenueHome() {
       <ScreenSection title="this month">
         <div className="grid grid-cols-3 gap-3">
           <Stat value={String(bookedOffsets.size)} label="nights booked" />
-          <Stat value={`£${revenue}`} label="booking revenue" />
+          <Stat value={naira(revenue)} label="booking revenue" />
           <Stat value={`${Math.min(Math.round((bookedOffsets.size / 30) * 100), 100)}%`} label="utilisation" />
         </div>
       </ScreenSection>
@@ -131,7 +132,7 @@ export function VenueHome() {
             <div className="min-w-0">
               <p className="text-sm font-bold text-foreground">{listing.name}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {listing.area} · fits {listing.capacity} · £{listing.pricePerNight}/night
+                {listing.area} · fits {listing.capacity} · {naira(listing.pricePerNight)}/night
               </p>
               <p className="mt-1 text-xs text-foreground/70">{listing.vibe}</p>
             </div>
@@ -276,7 +277,7 @@ export function TalentHome() {
           <p className="mt-1 text-sm text-muted-foreground">
             {nextGigEvent ? `${whenLabel(nextGigEvent)} · ${nextGigEvent.venueName}` : `booked by ${nextGig.fromName}`}
             {" · "}
-            <span className="font-bold text-foreground">£{nextGig.fee}</span>
+            <span className="font-bold text-foreground">{naira(nextGig.fee)}</span>
           </p>
         </div>
       )}
@@ -293,8 +294,8 @@ export function TalentHome() {
 
       <ScreenSection title="money">
         <div className="grid grid-cols-3 gap-3">
-          <Stat value={`£${confirmedTotal}`} label="confirmed this month" />
-          <Stat value={`£${nextGig?.fee ?? 0}`} label="next payout" />
+          <Stat value={naira(confirmedTotal)} label="confirmed this month" />
+          <Stat value={naira(nextGig?.fee ?? 0)} label="next payout" />
           <Stat value={String(listing.eventsPlayed)} label="events played" />
         </div>
       </ScreenSection>
@@ -313,7 +314,7 @@ export function TalentHome() {
                     {countdownLabel(gig.dayOffset)} · booked by {gig.fromName}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-bold text-foreground">£{gig.fee}</span>
+                <span className="shrink-0 text-sm font-bold text-foreground">{naira(gig.fee)}</span>
               </div>
             ))}
           </GroupedList>
@@ -324,7 +325,7 @@ export function TalentHome() {
         <div className="rounded-2xl bg-card p-4">
           <p className="text-sm leading-6 text-foreground/85">
             you appeared in <span className="font-bold text-foreground">12 searches</span> for{" "}
-            {listing.craft}s in se london this week, and{" "}
+            {listing.craft}s in lagos this week, and{" "}
             <span className="font-bold text-foreground">4 hosts</span> viewed your profile.
           </p>
           <p className="mt-2.5 text-xs text-muted-foreground">

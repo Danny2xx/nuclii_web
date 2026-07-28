@@ -43,8 +43,13 @@ export function countdownLabel(dayOffset: number): string {
   return `${dayOffset} days away`;
 }
 
+/** Illustrative naira formatting, e.g. 12000 → "₦12,000". */
+export function naira(n: number): string {
+  return "₦" + Math.round(n).toLocaleString("en-NG");
+}
+
 export function priceLabel(price: number): string {
-  return price === 0 ? "free" : `£${price}`;
+  return price === 0 ? "free" : naira(price);
 }
 
 export function isWeekend(dayOffset: number): boolean {

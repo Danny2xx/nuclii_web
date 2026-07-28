@@ -8,6 +8,7 @@ import {
   TALENTS,
   VENUES,
   countdownLabel,
+  naira,
   shortDayLabel,
   tierById,
   whenLabel,
@@ -139,7 +140,7 @@ export function HostDashboard() {
             your events
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {upcoming.length} coming up · £{revenue} in rsvps so far
+            {upcoming.length} coming up · {naira(revenue)} in rsvps so far
           </p>
         </div>
         <button
@@ -353,7 +354,7 @@ export function CreateEventFlow() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<EventCategory | null>(null);
   const [dayOffset, setDayOffset] = useState<number | null>(null);
-  const [price, setPrice] = useState("15");
+  const [price, setPrice] = useState("5000");
   const [venueId, setVenueId] = useState<string | null>(null);
   const [talentIds, setTalentIds] = useState<string[]>([]);
   const publishRef = useRef<HTMLButtonElement>(null);
@@ -495,7 +496,7 @@ export function CreateEventFlow() {
 
             <label className="block max-w-40">
               <span className="mb-1.5 block text-xs font-semibold text-foreground/80">
-                ticket price (£)
+                ticket price (₦)
               </span>
               <input
                 inputMode="numeric"
@@ -550,7 +551,7 @@ export function CreateEventFlow() {
                       {venueId === v.id && <CheckIcon className="size-4 shrink-0 text-[var(--demo-accent-bright)]" />}
                     </span>
                     <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                      {v.area} · fits {v.capacity} · £{v.pricePerNight}/night
+                      {v.area} · fits {v.capacity} · {naira(v.pricePerNight)}/night
                     </span>
                     <span className="mt-0.5 block truncate text-xs text-foreground/70">{v.vibe}</span>
                   </span>
@@ -604,7 +605,7 @@ export function CreateEventFlow() {
                         {selected && <CheckIcon className="size-4 shrink-0 text-[var(--demo-accent-bright)]" />}
                       </span>
                       <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                        {t.craft} · from £{t.rateFrom} · {t.eventsPlayed} events
+                        {t.craft} · from {naira(t.rateFrom)} · {t.eventsPlayed} events
                       </span>
                     </span>
                   </button>
@@ -616,7 +617,8 @@ export function CreateEventFlow() {
           <div className="mt-8 rounded-2xl bg-card px-4 py-3.5 text-sm">
             <p className="font-bold lowercase text-foreground">{title || "your event"}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {venue?.name} · {DATE_CHOICES.find((d) => d.dayOffset === dayOffset)?.label} · £{price || 0} entry
+              {venue?.name} · {DATE_CHOICES.find((d) => d.dayOffset === dayOffset)?.label} ·{" "}
+              {naira(Number(price) || 0)} entry
               {talentIds.length > 0 && ` · ${talentIds.length} on the line-up`}
             </p>
           </div>

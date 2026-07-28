@@ -11,25 +11,17 @@ import { EventCover } from "../primitives";
 import { CloseIcon, ForwardIcon, MapPinIcon } from "../icons";
 import { PinMark } from "../marks";
 
-/** stylised, non-geographic positions for the seed world's london areas */
+/** stylised, non-geographic positions for the seed world's lagos areas —
+ *  mainland up top, island neighbourhoods below the lagoon band */
 const AREA_POS: Record<string, [number, number]> = {
-  peckham: [46, 66],
-  deptford: [62, 62],
-  "new cross": [54, 74],
-  camberwell: [37, 60],
-  brixton: [27, 70],
-  dalston: [62, 28],
-  hackney: [70, 33],
-  "hackney wick": [84, 40],
-  "london fields": [66, 38],
-  shoreditch: [53, 40],
-  "columbia road": [58, 46],
-  haggerston: [60, 34],
-  bermondsey: [44, 53],
-  "canada water": [57, 57],
-  walthamstow: [78, 13],
-  "victoria park": [76, 44],
-  "canary wharf": [80, 60],
+  ikeja: [24, 18],
+  gbagada: [44, 26],
+  yaba: [34, 34],
+  surulere: [26, 46],
+  "lagos island": [50, 52],
+  ikoyi: [54, 58],
+  "victoria island": [64, 66],
+  lekki: [74, 72],
 };
 
 const FILTERS = [
@@ -104,11 +96,11 @@ export function MapScreen() {
         aria-hidden="true"
         className="absolute inset-0 select-none text-[9px] font-semibold uppercase tracking-wider text-white/22"
       >
-        <span className="absolute left-[56%] top-[26%]">dalston</span>
-        <span className="absolute left-[70%] top-[33%]">hackney</span>
-        <span className="absolute left-[42%] top-[64%]">peckham</span>
-        <span className="absolute left-[26%] top-[70%]">brixton</span>
-        <span className="absolute left-[60%] top-[62%]">deptford</span>
+        <span className="absolute left-[22%] top-[16%]">ikeja</span>
+        <span className="absolute left-[32%] top-[36%]">yaba</span>
+        <span className="absolute left-[24%] top-[52%]">surulere</span>
+        <span className="absolute left-[52%] top-[60%]">ikoyi</span>
+        <span className="absolute left-[70%] top-[74%]">lekki</span>
       </div>
 
       {/* filters */}

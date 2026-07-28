@@ -4,14 +4,15 @@ import { Reveal } from "@/components/motion";
 import { SectionTitle } from "@/components/ui/marketing-typography";
 import { EXPERIENCE_ROLES, type ExperienceRoleKey } from "@/lib/experience-roles";
 import { SEED_EVENTS } from "@/lib/demo/events";
+import { priceLabel } from "@/lib/demo/world";
 import { personaById } from "@/lib/demo/directory";
 import { routes } from "@/lib/routes";
 
-const DOORS: { role: ExperienceRoleKey; name: string; line: string }[] = [
-  { role: "explorer", name: "sofia", line: "six events this month, two nights ahead" },
-  { role: "host", name: "maya", line: "runs a supper club that sells out in days" },
-  { role: "venue", name: "priya", line: "keeps a plant-filled loft booked all week" },
-  { role: "talent", name: "jerome", line: "vinyl selector with a full gig calendar" },
+const DOORS: { role: ExperienceRoleKey; id: string; name: string; line: string }[] = [
+  { role: "explorer", id: "sofia", name: "amaka", line: "six events this month, two nights ahead" },
+  { role: "host", id: "maya", name: "tolu", line: "runs a supper club that sells out in days" },
+  { role: "venue", id: "priya", name: "funke", line: "keeps a plant-filled rooftop booked all week" },
+  { role: "talent", id: "jerome", name: "emeka", line: "vinyl selector with a full gig calendar" },
 ];
 
 /** preview tiles pulled straight from the sandbox's seed world */
@@ -37,16 +38,17 @@ export function DemoDoorway() {
           </Reveal>
           <Reveal delay={0.08}>
             <p className="mt-6 max-w-[36rem] text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
-              the sandbox is a working preview of nuclii — one london week seen through four
-              lives. create an event as a host, accept the booking as the venue, take the gig
-              as the talent, then rsvp to your own night as an explorer.
+              a simulated walkthrough of the full nuclii experience — one lagos week seen
+              through four lives. create an event as a host, accept the booking as the venue,
+              take the gig as the talent, then rsvp as an explorer. we&apos;re launching in
+              lagos, host and attendee first.
             </p>
           </Reveal>
           <Reveal delay={0.14}>
             <ul className="mt-8 grid gap-2.5 sm:grid-cols-2">
               {DOORS.map((door) => {
                 const role = EXPERIENCE_ROLES[door.role];
-                const persona = personaById(door.name);
+                const persona = personaById(door.id);
                 return (
                   <li key={door.role}>
                     <Link
@@ -87,7 +89,7 @@ export function DemoDoorway() {
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-5 text-xs lowercase text-white/45">
-              runs entirely in your browser · nothing to install · reset any time
+              an interactive simulation · runs in your browser · not the live product
             </p>
           </Reveal>
         </div>
@@ -133,8 +135,7 @@ export function DemoDoorway() {
                       {event.title}
                     </span>
                     <span className="block truncate text-xs text-white/55">
-                      {event.venueName} · {event.area} ·{" "}
-                      {event.price === 0 ? "free" : `£${event.price}`}
+                      {event.venueName} · {event.area} · {priceLabel(event.price)}
                     </span>
                   </span>
                   <span className="shrink-0 text-xs font-semibold text-white/45">
