@@ -10,10 +10,15 @@ Nuclii is not a generic events app, nightlife app, or social media feed. It is p
 
 Core brand line:
 
-> Every event starts here.
+> more than memories.
+
+(This replaced "Every event starts here" as the anchor line. See `PRODUCT.md`.)
+
+Launch city: **Birmingham first.** Example events, places, and landmarks should lean on Birmingham.
 
 Primary goal of this website:
 
+- drive web sign-ups (the primary action; sign up / log in and create flows are planned, and point at `/join` until built)
 - drive early access signups
 - attract early hosts
 - attract societies, communities, service providers, talent, and venues
@@ -29,6 +34,7 @@ This is a pre-launch website, not the full app website.
 
 Before making major changes, read these files:
 
+- `PRODUCT.md` (current product truth; wins where older docs disagree)
 - `docs/NUCLII_BRAND.md`
 - `docs/SITE_STRUCTURE.md`
 - `docs/DESIGN_SYSTEM.md`
@@ -68,14 +74,16 @@ Do not hard-code fake traction numbers.
 
 ## Main Navigation Pages
 
-Main nav:
+Main nav (as built):
 
-1. Home
-2. About
-3. Early Access
-4. For Hosts
-5. Build With Us
-6. Get in Touch
+1. explore (→ `/events`)
+2. for hosts (→ Partner With Us, `/early-access`)
+3. studio (→ Build With Us form)
+4. Log in
+5. sign up
+6. accessibility control
+
+The logo links home. `demo`, `motives`, `create`, and `home` stay in the nav config but are hidden; the `/demo` page still exists.
 
 Footer-only pages:
 
@@ -104,7 +112,7 @@ The site should feel:
 - product-led
 - trustworthy
 
-Use a blue / black / white visual identity.
+Use a black / white visual identity with Nuclii lime (`#A3BF1C`) as the brand accent. Light (`#F7F7FA`) sections may break up the dark canvas.
 
 Avoid making the website:
 
@@ -131,15 +139,13 @@ Primary colours:
 - Subtle border: `#26282F`
 - Primary text: `#FFFFFF`
 - Secondary text: `#A1A1AA`
-- Electric blue: `#5B8CFF`
-- Deep blue: `#0B1B3F`
-- Soft light background: `#F8FAFC`
+- Nuclii lime: `#A3BF1C` (exact value, do not approximate)
+- Soft light background: `#F7F7FA` / `#F8FAFC`
+- Supporting accents: make `#F04A23`, book `#35A9E0`, go `#A3BF1C` (from "you make it. you book it. you go.")
 
-Use electric blue as the main accent.
+Use Nuclii lime as the main accent (logo, primary CTAs, motion controls).
 
-Purple may only be used as a subtle secondary glow if needed.
-
-Avoid green unless there is a clear UI reason such as success states.
+Electric blue (`#5B8CFF`) is no longer the brand accent. Purple may only be used as a subtle secondary glow if needed.
 
 ---
 
@@ -152,7 +158,7 @@ Good animation ideas:
 - subtle scroll reveals
 - floating UI cards
 - map pins pulsing gently
-- animated blue gradient background
+- scroll-driven sequences (pinned, transform/opacity only)
 - phone mockups with slight parallax
 - hover microinteractions
 - animated bento cards
@@ -169,6 +175,8 @@ Avoid:
 - fake loading delays
 
 Animations should support clarity, not distract from the CTA.
+
+Every auto-moving section gets a play/pause control (the shared `MotionToggleButton`) and a reduced-motion path.
 
 ---
 
@@ -200,6 +208,7 @@ Students can be referenced as one early community, but do not publicly box the b
 
 The website must strongly push:
 
+- Sign up (primary)
 - Join Early Access
 - Become an Early Host
 - Get in Touch

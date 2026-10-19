@@ -7,7 +7,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AccessibilityPreferencesControl } from "@/components/accessibility/accessibility-preferences";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
-import { footerNavGroups, sideNavItems } from "@/lib/navigation";
+import { footerNavGroups, visibleNavItems } from "@/lib/navigation";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -31,27 +31,28 @@ function MobileNav() {
   if (pathname === "/join") return null;
 
   return (
-    <div className="lg:hidden">
+    <div>
+      {/* solid circle so the menu button reads over light, dark and video */}
       <button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         className={cn(
-          "nuclii-mobile-menu-button fixed z-[70] flex size-11 items-center justify-center text-white mix-blend-difference transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center rounded-full border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black",
         )}
         onClick={() => setOpen((current) => !current)}
         type="button"
       >
-        <span className="relative block h-4 w-7" aria-hidden="true">
+        <span className="relative block h-3.5 w-5" aria-hidden="true">
           <span
             className={cn(
-              "absolute left-0 top-1 block h-0.5 w-full bg-current transition-transform duration-300",
-              open && "translate-y-[5px] rotate-45",
+              "absolute left-0 top-0.5 block h-0.5 w-full bg-current transition-transform duration-300",
+              open && "translate-y-[4px] rotate-45",
             )}
           />
           <span
             className={cn(
-              "absolute bottom-1 left-0 block h-0.5 w-full bg-current transition-transform duration-300",
-              open && "-translate-y-[5px] -rotate-45",
+              "absolute bottom-0.5 left-0 block h-0.5 w-full bg-current transition-transform duration-300",
+              open && "-translate-y-[4px] -rotate-45",
             )}
           />
         </span>
@@ -59,16 +60,16 @@ function MobileNav() {
 
       {open && (
         <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-white text-black">
-          <nav aria-label="Mobile navigation" className="nuclii-mobile-drawer flex min-h-full flex-col px-6">
+          <nav aria-label="Menu" className="nuclii-mobile-drawer mx-auto flex min-h-full w-full max-w-[44rem] flex-col px-6 lg:px-10">
 
             {/* Main pages */}
             <div className="flex flex-col gap-4">
-              {sideNavItems.filter((item) => item.href !== routes.waitlist).map((item) => {
+              {visibleNavItems.map((item) => {
                 const active =
                   item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
                 return (
-                  <div key={item.href}>
+                  <div key={item.label}>
                     <TrackedLink
                       analyticsEvent={
                         item.external
@@ -82,8 +83,10 @@ function MobileNav() {
                       }}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "inline-flex items-center gap-2 text-4xl font-extrabold lowercase leading-none tracking-[-0.04em] transition-colors hover:text-black/60",
-                        active ? "text-black" : "text-black/55",
+                        "inline-flex items-center gap-2 text-4xl font-extrabold leading-none tracking-[-0.04em] transition-colors",
+                        item.variant === "signup"
+                          ? "mt-2 min-h-14 rounded-full bg-[var(--nuclii-lime)] px-6 text-2xl text-black hover:opacity-85"
+                          : cn("hover:text-black/60", active ? "text-black" : "text-black/55"),
                       )}
                       href={item.href}
                       onClick={() => setOpen(false)}

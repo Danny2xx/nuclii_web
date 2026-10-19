@@ -1,89 +1,180 @@
 "use client";
 
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
-import { AccessibilityPreferencesControl } from "@/components/accessibility/accessibility-preferences";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
-import { sideNavItems } from "@/lib/navigation";
-import { routes } from "@/lib/routes";
+import { ticketPillStyle } from "@/components/ui/ticket-pill";
+import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+
+// Top-bar actions beside the menu button. Log in and sign up are always
+// there, as solid pills that read over light, dark and video. On the home
+// hero (desktop) the main links sit inline too; once you scroll past the hero
+// they fold away into the menu.
+function useOverHomeHero(pathname: string) {
+  const [overHero, setOverHero] = useState(false);
+
+  // Looks the hero up on every check: the nav lives in the layout and can
+  // mount before the page content does, so a one-off lookup can miss it.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const hero = document.getElementById("waitlist");
+      // collapses once the hero has scrolled up behind the bar
+      setOverHero(Boolean(hero && hero.getBoundingClientRect().bottom > 96));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [pathname]);
+
+  // only the homepage has a hero; elsewhere the bar is always compact
+  return overHero && pathname === "/";
+}
+
+// Whether the page behind the bar is light, so lime "Log in" (too faint on
+// light: about 2:1) can switch to black there. Samples what sits under the
+// bar, skipping the bar itself and anything mostly see-through; photos and
+// video count as dark.
+function luminance(color: string) {
+  const [r, g, b, a = 1] = (color.match(/[\d.]+/g) ?? []).map(Number);
+  if (r === undefined || a < 0.5) return null;
+  const lin = (c: number) => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+function effectiveOpacity(el: Element) {
+  let opacity = 1;
+  for (let node: Element | null = el; node && node !== document.body; node = node.parentElement) {
+    opacity *= Number(getComputedStyle(node).opacity);
+  }
+  return opacity;
+}
+
+function useLightBehind(barRef: RefObject<HTMLElement | null>, pathname: string) {
+  const [light, setLight] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const bar = barRef.current;
+      if (!bar) return;
+      const box = bar.getBoundingClientRect();
+      const stack = document.elementsFromPoint(box.left + 12, box.top + box.height / 2);
+      let next = false;
+      for (const el of stack) {
+        if (bar.contains(el) || el.closest("header, [data-nav-ignore]")) continue;
+        if (el instanceof HTMLImageElement || el instanceof HTMLVideoElement) break;
+        const lum = luminance(getComputedStyle(el).backgroundColor);
+        if (lum === null || effectiveOpacity(el) < 0.5) continue;
+        next = lum > 0.5;
+        break;
+      }
+      setLight((current) => (current === next ? current : next));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [barRef, pathname]);
+
+  return light;
+}
 
 function SideNav() {
   const pathname = usePathname();
+  const expanded = useOverHomeHero(pathname);
+  const barRef = useRef<HTMLElement>(null);
+  const lightBehind = useLightBehind(barRef, pathname);
 
   // The /join gate is intentionally distraction-free — logo only.
   if (pathname === "/join") return null;
 
-  const eventsItem = sideNavItems.find((item) => item.href === routes.events);
-  const rightItems = sideNavItems.filter((item) => item.href !== routes.events);
-  const eventsActive = Boolean(eventsItem && pathname.startsWith(eventsItem.href));
+  const actions = visibleNavItems.filter((item) => item.variant === "login" || item.variant === "signup");
+  const links = visibleNavItems.filter((item) => !item.variant);
 
   return (
-    <>
-      {/* The events page is gated for now, so this reads as a quiet launch signal. */}
-      {eventsItem && (
+    <nav
+      aria-label="Main navigation"
+      ref={barRef}
+      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 lg:right-[5.875rem] lg:top-9"
+    >
+      {/* inline links: desktop only, shown over the home hero */}
+      <div
+        className={cn(
+          "mr-3 hidden items-center gap-6 transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none lg:flex",
+          expanded ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-3 opacity-0",
+        )}
+        inert={!expanded}
+      >
+        {links.map((item) => (
+          <TrackedLink
+            analyticsEvent={item.external ? ANALYTICS_EVENTS.outboundLinkClicked : ANALYTICS_EVENTS.navigationClicked}
+            analyticsProperties={{ label: item.label, location: "hero_nav", external: Boolean(item.external) }}
+            className="relative inline-flex min-h-11 items-center gap-1 font-display text-base font-semibold leading-none !text-white after:absolute after:bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            href={item.href}
+            key={item.label}
+            rel={item.external ? "noopener noreferrer" : undefined}
+            target={item.external ? "_blank" : undefined}
+          >
+            {item.label}
+            {item.external && (
+              <>
+                <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                <span className="sr-only">(opens in new tab)</span>
+              </>
+            )}
+          </TrackedLink>
+        ))}
+      </div>
+
+      {actions.map((item) => (
         <TrackedLink
           analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
-          analyticsProperties={{ label: eventsItem.label, location: "desktop_nav_left" }}
-          aria-current={eventsActive ? "page" : undefined}
+          analyticsProperties={{ label: item.label, location: "top_bar" }}
           className={cn(
-            "fixed left-[8.6rem] top-9 z-[60] hidden min-h-11 items-center gap-3 py-2 text-xs font-semibold lowercase leading-none text-white/55 mix-blend-difference transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex",
-            eventsActive && "text-white",
+            "inline-flex h-10 items-center font-display text-sm font-semibold leading-none transition-opacity duration-200 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-base",
+            item.variant === "signup"
+              ? "rounded-none bg-[var(--nuclii-lime)] px-4 !text-black sm:px-5"
+              : // plain link: lime over dark, black over light sections
+                cn("px-2 transition-colors", lightBehind ? "!text-[#0A0A0B]" : "!text-[var(--nuclii-lime)]"),
           )}
-          href={eventsItem.href}
+          href={item.href}
+          key={item.label}
+          style={item.variant === "signup" ? ticketPillStyle : undefined}
         >
-          <span aria-hidden="true" className="h-3 w-px bg-current opacity-45" />
-          <span>{eventsItem.label}</span>
+          {item.label}
+          {/* sign up carries the ticket tear and a stub */}
+          {item.variant === "signup" && (
+            <span aria-hidden="true" className="ml-3 flex items-center gap-2.5">
+              <span className="h-5 border-l-2 border-dotted border-black/45" />
+              <ArrowRight className="size-3.5" strokeWidth={2.25} />
+            </span>
+          )}
         </TrackedLink>
-      )}
-
-      <nav
-        aria-label="Main navigation"
-        className="fixed right-6 top-6 z-[60] hidden items-center gap-5 text-white lg:right-10 lg:top-9 lg:flex"
-      >
-        {rightItems.map((item) => {
-          const active =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-
-          return (
-            <TrackedLink
-              analyticsEvent={
-                item.external
-                  ? ANALYTICS_EVENTS.outboundLinkClicked
-                  : ANALYTICS_EVENTS.navigationClicked
-              }
-              analyticsProperties={{
-                label: item.label,
-                location: "desktop_nav",
-                external: Boolean(item.external),
-              }}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "relative inline-flex min-h-11 items-center gap-1 py-2 text-sm font-semibold lowercase leading-none tracking-normal mix-blend-difference transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active
-                  ? "text-white after:scale-x-100"
-                  : "text-white/55 after:scale-x-0 hover:after:scale-x-100",
-              )}
-              href={item.href}
-              key={item.href}
-              rel={item.external ? "noopener noreferrer" : undefined}
-              target={item.external ? "_blank" : undefined}
-            >
-              {item.label}
-              {item.external && (
-                <>
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  <span className="sr-only">(opens in new tab)</span>
-                </>
-              )}
-            </TrackedLink>
-          );
-        })}
-        <AccessibilityPreferencesControl />
-      </nav>
-    </>
+      ))}
+    </nav>
   );
 }
 

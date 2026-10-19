@@ -13,6 +13,9 @@ type VideoBackgroundCarouselProps = {
   cycleMs?: number;
   maxSources?: number;
   playbackRate?: number;
+  // When set, the caller owns play/pause (and its reduced-motion handling);
+  // resuming continues from the current frame instead of restarting the clip.
+  playing?: boolean;
   randomize?: boolean;
   sources: readonly string[];
 };
@@ -37,6 +40,7 @@ function VideoBackgroundCarousel({
   cycleMs = DEFAULT_CYCLE_MS,
   maxSources,
   playbackRate = DEFAULT_PLAYBACK_RATE,
+  playing,
   randomize = false,
   sources,
 }: VideoBackgroundCarouselProps) {
@@ -45,10 +49,13 @@ function VideoBackgroundCarousel({
   const [accessibilityMotion, setAccessibilityMotion] = useState("full");
   const [mediaPaused, setMediaPaused] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const startedIndexRef = useRef<number | null>(null);
   const reduceMotion = useReducedMotion();
   const nextActive = playlist.length > 0 ? (active + 1) % playlist.length : 0;
-  const pausePlayback =
-    Boolean(reduceMotion) || accessibilityMotion !== "full" || mediaPaused;
+  const controlled = playing !== undefined;
+  const pausePlayback = controlled
+    ? !playing
+    : Boolean(reduceMotion) || accessibilityMotion !== "full" || mediaPaused;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -92,10 +99,13 @@ function VideoBackgroundCarousel({
 
     const video = videoRefs.current[active];
     if (!video) return;
-    video.currentTime = 0;
+    if (!controlled || startedIndexRef.current !== active) {
+      video.currentTime = 0;
+      startedIndexRef.current = active;
+    }
     video.playbackRate = playbackRate;
     video.play().catch(() => {});
-  }, [active, pausePlayback, playbackRate]);
+  }, [active, controlled, pausePlayback, playbackRate]);
 
   return (
     <div aria-hidden="true" className={cn("overflow-hidden", className)}>

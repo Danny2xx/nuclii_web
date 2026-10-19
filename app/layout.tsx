@@ -23,11 +23,27 @@ const sora = Sora({
   display: "swap",
 });
 
+const siteTitle = "Nuclii · more than memories.";
+const siteDescription =
+  "Discover what's on near you, host your own and keep everyone in the loop. Nuclii is where real-life moments start. Launching in Birmingham.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://nuclii.co.uk"),
-  title: "Nuclii - Every event starts here",
-  description:
-    "Nuclii is a platform for discovering, hosting, booking, and managing real-world experiences.",
+  title: siteTitle,
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Nuclii",
+    locale: "en_GB",
+    title: siteTitle,
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+  },
 };
 
 export const viewport: Viewport = {

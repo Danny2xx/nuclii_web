@@ -95,6 +95,7 @@
   --border: #26282f;
   --input: #121316;
   --ring: #ffffff;
+  --nuclii-lime: #A3BF1C;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -182,9 +183,27 @@ body::before {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.035) 0%, transparent 22rem);
 }
 
+/* top bar: logo left; account actions + menu button right, on one row */
 .nuclii-mobile-menu-button {
-  top: max(1rem, env(safe-area-inset-top));
+  top: max(1.25rem, env(safe-area-inset-top));
   right: max(1rem, env(safe-area-inset-right));
+}
+
+.nuclii-nav-actions {
+  top: max(1.25rem, env(safe-area-inset-top));
+  right: calc(max(1rem, env(safe-area-inset-right)) + 3.375rem);
+}
+
+@media (min-width: 1024px) {
+  .nuclii-mobile-menu-button {
+    top: 2.25rem;
+    right: 2.5rem;
+  }
+
+  .nuclii-nav-actions {
+    top: 2.25rem;
+    right: 5.875rem;
+  }
 }
 
 .nuclii-mobile-theme-toggle {
@@ -195,10 +214,6 @@ body::before {
 .nuclii-mobile-drawer {
   padding-top: calc(max(1rem, env(safe-area-inset-top)) + 5rem);
   padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 2rem));
-}
-
-html[data-mobile-nav="open"] .nuclii-logo-mark {
-  background-color: #6a6af2 !important;
 }
 
 a {
@@ -483,6 +498,36 @@ strong {
 
 .nuclii-marquee:hover {
   animation-play-state: paused;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HERO DOT — bounces only while hero motion is playing; paused
+   drops it back to rest. The reduced-motion rules below still apply.
+═══════════════════════════════════════════════════════════ */
+
+@keyframes nuclii-hero-dot-bounce {
+  0%,
+  55%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(var(--nuclii-hero-dot-lift));
+  }
+}
+
+.nuclii-hero-dot {
+  --nuclii-hero-dot-lift: -3px;
+}
+
+.nuclii-hero-dot[data-playing="true"] {
+  animation: nuclii-hero-dot-bounce 1.6s ease-in-out infinite;
+}
+
+@media (min-width: 1024px) {
+  .nuclii-hero-dot {
+    --nuclii-hero-dot-lift: -4px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════

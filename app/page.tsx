@@ -1,183 +1,135 @@
-import { DemoDoorway } from "@/components/home/demo-doorway";
-import { ExperienceLayersScroll } from "@/components/home/experience-layers-scroll";
-import { FeaturePillars } from "@/components/home/feature-pillars";
-import { Testimonials } from "@/components/home/testimonials";
-import { WaitlistForm } from "@/components/home/waitlist-form";
-import { FadeIn, Reveal } from "@/components/motion";
-import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
-import { SectionTitle } from "@/components/ui/marketing-typography";
-import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
+import { AppTeaserSection } from "@/components/home/app-teaser-section";
+import { ConceptSection } from "@/components/home/concept-section";
+import { ExploreSequence } from "@/components/home/explore-sequence";
+import { FaqSection } from "@/components/home/faq-section";
+import { GlobeSection } from "@/components/home/globe-section";
+import { CircleSection } from "@/components/home/circle-section";
+import { ControlSection } from "@/components/home/control-section";
+import { CreateLookSection } from "@/components/home/create-look-section";
+import { LineupSection } from "@/components/home/lineup-section";
+import { Prewarm } from "@/components/motion/prewarm";
+import { StackedSlides } from "@/components/motion/stacked-slides";
+import {
+  HeroMotionProvider,
+  HeroMotionToggle,
+  HeroVideo,
+} from "@/components/home/hero-motion";
+import { ArrowRight } from "lucide-react";
+
+import { TrackedLink } from "@/components/analytics/tracked-link";
+import { FadeIn } from "@/components/motion";
+import { motionToggleEdgeClassName } from "@/components/motion/motion-toggle-edge";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { ticketPillStyle } from "@/components/ui/ticket-pill";
+import { routes } from "@/lib/routes";
 
 const heroVideos = [
-  "/videos/nightlife.mp4",
-  "/videos/pickup.mp4",
-  "/videos/reveal.mp4",
-  "/videos/society.mp4",
-  "/videos/workshop.mp4",
+  "/videos/videos_web2/movie.mp4",
+  "/videos/videos_web2/party.mp4",
+  "/videos/videos_web2/matchday.mp4",
+  "/videos/videos_web2/football.mp4",
+  "/videos/videos_web2/pickup.mp4",
+  "/videos/videos_web2/runclub.mp4",
+  "/videos/videos_web2/large_group.mp4",
+  "/videos/videos_web2/study.mp4",
 ] as const;
 
-const experienceLayers = [
-  {
-    number: "01",
-    title: EXPERIENCE_ROLES.explorer.label,
-    description:
-      "find events, workshops, services, pickups and private moments around you without needing the right group chat.",
-    image: "/homepage/explore.jpg",
-    imagePosition: "50% 72%",
-    alt: "Friends sitting together beside the sea",
-  },
-  {
-    number: "02",
-    title: EXPERIENCE_ROLES.host.label,
-    description:
-      "turn an idea into a listing, manage demand, coordinate access and bring the right people around the moment.",
-    image: "/homepage/hosts.jpg",
-    imagePosition: "50% 48%",
-    alt: "An organiser planning an experience with their team",
-  },
-  {
-    number: "03",
-    title: EXPERIENCE_ROLES.venue.label,
-    description:
-      "show what your space can hold — capacity, atmosphere, availability and the kind of gatherings it was built for.",
-    image: "/homepage/venue.jpg",
-    imagePosition: "48% 50%",
-    alt: "A venue prepared for a gathering",
-  },
-  {
-    number: "04",
-    title: EXPERIENCE_ROLES.talent.label,
-    description:
-      "put your skill where organisers are already looking — food, decor, sound, styling, performance, workshops, media, craft and hands-on services.",
-    image: "/homepage/talent.jpg",
-    imagePosition: "72% 50%",
-    alt: "A DJ performing at an outdoor gathering",
-  },
-] as const;
+// the ticket's stub: a dashed perforation, then an arrow
+function TicketStub() {
+  return (
+    <span aria-hidden="true" className="flex items-center gap-3">
+      <span className="h-6 border-l-2 border-dotted border-black/45" />
+      <ArrowRight className="size-4" strokeWidth={2.25} />
+    </span>
+  );
+}
+
+const heroCtaClassName =
+  "inline-flex h-11 min-w-[8.5rem] shrink-0 items-center justify-between gap-3 rounded-none pl-5 pr-3.5 font-display text-base font-semibold lowercase sm:min-w-[9rem] !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none";
 
 export default function Home() {
   return (
     <main className="nuclii-page">
+      {/* loads and decodes each section just before it scrolls in */}
+      <Prewarm />
       <section
         className="relative min-h-[100svh] overflow-hidden"
         data-analytics-section="home_hero_waitlist"
         id="waitlist"
       >
-        <VideoBackgroundCarousel
-          className="absolute inset-0 [filter:saturate(0.62)_contrast(1.06)_brightness(0.76)]"
-          sources={heroVideos}
-        />
-        <div className="absolute inset-0 bg-black/42" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_48%,rgba(91,140,255,0.11),transparent_32%),linear-gradient(90deg,rgba(0,0,0,0.84)_0%,rgba(0,0,0,0.56)_46%,rgba(0,0,0,0.78)_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-background/86 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <HeroMotionProvider>
+          <HeroVideo className="absolute inset-0" sources={heroVideos} />
+          {/* light scrims keep the footage bright, darkening only behind the nav and copy */}
+          <div className="absolute inset-0 bg-black/15" />
+          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-        <div className="nuclii-container relative z-10 flex min-h-[100svh] items-end pb-[clamp(3.25rem,9vh,6rem)] pt-[max(7rem,16svh)] md:pt-[clamp(7rem,14vh,9rem)] lg:items-center">
-          <FadeIn className="grid w-full items-end gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,31rem)] lg:gap-20 xl:gap-24">
-            <div className="max-w-[45rem]">
-              <p className="mb-5 text-sm font-bold lowercase tracking-normal text-white/70 sm:text-base">
-                every event starts here
-              </p>
-              <h1 className="max-w-[17ch] text-[2.5rem] font-extrabold lowercase leading-[0.98] tracking-normal text-white text-balance sm:text-[3.3rem] lg:text-[3.85rem] xl:text-[4.25rem]">
-                nuclii is a new way to discover events, pop-ups and
-                experiences near you.
+          {/* full-width with a fluid gutter (not the capped container) so the copy stays anchored
+              to the same edges as the nav and toggle on wide screens */}
+          <div className="relative z-10 flex min-h-[100svh] w-full items-end px-[var(--container-x)] lg:px-[clamp(3rem,5.5vw,7rem)] pb-[clamp(3.25rem,9vh,6rem)] pt-[max(7rem,16svh)] md:pt-[clamp(7rem,14vh,9rem)] lg:pb-[clamp(5.5rem,10vh,7rem)]">
+            <FadeIn className="w-full">
+              <h1 className="mt-1 text-[2.75rem] font-semibold lowercase leading-none tracking-[-0.02em] text-white text-balance sm:text-[3.75rem] lg:text-[4rem] xl:text-[clamp(4.5rem,4.5vw,6rem)]">
+                more than memories
               </h1>
 
-              <div className="mt-7 max-w-[38rem] border-t border-white/18 pt-5 sm:mt-8">
-                <p className="text-base font-normal lowercase leading-[1.58] tracking-normal text-white/84 sm:text-lg">
-                  find local events, pop-ups, venues and communities near you
-                  — and, if you host, reach the right people. everything worth
-                  going to, in one place.
+              {/* copy sits just above the CTA row's baseline, as in the layout reference */}
+              <div className="mt-3 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+                <p className="min-w-0 max-w-[30em] font-display text-base font-normal leading-[1.5] tracking-normal text-white/90 sm:text-lg lg:mb-12 xl:text-[clamp(1.25rem,1.2vw,1.625rem)] xl:leading-[1.4]">
+                  <span className="lg:block">
+                    Start with an idea. Find the people it&apos;s for. Fill the room.
+                  </span>{" "}
+                  Then do it again.
                 </p>
-              </div>
-            </div>
 
-            <div className="w-full border-t border-white/18 pt-5 lg:ml-auto lg:max-w-[31rem] lg:border-l lg:border-t-0 lg:pl-10">
-              <div className="mb-5">
-                <p className="flex flex-wrap gap-x-3 gap-y-1 text-lg font-extrabold lowercase leading-none tracking-normal text-white sm:text-xl">
-                  <span>discover.</span>
-                  <span>host.</span>
-                  <span>collaborate.</span>
-                </p>
-                <p className="mt-3 max-w-[27rem] text-sm lowercase leading-6 text-white/64 text-pretty">
-                  join the first wave and be first through the door when we
-                  open.
-                </p>
+                <div className="flex shrink-0 items-center gap-2.5 lg:mr-16">
+                  <TrackedLink
+                    analyticsEvent={ANALYTICS_EVENTS.ctaClicked}
+                    analyticsProperties={{ cta: "explore", location: "home_hero" }}
+                    className="inline-flex h-11 shrink-0 items-center justify-center rounded-none bg-white px-6 font-display text-base font-semibold lowercase !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none"
+                    href={routes.explore}
+                    style={ticketPillStyle}
+                  >
+                    explore
+                  </TrackedLink>
+                  <TrackedLink
+                    analyticsEvent={ANALYTICS_EVENTS.ctaClicked}
+                    analyticsProperties={{ cta: "create", location: "home_hero" }}
+                    className={`${heroCtaClassName} bg-[var(--nuclii-lime)]`}
+                    href={routes.create}
+                    style={ticketPillStyle}
+                  >
+                    create
+                    <TicketStub />
+                  </TrackedLink>
+                </div>
               </div>
-              <WaitlistForm
-                className="max-w-[31rem]"
-                layout="hero"
-                source="home hero"
-                submitLabel="join waitlist"
-              />
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      <section
-        className="border-t border-border px-[var(--container-x)] pb-16 pt-16 md:pb-24 md:pt-24"
-        data-analytics-section="home_experience_layers"
-      >
-        <div className="mx-auto w-full max-w-[92rem]">
-          <div className="mb-10 grid gap-6 md:mb-14 md:grid-cols-[0.85fr_1fr] md:items-end md:gap-16">
-            <Reveal>
-              <SectionTitle className="text-[clamp(2.35rem,5vw,4.4rem)] leading-[1.03]">
-                one platform for every side of the experience.
-              </SectionTitle>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <div className="space-y-4 text-base leading-relaxed tracking-[-0.02em] text-white/72 sm:text-xl">
-                <p>
-                  explorers find what is happening. hosts and organisers shape
-                  demand. spaces, venues, talent and service providers become
-                  easier to discover when the moment needs them.
-                </p>
-                <p className="text-base font-bold text-white/88 sm:text-lg">
-                  that ecosystem is the product — not another social feed.
-                </p>
-              </div>
-            </Reveal>
+            </FadeIn>
           </div>
 
-          <ExperienceLayersScroll layers={experienceLayers} />
-        </div>
+          {/* bottom-right utility spot, lined up with the nav's right edge */}
+          <HeroMotionToggle className={`absolute bottom-1.5 z-10 lg:bottom-9 ${motionToggleEdgeClassName}`} />
+        </HeroMotionProvider>
       </section>
 
-      <DemoDoorway />
+      <ConceptSection />
 
-      <section
-        className="border-t border-border px-[var(--container-x)] pb-16 pt-20 md:pb-28 md:pt-28"
-        data-analytics-section="home_why_we_exist"
-      >
-        <div className="mx-auto flex w-full max-w-[86rem] flex-col gap-16 md:gap-24">
-          <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-start md:gap-16">
-            <Reveal>
-              <SectionTitle className="text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.03]">
-                great moments should not be hard to find, difficult to build,
-                or easy to forget.
-              </SectionTitle>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <div className="space-y-6 text-base leading-relaxed tracking-[-0.02em] text-white/78 sm:text-xl md:border-l md:border-white/12 md:pl-12">
-                <p>
-                  too many moments are held together by scattered tools, private
-                  links, screenshots, group chats and last-minute favours.
-                </p>
-                <p className="font-bold text-white">
-                  nuclii brings the missing pieces into one place.
-                </p>
-              </div>
-            </Reveal>
-          </div>
+      <GlobeSection />
 
-          <Reveal>
-            <Testimonials />
-          </Reveal>
-        </div>
-      </section>
+      {/* testing: scroll sequence in place of <ExploreSection /> — swap back to undo */}
+      <ExploreSequence />
 
-      <FeaturePillars />
+      {/* the "make" story: four steps that stack over each other as you
+          scroll (was the pinned <MakeChapter /> — swap back to undo) */}
+      <StackedSlides>
+        <CreateLookSection />
+        <ControlSection />
+        <LineupSection />
+        <CircleSection />
+      </StackedSlides>
+
+      <AppTeaserSection />
+
+      <FaqSection />
     </main>
   );
 }
