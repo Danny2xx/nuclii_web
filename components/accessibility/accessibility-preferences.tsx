@@ -228,10 +228,10 @@ function AccessibilityPreferencesControl({
           type="button"
         >
           <span>
-            <span className="block text-sm font-extrabold lowercase" id={`${panelId}-mobile-title`}>
+            <span className="block text-xl font-extrabold lowercase tracking-[-0.03em]" id={`${panelId}-mobile-title`}>
               accessibility settings
             </span>
-            <span className="mt-0.5 block text-xs font-medium lowercase leading-5 text-black/55">
+            <span className="mt-1 block text-sm font-medium lowercase leading-5 text-black/55">
               motion, text, fonts, contrast and focus
             </span>
           </span>

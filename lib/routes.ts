@@ -1,8 +1,12 @@
 export const routes = {
   home: "/",
   waitlist: "/join",
-  partner: "/early-access",
+  partner: "/partner",
   events: "/events",
+  whoItsFor: "/who-its-for",
+  studio: "/studio",
+  // the join-the-team form, linked from the Studio flyer
+  joinTeamForm: "https://tally.so/r/xX6O1J",
   demo: "/demo",
   demoSection: "/#demo",
   // Shared by the navbar and the home hero so each pair can't drift apart.

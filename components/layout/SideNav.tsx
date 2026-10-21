@@ -11,22 +11,25 @@ import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 // Top-bar actions beside the menu button. Log in and sign up are always
-// there, as solid pills that read over light, dark and video. On the home
-// hero (desktop) the main links sit inline too; once you scroll past the hero
-// they fold away into the menu.
+// there. On desktop the main links sit inline too, over the page's opening
+// section; once you scroll past it they fold away into the menu. The home
+// page folds after its hero (#waitlist); every other page after its first
+// section.
 function useOverHomeHero(pathname: string) {
-  const [overHero, setOverHero] = useState(false);
+  const [overHero, setOverHero] = useState(true);
 
-  // Looks the hero up on every check: the nav lives in the layout and can
+  // Looks the section up on every check: the nav lives in the layout and can
   // mount before the page content does, so a one-off lookup can miss it.
   useEffect(() => {
-    if (pathname !== "/") return;
     let frame = 0;
     const check = () => {
       frame = 0;
-      const hero = document.getElementById("waitlist");
-      // collapses once the hero has scrolled up behind the bar
-      setOverHero(Boolean(hero && hero.getBoundingClientRect().bottom > 96));
+      const top =
+        pathname === "/" ? document.getElementById("waitlist") : document.querySelector("main section");
+      // collapses once that section has scrolled up behind the bar; pages
+      // without one fold after a short scroll
+      const over = top ? top.getBoundingClientRect().bottom > 96 : window.scrollY < 160;
+      setOverHero((current) => (current === over ? current : over));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(check);
@@ -41,8 +44,7 @@ function useOverHomeHero(pathname: string) {
     };
   }, [pathname]);
 
-  // only the homepage has a hero; elsewhere the bar is always compact
-  return overHero && pathname === "/";
+  return overHero;
 }
 
 // Whether the page behind the bar is light, so lime "Log in" (too faint on
@@ -132,7 +134,10 @@ function SideNav() {
           <TrackedLink
             analyticsEvent={item.external ? ANALYTICS_EVENTS.outboundLinkClicked : ANALYTICS_EVENTS.navigationClicked}
             analyticsProperties={{ label: item.label, location: "hero_nav", external: Boolean(item.external) }}
-            className="relative inline-flex min-h-11 items-center gap-1 font-display text-base font-semibold leading-none !text-white after:absolute after:bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              "relative inline-flex min-h-11 items-center gap-1 font-display text-base font-semibold leading-none transition-colors after:absolute after:bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              lightBehind ? "!text-[#0A0A0B]" : "!text-white",
+            )}
             href={item.href}
             key={item.label}
             rel={item.external ? "noopener noreferrer" : undefined}

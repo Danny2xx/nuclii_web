@@ -126,14 +126,14 @@ function Footer() {
               </ul>
             </nav>
 
-            <nav aria-label="Use cases">
-              <p className={headingClass}>use cases</p>
+            <nav aria-label="Made for">
+              <p className={headingClass}>made for</p>
               <ul className="!mt-4 flex flex-col gap-3">
                 {useCaseLinks.map((link) => (
                   <li key={link.label}>
                     <TrackedLink
                       analyticsEvent={ANALYTICS_EVENTS.navigationClicked}
-                      analyticsProperties={{ label: link.label, location: "footer_use_cases" }}
+                      analyticsProperties={{ label: link.label, location: "footer_made_for" }}
                       className={linkClass}
                       href={link.href}
                     >

@@ -54,8 +54,8 @@ type Memory = {
 
 const memories: readonly Memory[] = [
   {
-    clip: "/images/memories/partya.mp4",
-    event: "Late Night Activities",
+    clip: "/images/memories/midnight_chronicles.mp4",
+    event: "With the Girlies",
     meta: "Sat 16 May · Digbeth",
     host: "Tobi",
     others: 6,
@@ -73,7 +73,7 @@ const memories: readonly Memory[] = [
   },
   {
     clip: "/images/memories/partyb.mp4",
-    event: "Unpopular Opinions",
+    event: "'Casual' Games Night",
     meta: "Fri 8 May · Digbeth",
     host: "Zara",
     others: 4,
@@ -90,8 +90,8 @@ const memories: readonly Memory[] = [
     z: 3,
   },
   {
-    clip: "/images/memories/partyc.mp4",
-    event: "Grace's Birthday Link-up",
+    clip: "/images/memories/just-roaming.mp4",
+    event: "Just Roaming",
     meta: "Sat 2 May · Moseley",
     host: "Liv",
     others: 9,
@@ -111,10 +111,10 @@ const memories: readonly Memory[] = [
 
 // Notches sit level with the perforation between the clip window and the
 // stub. Sizes are in cqw of the ticket (an @container), so they scale with it:
-// 0.8cqw white rim + 4cqw padding + a 4:5 window 90.4cqw wide (113cqw tall)
-// + 3cqw gap.
-const RIM = "0.8cqw";
-const PERF_Y = "120.8cqw";
+// 0.56cqw white rim + 2.8cqw padding + a 4:5 window 93.28cqw wide
+// (116.6cqw tall) + 3cqw gap.
+const RIM = "0.56cqw";
+const PERF_Y = "122.96cqw";
 const notches = ["0", "100%"].map(
   (x) =>
     `radial-gradient(circle 3.4cqw at ${x} ${PERF_Y}, transparent 98%, #000 100%)`,
@@ -158,7 +158,7 @@ function Ticket({
     <div className="@container">
       {/* white rim around the black ticket, notched with it */}
       <div className="bg-white shadow-[0_30px_60px_-28px_rgba(0,0,0,0.55)]" style={{ ...ticketMask, padding: RIM }}>
-      <div className="bg-[#0A0A0B] p-[4cqw] pb-[6cqw] text-white">
+      <div className="bg-[#0A0A0B] p-[2.8cqw] pb-[4.2cqw] text-white">
         {/* the window: an "admit one" face that develops into the clip */}
         <div className="relative aspect-[4/5] overflow-hidden bg-[#141416]">
           <video

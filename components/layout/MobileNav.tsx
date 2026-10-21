@@ -129,14 +129,14 @@ function MobileNav() {
             <TrackedLink
               analyticsEvent={ANALYTICS_EVENTS.ctaClicked}
               analyticsProperties={{
-                cta: "join_waitlist",
+                cta: "try_web_app",
                 location: "mobile_drawer_primary",
               }}
               className="mt-8 inline-flex min-h-14 w-full items-center justify-between border-y border-black/14 py-4 text-xl font-extrabold lowercase tracking-[-0.03em] text-black transition hover:text-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
               href={routes.waitlist}
               onClick={() => setOpen(false)}
             >
-              join early access
+              try the web app
               <ArrowRight aria-hidden="true" className="size-5" />
             </TrackedLink>
 

@@ -1,7 +1,5 @@
 import { routes } from "@/lib/routes";
 
-const BUILD_WITH_US_FORM = "https://tally.so/r/xX6O1J";
-
 export type NavItem = {
   label: string;
   href: string;
@@ -18,8 +16,9 @@ export const sideNavItems: readonly NavItem[] = [
   { label: "demo", href: routes.demoSection, hidden: true },
   { label: "motives", href: routes.events, hidden: true },
   { label: "explore", href: routes.explore },
-  { label: "for hosts", href: routes.partner },
-  { label: "studio", href: BUILD_WITH_US_FORM, external: true },
+  { label: "studio", href: routes.studio },
+  { label: "who it's for", href: routes.whoItsFor },
+  { label: "partner", href: routes.partner },
   { label: "create", href: routes.create, hidden: true },
   { label: "Log in", href: routes.login, variant: "login" },
   { label: "sign up", href: routes.signup, variant: "signup" },
@@ -36,17 +35,18 @@ export const footerLinks: readonly {
 }[] = [
   { label: "events", href: routes.events },
   { label: "partner with us", href: routes.partner },
-  { label: "nuclii studio", bold: "studio", href: BUILD_WITH_US_FORM, external: true },
+  { label: "nuclii studio", bold: "studio", href: routes.studio },
+  { label: "join the team", href: `${routes.studio}#team` },
   { label: "get in touch", href: "mailto:hello@nuclii.co.uk" },
 ] as const;
 
-// The footer's "use cases" column; each goes to For Hosts for now.
+// The footer's "made for" column: each jumps to its section on /who-its-for.
 export const useCaseLinks = [
-  { label: "students", href: routes.partner },
-  { label: "organisers", href: routes.partner },
-  { label: "offline communities", href: routes.partner },
-  { label: "venues", href: routes.partner },
-  { label: "talent & makers", href: routes.partner },
+  { label: "students", href: `${routes.whoItsFor}#students` },
+  { label: "organisers", href: `${routes.whoItsFor}#organisers` },
+  { label: "offline communities", href: `${routes.whoItsFor}#offline-communities` },
+  { label: "venues", href: `${routes.whoItsFor}#venues` },
+  { label: "talent & makers", href: `${routes.whoItsFor}#talent` },
 ] as const;
 
 // Instagram, TikTok and Threads are all @wearenuclii.

@@ -5,8 +5,14 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/hosts",
-        destination: "/early-access#hosts",
+        destination: "/partner",
         permanent: false,
+      },
+      // the old partner page lived here
+      {
+        source: "/early-access",
+        destination: "/partner",
+        permanent: true,
       },
     ];
   },
