@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
+  useMotionValue,
   useScroll,
   useSpring,
   useTransform,
@@ -25,10 +26,13 @@ import { useLessMotion } from "@/components/motion/use-less-motion";
 //   title    – the chapter title takes the whole screen, then hands off
 //
 // Smoothness rules: everything moves with transforms/opacity only (no layout),
-// every value comes from one spring-smoothed scroll progress (so wheel steps
-// glide instead of jumping), and stacking never changes mid-flight. Values are
-// computed in JS (function transforms) rather than handed to the browser's
-// scroll timeline, which snaps back once the section scrolls past its end.
+// and stacking never changes mid-flight. Where the browser supports
+// scroll-driven animations (ViewTimeline: Chrome, Edge, Safari 26), every
+// part's whole journey is sampled once into keyframes and handed to the
+// compositor, so the sequence tracks the scroll exactly, off the main thread,
+// like a native app. `fill: both` holds the end state once the section has
+// scrolled past (no snapping back). Elsewhere it falls back to one
+// spring-smoothed scroll progress computed in JS.
 
 const TITLE = "now make your own.";
 
@@ -90,6 +94,41 @@ const easeIn = (t: number) => t ** 3;
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
 const ramp = (v: number, from: number, to: number) => clamp01((v - from) / (to - from));
 
+// Scroll-driven animations on the compositor (not in every browser yet).
+type ViewTimelineCtor = new (options: { subject: Element; axis?: "block" | "inline" }) => AnimationTimeline;
+
+function viewTimelineCtor() {
+  return (window as unknown as { ViewTimeline?: ViewTimelineCtor }).ViewTimeline;
+}
+
+function useNativeScrollTimeline() {
+  const [native, setNative] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setNative(Boolean(viewTimelineCtor())));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return native;
+}
+
+// The section pins from its top meeting the top of the screen until its
+// bottom meets the bottom: the "contain" range of a view timeline.
+function scrollAnimation(
+  el: Element | null,
+  timeline: AnimationTimeline,
+  sample: (p: number) => Keyframe,
+  steps = 64,
+) {
+  if (!el) return null;
+  const frames = Array.from({ length: steps + 1 }, (_, i) => ({ ...sample(i / steps), offset: i / steps }));
+  return el.animate(frames, {
+    timeline,
+    fill: "both",
+    easing: "linear",
+    rangeStart: "contain 0%",
+    rangeEnd: "contain 100%",
+  } as KeyframeAnimationOptions);
+}
+
 function useIsDesktop() {
   const [desktop, setDesktop] = useState(false);
   useEffect(() => {
@@ -110,52 +149,69 @@ type CardPlan = {
   stackRotate: number;
 };
 
-function SequenceCard({
-  plan,
-  stage,
-  progress,
-}: {
-  plan: CardPlan;
-  stage: { w: number; h: number };
-  progress: MotionValue<number>;
-}) {
+type Stage = { w: number; h: number };
+type CardState = { x: number; y: number; rotate: number; scale: number; opacity: number };
+
+// One function describes a card's whole journey through the sequence.
+function cardState(plan: CardPlan, stage: Stage, p: number): CardState {
   const { spot } = plan;
   const featured = plan.event.id === FEATURED_ID;
   const emerges = spot.layer > 2; // in front of the phone, so it fades out of it
   const fx = ((spot.x - 50) / 100) * stage.w;
   const fy = ((spot.y - 50) / 100) * stage.h;
-
-  // one function describes the whole journey; each style reads its part
-  const state = (p: number) => {
-    const deal = easeOut(ramp(p, plan.dealAt, plan.dealAt + T.dealLength));
-    const collapse = easeIn(ramp(p, plan.collapseAt, plan.collapseAt + T.collapseLength));
-    const lift = featured ? Math.sin(Math.PI * ramp(p, T.holdStart, T.holdEnd)) : 0;
-    const out = deal * (1 - collapse);
-    return {
-      x: fx * out,
-      y: fy * out - lift * stage.h * 0.03,
-      rotate: (plan.stackRotate + (spot.r - plan.stackRotate) * deal) * (1 - collapse) * (1 - easeInOut(lift)),
-      scale: (0.82 + 0.18 * deal) * (1 - 0.6 * collapse) * (1 + 0.16 * lift),
-      // floor of 0.001 keeps hidden cards painted (invisible), so nothing has
-      // to be drawn for the first time mid-animation
-      opacity: Math.max(
-        0.001,
-        (emerges ? ramp(p, plan.dealAt, plan.dealAt + T.dealLength * 0.35) : 1) *
-          (1 - ramp(collapse, 0.35, 1)),
-      ),
-    };
+  const deal = easeOut(ramp(p, plan.dealAt, plan.dealAt + T.dealLength));
+  const collapse = easeIn(ramp(p, plan.collapseAt, plan.collapseAt + T.collapseLength));
+  const lift = featured ? Math.sin(Math.PI * ramp(p, T.holdStart, T.holdEnd)) : 0;
+  const out = deal * (1 - collapse);
+  return {
+    x: fx * out,
+    y: fy * out - lift * stage.h * 0.03,
+    rotate: (plan.stackRotate + (spot.r - plan.stackRotate) * deal) * (1 - collapse) * (1 - easeInOut(lift)),
+    scale: (0.82 + 0.18 * deal) * (1 - 0.6 * collapse) * (1 + 0.16 * lift),
+    // floor of 0.001 keeps hidden cards painted (invisible), so nothing has
+    // to be drawn for the first time mid-animation
+    opacity: Math.max(
+      0.001,
+      (emerges ? ramp(p, plan.dealAt, plan.dealAt + T.dealLength * 0.35) : 1) * (1 - ramp(collapse, 0.35, 1)),
+    ),
   };
+}
 
-  const x = useTransform(progress, (p) => state(p).x);
-  const y = useTransform(progress, (p) => state(p).y);
-  const rotate = useTransform(progress, (p) => state(p).rotate);
-  const scale = useTransform(progress, (p) => state(p).scale);
-  const opacity = useTransform(progress, (p) => state(p).opacity);
+const cardTransform = (s: CardState) =>
+  `translateX(${s.x.toFixed(2)}px) translateY(${s.y.toFixed(2)}px) rotate(${s.rotate.toFixed(3)}deg) scale(${s.scale.toFixed(4)})`;
+
+// the rest of the stage, as functions of progress
+const darkAt = (p: number) => easeInOut(ramp(p, T.darkStart, T.darkEnd));
+const phoneScaleAt = (p: number) => 1 - 0.45 * easeIn(ramp(p, T.collapseStart, T.phoneOut[1]));
+const phoneOpacityAt = (p: number) => 1 - ramp(p, T.phoneOut[0], T.phoneOut[1]);
+const feedDriftAt = (p: number) => -32 * easeInOut(ramp(p, 0.04, 0.6));
+const titleAt = (p: number) => easeOut(ramp(p, T.titleIn[0], T.titleIn[1]));
+
+function SequenceCard({
+  plan,
+  stage,
+  progress,
+  cardRef,
+}: {
+  plan: CardPlan;
+  stage: Stage;
+  progress: MotionValue<number>;
+  cardRef: (el: HTMLLIElement | null) => void;
+}) {
+  // the JS fallback: one journey calculation per frame, shared by each style
+  const memo = useRef<{ p: number; s: CardState } | null>(null);
+  const at = (p: number) => {
+    if (memo.current?.p !== p) memo.current = { p, s: cardState(plan, stage, p) };
+    return memo.current.s;
+  };
+  const transform = useTransform(progress, (p) => cardTransform(at(p)));
+  const opacity = useTransform(progress, (p) => at(p).opacity);
 
   return (
     <motion.li
       className="absolute left-1/2 top-1/2 w-[27%] -translate-x-1/2 -translate-y-1/2 will-change-transform lg:w-[16%]"
-      style={{ x, y, rotate, scale, opacity, zIndex: spot.layer }}
+      ref={cardRef}
+      style={{ transform, opacity, zIndex: plan.spot.layer }}
     >
       {/* no hover effects: cards slide under a resting pointer while scrolling,
           and hover repaints/restacking would stutter mid-flight */}
@@ -167,12 +223,21 @@ function SequenceCard({
 function PinnedSequence() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const darkRef = useRef<HTMLDivElement | null>(null);
+  const phoneRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const cardRefs = useRef(new Map<string, HTMLLIElement>());
   const desktop = useIsDesktop();
-  const [stage, setStage] = useState({ w: 0, h: 0 });
+  const native = useNativeScrollTimeline();
+  const [stage, setStage] = useState<Stage>({ w: 0, h: 0 });
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  // light spring: glides between wheel steps without feeling laggy
-  const progress = useSpring(scrollYProgress, { stiffness: 220, damping: 38, mass: 0.4, restDelta: 0.0004 });
+  // light spring for the JS fallback: glides between wheel steps
+  const sprung = useSpring(scrollYProgress, { stiffness: 220, damping: 38, mass: 0.4, restDelta: 0.0004 });
+  // with native timelines the compositor drives everything; the JS values
+  // hold still at the start (and the running animations override them)
+  const still = useMotionValue(0);
+  const progress = native ? still : sprung;
 
   // decode every card photo before the section arrives, so no image is
   // decoded (and no frame dropped) while cards are flying
@@ -206,27 +271,62 @@ function PinnedSequence() {
     return () => observer.disconnect();
   }, []);
 
-  const layout = desktop ? desktopLayout : mobileLayout;
-  const placed = allEvents.filter((event) => layout[event.id]);
   // deal from the phone outward, pull back in the reverse order
-  const byDistance = [...placed].sort(
-    (a, b) =>
-      Math.hypot(layout[a.id].x - 50, layout[a.id].y - 50) - Math.hypot(layout[b.id].x - 50, layout[b.id].y - 50),
-  );
-  const last = Math.max(1, byDistance.length - 1);
-  const plans: CardPlan[] = byDistance.map((event, order) => ({
-    event,
-    spot: layout[event.id],
-    dealAt: T.dealStart + (order / last) * T.dealSpread,
-    collapseAt: T.collapseStart + ((last - order) / last) * T.collapseSpread,
-    stackRotate: (order % 2 ? 1 : -1) * (2 + (order % 4)),
-  }));
+  const plans = useMemo<CardPlan[]>(() => {
+    const layout = desktop ? desktopLayout : mobileLayout;
+    const byDistance = allEvents
+      .filter((event) => layout[event.id])
+      .sort(
+        (a, b) =>
+          Math.hypot(layout[a.id].x - 50, layout[a.id].y - 50) - Math.hypot(layout[b.id].x - 50, layout[b.id].y - 50),
+      );
+    const last = Math.max(1, byDistance.length - 1);
+    return byDistance.map((event, order) => ({
+      event,
+      spot: layout[event.id],
+      dealAt: T.dealStart + (order / last) * T.dealSpread,
+      collapseAt: T.collapseStart + ((last - order) / last) * T.collapseSpread,
+      stackRotate: (order % 2 ? 1 : -1) * (2 + (order % 4)),
+    }));
+  }, [desktop]);
 
-  const dark = useTransform(progress, (p) => easeInOut(ramp(p, T.darkStart, T.darkEnd)));
-  const phoneScale = useTransform(progress, (p) => 1 - 0.45 * easeIn(ramp(p, T.collapseStart, T.phoneOut[1])));
-  const phoneOpacity = useTransform(progress, (p) => 1 - ramp(p, T.phoneOut[0], T.phoneOut[1]));
-  const screenDrift = useTransform(progress, (p) => `${-32 * easeInOut(ramp(p, 0.04, 0.6))}%`);
-  const titleT = useTransform(progress, (p) => easeOut(ramp(p, T.titleIn[0], T.titleIn[1])));
+  // native path: sample every journey into keyframes, once per stage size
+  useEffect(() => {
+    const Timeline = viewTimelineCtor();
+    const section = sectionRef.current;
+    if (!native || !Timeline || !section || !stage.w) return;
+    const timeline = new Timeline({ subject: section, axis: "block" });
+    const animations = [
+      scrollAnimation(darkRef.current, timeline, (p) => ({ opacity: darkAt(p) })),
+      scrollAnimation(phoneRef.current, timeline, (p) => ({
+        transform: `scale(${phoneScaleAt(p).toFixed(4)})`,
+        opacity: phoneOpacityAt(p),
+      })),
+      scrollAnimation(section.querySelector("[data-phone-feed]"), timeline, (p) => ({
+        transform: `translateY(${feedDriftAt(p).toFixed(3)}%)`,
+      })),
+      scrollAnimation(titleRef.current, timeline, (p) => {
+        const t = titleAt(p);
+        return {
+          opacity: Math.max(0.001, t),
+          transform: `translateY(${(48 * (1 - t)).toFixed(2)}px) scale(${(0.94 + 0.06 * t).toFixed(4)})`,
+        };
+      }),
+      ...plans.map((plan) =>
+        scrollAnimation(cardRefs.current.get(plan.event.id) ?? null, timeline, (p) => {
+          const s = cardState(plan, stage, p);
+          return { transform: cardTransform(s), opacity: s.opacity };
+        }),
+      ),
+    ];
+    return () => animations.forEach((animation) => animation?.cancel());
+  }, [native, stage, plans]);
+
+  const dark = useTransform(progress, darkAt);
+  const phoneScale = useTransform(progress, phoneScaleAt);
+  const phoneOpacity = useTransform(progress, phoneOpacityAt);
+  const screenDrift = useTransform(progress, (p) => `${feedDriftAt(p)}%`);
+  const titleT = useTransform(progress, titleAt);
   // floor keeps the huge title painted from the start, so it never rasterises mid-scroll
   const titleOpacity = useTransform(titleT, (t) => Math.max(0.001, t));
   const titleY = useTransform(titleT, (t) => 48 * (1 - t));
@@ -241,7 +341,12 @@ function PinnedSequence() {
     >
       <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-[#F7F7FA] px-[var(--container-x)] pt-14">
         {/* fades in over the light background: cheaper than animating the colour */}
-        <motion.div aria-hidden="true" className="absolute inset-0 bg-[#0A0A0B] will-change-[opacity]" style={{ opacity: dark }} />
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#0A0A0B] will-change-[opacity]"
+          ref={darkRef}
+          style={{ opacity: dark }}
+        />
 
         {/* stage: portrait on phones/tablets, wide from lg — sized to fit the screen */}
         <div
@@ -250,6 +355,7 @@ function PinnedSequence() {
         >
           <motion.div
             className="absolute left-1/2 top-1/2 z-[2] w-[50%] -translate-x-1/2 -translate-y-1/2 will-change-transform lg:w-[27%]"
+            ref={phoneRef}
             style={{ scale: phoneScale, opacity: phoneOpacity }}
           >
             <PhonePreview contentY={screenDrift} />
@@ -257,7 +363,16 @@ function PinnedSequence() {
 
           <ul aria-label="example events">
             {plans.map((plan) => (
-              <SequenceCard key={plan.event.id} plan={plan} progress={progress} stage={stage} />
+              <SequenceCard
+                cardRef={(el) => {
+                  if (el) cardRefs.current.set(plan.event.id, el);
+                  else cardRefs.current.delete(plan.event.id);
+                }}
+                key={plan.event.id}
+                plan={plan}
+                progress={progress}
+                stage={stage}
+              />
             ))}
           </ul>
         </div>
@@ -265,6 +380,7 @@ function PinnedSequence() {
         <motion.h2
           className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 px-[var(--container-x)] text-center font-display text-[clamp(3rem,9vw,8.5rem)] !font-bold lowercase leading-[0.95] tracking-[-0.04em] !text-white will-change-transform"
           id="explore-sequence-title"
+          ref={titleRef}
           style={{ opacity: titleOpacity, y: titleY, scale: titleScale }}
         >
           {TITLE}

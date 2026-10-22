@@ -10,37 +10,42 @@ import { ticketPillStyle } from "@/components/ui/ticket-pill";
 import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-// Top-bar actions beside the menu button. Log in and sign up are always
-// there. On desktop the main links sit inline too, over the page's opening
-// section; once you scroll past it they fold away into the menu. The home
-// page folds after its hero (#waitlist); every other page after its first
-// section.
+// Top-bar actions beside the menu button. Log in and sign up sit here from
+// tablets up; on phones they'd crowd the page, so they live in the menu only.
+// On desktop the main links sit inline too, over the page's opening section;
+// once you scroll past it they fold away into the menu. The home page folds
+// after its hero (#waitlist); every other page after its first section.
 function useOverHomeHero(pathname: string) {
   const [overHero, setOverHero] = useState(true);
 
-  // Looks the section up on every check: the nav lives in the layout and can
-  // mount before the page content does, so a one-off lookup can miss it.
+  // An IntersectionObserver does the watching, so scrolling never forces a
+  // layout. The nav lives in the layout and can mount before the page content
+  // does, so until the section turns up each scroll tries the lookup again
+  // (and pages without one fold after a short scroll).
   useEffect(() => {
-    let frame = 0;
-    const check = () => {
-      frame = 0;
+    let observer: IntersectionObserver | null = null;
+    const set = (over: boolean) => setOverHero((current) => (current === over ? current : over));
+    const attach = () => {
       const top =
         pathname === "/" ? document.getElementById("waitlist") : document.querySelector("main section");
-      // collapses once that section has scrolled up behind the bar; pages
-      // without one fold after a short scroll
-      const over = top ? top.getBoundingClientRect().bottom > 96 : window.scrollY < 160;
-      setOverHero((current) => (current === over ? current : over));
+      if (!top) return false;
+      // collapses once the section has scrolled up behind the bar (96px)
+      observer = new IntersectionObserver(([entry]) => set(entry.isIntersecting), {
+        rootMargin: "-96px 0px 0px 0px",
+      });
+      observer.observe(top);
+      return true;
     };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(check);
+    const onScroll = () => {
+      if (observer || attach()) return;
+      set(window.scrollY < 160);
     };
-    schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    const first = requestAnimationFrame(onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(first);
+      observer?.disconnect();
+      window.removeEventListener("scroll", onScroll);
     };
   }, [pathname]);
 
@@ -66,15 +71,20 @@ function effectiveOpacity(el: Element) {
   return opacity;
 }
 
+// Hit-testing forces a layout, so it runs at most every CHECK_MS while you
+// scroll (and once more when you stop), never on every frame.
+const CHECK_MS = 120;
+
 function useLightBehind(barRef: RefObject<HTMLElement | null>, pathname: string) {
   const [light, setLight] = useState(false);
 
   useEffect(() => {
-    let frame = 0;
+    let timer = 0;
     const check = () => {
-      frame = 0;
+      timer = 0;
       const bar = barRef.current;
-      if (!bar) return;
+      // hidden (phones): nothing to colour
+      if (!bar || bar.getClientRects().length === 0) return;
       const box = bar.getBoundingClientRect();
       const stack = document.elementsFromPoint(box.left + 12, box.top + box.height / 2);
       let next = false;
@@ -89,13 +99,13 @@ function useLightBehind(barRef: RefObject<HTMLElement | null>, pathname: string)
       setLight((current) => (current === next ? current : next));
     };
     const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(check);
+      if (!timer) timer = window.setTimeout(check, CHECK_MS);
     };
     schedule();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     return () => {
-      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
@@ -120,7 +130,7 @@ function SideNav() {
     <nav
       aria-label="Main navigation"
       ref={barRef}
-      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 lg:right-[5.875rem] lg:top-9"
+      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 max-md:hidden lg:right-[5.875rem] lg:top-9"
     >
       {/* inline links: desktop only, shown over the home hero */}
       <div

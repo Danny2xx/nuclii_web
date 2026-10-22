@@ -53,58 +53,57 @@ function CategoryCard({ item, hidden }: { item: CategoryItem; hidden?: boolean }
 }
 
 // Drifts slowly while the section plays; any hover, touch or focus hands
-// control back to the visitor. The list renders twice so the drift can wrap.
+// control back to the visitor, who can also swipe the strip. The list renders
+// twice so the drift can wrap. The drift is a CSS transform animation, so it
+// runs on the compositor and never competes with page scrolling (moving
+// scrollLeft every frame did, and stuttered).
 function CategoryRail({ playing }: { playing: boolean }) {
-  const railRef = useRef<HTMLUListElement | null>(null);
+  const trackRef = useRef<HTMLUListElement | null>(null);
   const [interacting, setInteracting] = useState(false);
+  const [duration, setDuration] = useState(0);
 
+  // one loop is half the track; its length sets the speed
   useEffect(() => {
-    const rail = railRef.current;
-    if (!rail || !playing || interacting) return;
-
-    let frame = 0;
-    let last = performance.now();
-    let position = rail.scrollLeft;
-
-    const tick = (now: number) => {
-      const loopWidth = rail.scrollWidth / 2;
-      // a manual scroll since the last frame moves our starting point
-      if (Math.abs(rail.scrollLeft - Math.round(position)) > 1) position = rail.scrollLeft;
-      position += ((now - last) / 1000) * RAIL_SPEED;
-      if (position >= loopWidth) position -= loopWidth;
-      rail.scrollLeft = Math.round(position);
-      last = now;
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [interacting, playing]);
+    const track = trackRef.current;
+    if (!track) return;
+    const observer = new ResizeObserver(() => setDuration(track.scrollWidth / 2 / RAIL_SPEED));
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, []);
 
   const pause = () => setInteracting(true);
   const resume = () => setInteracting(false);
 
   return (
-    <ul
-      aria-label="experience categories"
-      className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    <div
+      className="overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       onBlur={resume}
       onFocus={pause}
       onPointerEnter={pause}
       onPointerLeave={resume}
       onTouchEnd={resume}
       onTouchStart={pause}
-      ref={railRef}
-      style={{ paddingInline: railInset }}
-      tabIndex={0}
+      style={{ paddingLeft: railInset }}
     >
-      {categoryItems.map((item) => (
-        <CategoryCard item={item} key={item.title} />
-      ))}
-      {categoryItems.map((item) => (
-        <CategoryCard hidden item={item} key={`${item.title}-loop`} />
-      ))}
-    </ul>
+      <ul
+        aria-label="experience categories"
+        // each card carries its own gap (pr-2) so half the track is exactly one loop
+        className="flex w-max [&>li]:pr-2"
+        ref={trackRef}
+        style={{
+          animation: duration ? `nuclii-marquee ${duration}s linear infinite` : undefined,
+          animationPlayState: playing && !interacting ? "running" : "paused",
+        }}
+        tabIndex={0}
+      >
+        {categoryItems.map((item) => (
+          <CategoryCard item={item} key={item.title} />
+        ))}
+        {categoryItems.map((item) => (
+          <CategoryCard hidden item={item} key={`${item.title}-loop`} />
+        ))}
+      </ul>
+    </div>
   );
 }
 

@@ -13,6 +13,8 @@ type VideoBackgroundCarouselProps = {
   cycleMs?: number;
   maxSources?: number;
   playbackRate?: number;
+  // A still for the first clip, shown while it loads.
+  poster?: string;
   // When set, the caller owns play/pause (and its reduced-motion handling);
   // resuming continues from the current frame instead of restarting the clip.
   playing?: boolean;
@@ -41,6 +43,7 @@ function VideoBackgroundCarousel({
   maxSources,
   playbackRate = DEFAULT_PLAYBACK_RATE,
   playing,
+  poster,
   randomize = false,
   sources,
 }: VideoBackgroundCarouselProps) {
@@ -123,7 +126,9 @@ function VideoBackgroundCarousel({
             event.currentTarget.playbackRate = playbackRate;
           }}
           playsInline
-          preload={index === active ? "auto" : index === nextActive && !pausePlayback ? "metadata" : "none"}
+          // the next clip buffers in full, so the switch never waits on the network
+          poster={index === 0 ? poster : undefined}
+          preload={index === active || (index === nextActive && !pausePlayback) ? "auto" : "none"}
           ref={(el) => {
             videoRefs.current[index] = el;
           }}

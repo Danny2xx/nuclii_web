@@ -309,16 +309,27 @@ function GlobeSphere({ playing }: { playing: boolean }) {
     observer.observe(box);
     resize();
 
-    // animate only while the section is on screen
+    // Animate only while the section is on screen, at 30fps (the spin is
+    // slow, so the eye can't tell), and hold still while the page is being
+    // scrolled so every frame of the scroll goes to the scroll. The spin
+    // resumes where it stopped instead of jumping ahead.
     let onScreen = false;
     let frame = 0;
     let last = 0;
+    let lastScroll = 0;
+    const onScroll = () => {
+      lastScroll = performance.now();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     const tick = (now: number) => {
-      if (last && playingRef.current) {
-        spinRef.current = (spinRef.current + (now - last) * DEGREES_PER_MS) % 360;
+      const scrolling = now - lastScroll < 160;
+      if (!last || scrolling || !playingRef.current) {
+        last = now;
+      } else if (now - last >= 32) {
+        spinRef.current = (spinRef.current + Math.min(now - last, 64) * DEGREES_PER_MS) % 360;
         draw();
+        last = now;
       }
-      last = now;
       frame = onScreen ? requestAnimationFrame(tick) : 0;
     };
     const visibility = new IntersectionObserver(([entry]) => {
@@ -333,6 +344,7 @@ function GlobeSphere({ playing }: { playing: boolean }) {
     return () => {
       observer.disconnect();
       visibility.disconnect();
+      window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
     };
   }, []);

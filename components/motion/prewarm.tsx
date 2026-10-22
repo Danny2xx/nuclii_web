@@ -17,8 +17,11 @@ function Prewarm({ selector = "main section" }: { selector?: string }) {
             if (img.loading === "lazy") img.loading = "eager";
             img.decode().catch(() => {});
           });
+          // only videos waiting on "metadata": a carousel marks the clips it
+          // isn't about to play "none", and buffering all of them at once
+          // would starve the one that's actually on screen
           entry.target.querySelectorAll("video").forEach((video) => {
-            if (video.preload !== "auto") video.preload = "auto";
+            if (video.preload === "metadata") video.preload = "auto";
           });
         }
       },

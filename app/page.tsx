@@ -58,7 +58,13 @@ export default function Home() {
         id="waitlist"
       >
         <HeroMotionProvider>
-          <HeroVideo className="absolute inset-0" sources={heroVideos} />
+          {/* the clips have their speed-up built in (re-encoded at 720p), so they play at 1x */}
+          <HeroVideo
+            className="absolute inset-0"
+            playbackRate={1}
+            poster="/videos/videos_web2/movie-poster.jpg"
+            sources={heroVideos}
+          />
           {/* light scrims keep the footage bright, darkening only behind the nav and copy */}
           <div className="absolute inset-0 bg-black/15" />
           <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />

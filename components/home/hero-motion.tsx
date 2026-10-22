@@ -34,7 +34,12 @@ function HeroMotionProvider({ children }: { children: ReactNode }) {
 
 // Also pauses while the hero is off screen, so the video isn't decoded in the
 // background while you scroll the rest of the page. The toggle keeps its state.
-function HeroVideo(props: { className?: string; sources: readonly string[] }) {
+function HeroVideo(props: {
+  className?: string;
+  playbackRate?: number;
+  poster?: string;
+  sources: readonly string[];
+}) {
   const { isHeroPlaying } = useHeroMotion();
   const boxRef = useRef<HTMLDivElement | null>(null);
   const [onScreen, setOnScreen] = useState(true);

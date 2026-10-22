@@ -278,14 +278,16 @@ function AppTeaserSection() {
     return () => observer.disconnect();
   }, []);
 
-  // clips only run while the section is visible and motion is playing
+  // clips only run while the section is visible and motion is playing, and
+  // each starts as its ticket develops: the face hides it until then, and
+  // starting all three decoders at once dropped frames mid-scroll
   useEffect(() => {
-    videoRefs.current.forEach((video) => {
+    videoRefs.current.forEach((video, index) => {
       if (!video) return;
-      if (playing && onScreen) video.play().catch(() => {});
+      if (playing && onScreen && developed[index]) video.play().catch(() => {});
       else video.pause();
     });
-  }, [onScreen, playing]);
+  }, [developed, onScreen, playing]);
 
   return (
     <section

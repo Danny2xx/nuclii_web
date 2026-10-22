@@ -92,6 +92,7 @@ function PhonePreview({ contentY }: { contentY?: MotionValue<string> } = {}) {
       <motion.div
         aria-hidden="true"
         className={cn("px-[5cqw] pb-[20cqw] pt-[15cqw] font-display", contentY && "will-change-transform")}
+        data-phone-feed=""
         style={{ y: contentY }}
       >
         <div className="flex items-center justify-between">
