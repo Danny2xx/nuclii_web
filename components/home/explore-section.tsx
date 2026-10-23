@@ -67,7 +67,7 @@ const phoneShots = {
   ],
 };
 
-// `bare` drops the tab bar on phones (fading the feed out instead), so the
+// `bare` drops the tab bar (fading the feed out instead), so the
 // mockup doesn't read as the bottom of the website.
 function PhonePreview({ contentY, bare = false }: { contentY?: MotionValue<string>; bare?: boolean } = {}) {
   return (
@@ -233,7 +233,7 @@ function PhonePreview({ contentY, bare = false }: { contentY?: MotionValue<strin
       {bare && (
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 z-10 h-[24cqw] bg-gradient-to-t from-white via-white/80 to-transparent lg:hidden"
+          className="absolute inset-x-0 bottom-0 z-10 h-[24cqw] bg-gradient-to-t from-white via-white/80 to-transparent"
         />
       )}
 
@@ -242,7 +242,7 @@ function PhonePreview({ contentY, bare = false }: { contentY?: MotionValue<strin
         aria-hidden="true"
         className={cn(
           "absolute inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-black/10 bg-white/95 px-[4cqw] pb-[5cqw] pt-[2.5cqw] text-black/45",
-          bare && "max-lg:hidden",
+          bare && "hidden",
         )}
       >
         <span className="flex flex-col items-center gap-[0.6cqw] text-[2.3cqw] font-semibold text-black">

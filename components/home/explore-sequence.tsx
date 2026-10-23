@@ -87,13 +87,18 @@ const mobileLayout: Record<string, Spot> = {
   "love-island-watchparty": { x: 86.5, y: 86, r: -6, layer: 3 },
 };
 
-// phones: these cards already stick out of the phone before the sequence
-// starts (share of the way out), so the mockup never reads as the end of the
-// page
+// these cards already stick out of the phone before the sequence starts
+// (share of the way out), so the mockup never reads as the end of the page
 const mobilePeek: Record<string, number> = {
   footy: 0.55,
   study: 0.6,
   "unpopular-opinions": 0.5,
+};
+
+const desktopPeek: Record<string, number> = {
+  "pop-up": 0.5,
+  "painting-park": 0.55,
+  study: 0.5,
 };
 
 const allEvents: readonly ExploreEvent[] = [...exploreCards, ...moreExploreEvents];
@@ -302,7 +307,7 @@ function PinnedSequence() {
       dealAt: T.dealStart + (order / last) * T.dealSpread,
       collapseAt: T.collapseStart + ((last - order) / last) * T.collapseSpread,
       stackRotate: (order % 2 ? 1 : -1) * (2 + (order % 4)),
-      peek: desktop ? 0 : (mobilePeek[event.id] ?? 0),
+      peek: (desktop ? desktopPeek : mobilePeek)[event.id] ?? 0,
     }));
   }, [desktop]);
 
@@ -374,20 +379,20 @@ function PinnedSequence() {
           style={{ opacity: dark }}
         />
 
-        {/* stage: portrait on phones/tablets, wide from lg — sized to fit the screen.
-            On phones it sits a little low to leave room for the intro line above. */}
+        {/* stage: portrait on phones/tablets, wide from lg — sized to fit the
+            screen, sitting a little low to leave room for the intro line above */}
         <div
-          className="relative aspect-[4/5] w-[min(40rem,92vw,calc((100svh-12rem)*0.8))] max-lg:mt-9 lg:aspect-[1.45] lg:w-[min(80rem,94vw,calc((100svh-7rem)*1.45))]"
+          className="relative mt-9 aspect-[4/5] w-[min(40rem,92vw,calc((100svh-12rem)*0.8))] lg:aspect-[1.45] lg:w-[min(80rem,94vw,calc((100svh-12rem)*1.45))]"
           ref={stageRef}
         >
-          {/* phones: a line above the mockup and a cue below it, so the phone
-              reads as a preview with more to come, not the end of the page */}
+          {/* a line above the mockup and a cue below it, so the phone reads
+              as a preview with more to come, not the end of the page */}
           <motion.div
-            className="pointer-events-none absolute inset-0 lg:hidden"
+            className="pointer-events-none absolute inset-0"
             ref={introRef}
             style={{ opacity: introOpacity, y: introY }}
           >
-            <p className="absolute inset-x-0 bottom-full mb-4 text-center font-display text-[clamp(1.4rem,6.4vw,2rem)] font-bold lowercase leading-[1.05] tracking-[-0.03em] text-[#0A0A0B]">
+            <p className="absolute inset-x-0 bottom-full mb-4 text-center font-display text-[clamp(1.4rem,6.4vw,2rem)] font-bold lowercase lg:text-[clamp(2rem,2.6vw,2.75rem)] leading-[1.05] tracking-[-0.03em] text-[#0A0A0B]">
               your city&apos;s already moving.
             </p>
             <span

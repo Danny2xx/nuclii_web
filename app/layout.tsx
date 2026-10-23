@@ -30,6 +30,17 @@ const siteDescription =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nuclii.co.uk"),
+  // one fixed lime icon on every browser and device. The "-v2" file names are
+  // new URLs, so browsers that saved the old cycling icon fetch this one fresh
+  // (app/favicon.ico still answers the default /favicon.ico request).
+  icons: {
+    icon: [
+      { url: "/icons/nuclii-icon-v2-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/nuclii-icon-v2-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/nuclii-icon-v2-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/nuclii-apple-touch-v2.png", sizes: "180x180", type: "image/png" }],
+  },
   title: siteTitle,
   description: siteDescription,
   openGraph: {
