@@ -9,6 +9,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { ChevronDown } from "lucide-react";
 
 import {
   exploreCards,
@@ -86,6 +87,15 @@ const mobileLayout: Record<string, Spot> = {
   "love-island-watchparty": { x: 86.5, y: 86, r: -6, layer: 3 },
 };
 
+// phones: these cards already stick out of the phone before the sequence
+// starts (share of the way out), so the mockup never reads as the end of the
+// page
+const mobilePeek: Record<string, number> = {
+  footy: 0.55,
+  study: 0.6,
+  "unpopular-opinions": 0.5,
+};
+
 const allEvents: readonly ExploreEvent[] = [...exploreCards, ...moreExploreEvents];
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -147,6 +157,7 @@ type CardPlan = {
   dealAt: number;
   collapseAt: number;
   stackRotate: number;
+  peek: number;
 };
 
 type Stage = { w: number; h: number };
@@ -159,7 +170,7 @@ function cardState(plan: CardPlan, stage: Stage, p: number): CardState {
   const emerges = spot.layer > 2; // in front of the phone, so it fades out of it
   const fx = ((spot.x - 50) / 100) * stage.w;
   const fy = ((spot.y - 50) / 100) * stage.h;
-  const deal = easeOut(ramp(p, plan.dealAt, plan.dealAt + T.dealLength));
+  const deal = plan.peek + (1 - plan.peek) * easeOut(ramp(p, plan.dealAt, plan.dealAt + T.dealLength));
   const collapse = easeIn(ramp(p, plan.collapseAt, plan.collapseAt + T.collapseLength));
   const lift = featured ? Math.sin(Math.PI * ramp(p, T.holdStart, T.holdEnd)) : 0;
   const out = deal * (1 - collapse);
@@ -172,7 +183,8 @@ function cardState(plan: CardPlan, stage: Stage, p: number): CardState {
     // to be drawn for the first time mid-animation
     opacity: Math.max(
       0.001,
-      (emerges ? ramp(p, plan.dealAt, plan.dealAt + T.dealLength * 0.35) : 1) * (1 - ramp(collapse, 0.35, 1)),
+      (emerges && !plan.peek ? ramp(p, plan.dealAt, plan.dealAt + T.dealLength * 0.35) : 1) *
+        (1 - ramp(collapse, 0.35, 1)),
     ),
   };
 }
@@ -186,6 +198,8 @@ const phoneScaleAt = (p: number) => 1 - 0.45 * easeIn(ramp(p, T.collapseStart, T
 const phoneOpacityAt = (p: number) => 1 - ramp(p, T.phoneOut[0], T.phoneOut[1]);
 const feedDriftAt = (p: number) => -32 * easeInOut(ramp(p, 0.04, 0.6));
 const titleAt = (p: number) => easeOut(ramp(p, T.titleIn[0], T.titleIn[1]));
+// phones: the intro line and scroll cue leave as soon as the cards start moving
+const introAt = (p: number) => 1 - ramp(p, 0.02, 0.1);
 
 function SequenceCard({
   plan,
@@ -226,6 +240,7 @@ function PinnedSequence() {
   const darkRef = useRef<HTMLDivElement | null>(null);
   const phoneRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const introRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef(new Map<string, HTMLLIElement>());
   const desktop = useIsDesktop();
   const native = useNativeScrollTimeline();
@@ -287,6 +302,7 @@ function PinnedSequence() {
       dealAt: T.dealStart + (order / last) * T.dealSpread,
       collapseAt: T.collapseStart + ((last - order) / last) * T.collapseSpread,
       stackRotate: (order % 2 ? 1 : -1) * (2 + (order % 4)),
+      peek: desktop ? 0 : (mobilePeek[event.id] ?? 0),
     }));
   }, [desktop]);
 
@@ -305,6 +321,10 @@ function PinnedSequence() {
       scrollAnimation(section.querySelector("[data-phone-feed]"), timeline, (p) => ({
         transform: `translateY(${feedDriftAt(p).toFixed(3)}%)`,
       })),
+      scrollAnimation(introRef.current, timeline, (p) => {
+        const t = introAt(p);
+        return { opacity: Math.max(0.001, t), transform: `translateY(${(-16 * (1 - t)).toFixed(2)}px)` };
+      }),
       scrollAnimation(titleRef.current, timeline, (p) => {
         const t = titleAt(p);
         return {
@@ -331,11 +351,14 @@ function PinnedSequence() {
   const titleOpacity = useTransform(titleT, (t) => Math.max(0.001, t));
   const titleY = useTransform(titleT, (t) => 48 * (1 - t));
   const titleScale = useTransform(titleT, (t) => 0.94 + 0.06 * t);
+  const introT = useTransform(progress, introAt);
+  const introOpacity = useTransform(introT, (t) => Math.max(0.001, t));
+  const introY = useTransform(introT, (t) => -16 * (1 - t));
 
   return (
     <section
       aria-labelledby="explore-sequence-title"
-      className="relative h-[280vh] lg:h-[360vh]"
+      className="relative h-[220vh] lg:h-[360vh]"
       data-analytics-section="home_explore"
       ref={sectionRef}
     >
@@ -348,17 +371,37 @@ function PinnedSequence() {
           style={{ opacity: dark }}
         />
 
-        {/* stage: portrait on phones/tablets, wide from lg — sized to fit the screen */}
+        {/* stage: portrait on phones/tablets, wide from lg — sized to fit the screen.
+            On phones it sits a little low to leave room for the intro line above. */}
         <div
-          className="relative aspect-[4/5] w-[min(40rem,92vw,calc((100svh-7rem)*0.8))] lg:aspect-[1.45] lg:w-[min(80rem,94vw,calc((100svh-7rem)*1.45))]"
+          className="relative aspect-[4/5] w-[min(40rem,92vw,calc((100svh-12rem)*0.8))] max-lg:mt-9 lg:aspect-[1.45] lg:w-[min(80rem,94vw,calc((100svh-7rem)*1.45))]"
           ref={stageRef}
         >
+          {/* phones: a line above the mockup and a cue below it, so the phone
+              reads as a preview with more to come, not the end of the page */}
           <motion.div
-            className="absolute left-1/2 top-1/2 z-[2] w-[50%] -translate-x-1/2 -translate-y-1/2 will-change-transform lg:w-[27%]"
+            className="pointer-events-none absolute inset-0 lg:hidden"
+            ref={introRef}
+            style={{ opacity: introOpacity, y: introY }}
+          >
+            <p className="absolute inset-x-0 bottom-full mb-4 text-center font-display text-[clamp(1.4rem,6.4vw,2rem)] font-bold lowercase leading-[1.05] tracking-[-0.03em] text-[#0A0A0B]">
+              here&apos;s what&apos;s on near you.
+            </p>
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 top-full mt-3 flex flex-col items-center gap-0.5 text-sm font-semibold lowercase tracking-wide text-black/70"
+            >
+              scroll
+              <ChevronDown className="size-5 text-[#7E9416] motion-safe:animate-bounce" strokeWidth={2.75} />
+            </span>
+          </motion.div>
+
+          <motion.div
+            className="absolute left-1/2 top-1/2 z-[2] w-[46%] -translate-x-1/2 -translate-y-1/2 will-change-transform lg:w-[27%]"
             ref={phoneRef}
             style={{ scale: phoneScale, opacity: phoneOpacity }}
           >
-            <PhonePreview contentY={screenDrift} />
+            <PhonePreview bare contentY={screenDrift} />
           </motion.div>
 
           <ul aria-label="example events">
