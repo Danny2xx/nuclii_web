@@ -16,6 +16,8 @@ import { motionToggleEdgeClassName } from "@/components/motion/motion-toggle-edg
 import { cn } from "@/lib/utils";
 
 const MODE_INTERVAL_MS = 5500;
+// how far a swipe must travel (px) before it changes slide
+const SWIPE_PX = 40;
 // px per second — slow enough to read the cards as they pass
 const RAIL_SPEED = 18;
 
@@ -155,6 +157,7 @@ function ModeSlide({ item, place }: { item: ModeItem; place: SlidePlace }) {
             <Image
               alt={item.imageAlt ?? ""}
               className="scale-[1.01] object-cover"
+              draggable={false}
               fill
               sizes="(min-width: 1024px) 25rem, 22rem"
               src={item.image}
@@ -173,19 +176,27 @@ function ModeSlide({ item, place }: { item: ModeItem; place: SlidePlace }) {
 
 function ModeCarousel({ playing }: { playing: boolean }) {
   const [active, setActive] = useState(0);
+  // live swipe: the slides follow the finger, then step or spring back
+  const [dragX, setDragX] = useState<number | null>(null);
+  const dragStart = useRef(0);
 
   // Re-arms on every change, so a manual step always gets a full interval.
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || dragX !== null) return;
     const id = window.setTimeout(
       () => setActive((current) => (current + 1) % modeItems.length),
       MODE_INTERVAL_MS,
     );
     return () => window.clearTimeout(id);
-  }, [active, playing]);
+  }, [active, playing, dragX]);
 
   const step = (delta: number) =>
     setActive((current) => (current + delta + modeItems.length) % modeItems.length);
+
+  const endSwipe = () => {
+    if (dragX !== null && Math.abs(dragX) >= SWIPE_PX) step(dragX < 0 ? 1 : -1);
+    setDragX(null);
+  };
 
   const arrowClassName =
     "inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--nuclii-lime)] transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transform-none";
@@ -201,7 +212,26 @@ function ModeCarousel({ playing }: { playing: boolean }) {
         <ArrowLeft aria-hidden="true" className="size-6" strokeWidth={1.75} />
       </button>
 
-      <div aria-live={playing ? "off" : "polite"} className="grid [grid-template-areas:'stack']">
+      {/* pan-y keeps vertical page scrolling native; horizontal drags swipe */}
+      <div
+        aria-live={playing ? "off" : "polite"}
+        className={cn(
+          "grid cursor-grab touch-pan-y select-none [grid-template-areas:'stack'] active:cursor-grabbing",
+          dragX === null && "transition-transform duration-300 ease-out motion-reduce:transition-none",
+        )}
+        onPointerCancel={() => setDragX(null)}
+        onPointerDown={(event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          dragStart.current = event.clientX;
+          setDragX(0);
+        }}
+        onPointerMove={(event) => {
+          if (dragX !== null) setDragX(event.clientX - dragStart.current);
+        }}
+        onPointerUp={endSwipe}
+        style={{ transform: `translateX(${(dragX ?? 0) * 0.6}px)` }}
+      >
         {modeItems.map((item, index) => (
           <ModeSlide
             item={item}
@@ -244,13 +274,13 @@ function ConceptSection() {
           <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
             <div>
               <h2
-                className="max-w-[11.6em] font-display text-[clamp(2.25rem,4vw,3.625rem)] !font-medium leading-[1.4] tracking-[-0.01em] !text-black"
+                className="max-w-[11.6em] font-display text-[clamp(1.5rem,4vw,3.625rem)] !font-medium leading-[1.3] tracking-[-0.01em] !text-black sm:leading-[1.4]"
                 id="concept-heading"
               >
                 From something happening downstairs to something happening across
                 the city. From ten people to ten thousand.
               </h2>
-              <p className="!mt-[clamp(2.5rem,5vw,4.5rem)] flex flex-wrap gap-x-[clamp(2rem,5vw,5rem)] gap-y-2 font-display text-xl text-black sm:text-2xl">
+              <p className="!mt-[clamp(1.5rem,5vw,4.5rem)] flex gap-x-4 gap-y-2 whitespace-nowrap font-display text-base text-black sm:flex-wrap sm:gap-x-[clamp(2rem,5vw,5rem)] sm:text-2xl">
                 <span>
                   you <span className="font-bold text-[#F04A23]">make</span> it.
                 </span>
