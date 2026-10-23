@@ -385,7 +385,7 @@ function PinnedSequence() {
             style={{ opacity: introOpacity, y: introY }}
           >
             <p className="absolute inset-x-0 bottom-full mb-4 text-center font-display text-[clamp(1.4rem,6.4vw,2rem)] font-bold lowercase leading-[1.05] tracking-[-0.03em] text-[#0A0A0B]">
-              here&apos;s what&apos;s on near you.
+              first, see what&apos;s out there.
             </p>
             <span
               aria-hidden="true"
