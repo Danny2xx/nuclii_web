@@ -9,48 +9,13 @@ import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { ticketPillStyle } from "@/components/ui/ticket-pill";
 import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { useOverHomeHero } from "@/components/layout/use-over-hero";
 
 // Top-bar actions beside the menu button. Log in and sign up sit here from
-// tablets up; phones get a smaller sign up ticket only (log in is in the menu).
-// On desktop the main links sit inline too, over the page's opening section;
-// once you scroll past it they fold away into the menu. The home page folds
-// after its hero (#waitlist); every other page after its first section.
-function useOverHomeHero(pathname: string) {
-  const [overHero, setOverHero] = useState(true);
-
-  // An IntersectionObserver does the watching, so scrolling never forces a
-  // layout. The nav lives in the layout and can mount before the page content
-  // does, so until the section turns up each scroll tries the lookup again
-  // (and pages without one fold after a short scroll).
-  useEffect(() => {
-    let observer: IntersectionObserver | null = null;
-    const set = (over: boolean) => setOverHero((current) => (current === over ? current : over));
-    const attach = () => {
-      const top =
-        pathname === "/" ? document.getElementById("waitlist") : document.querySelector("main section");
-      if (!top) return false;
-      // collapses once the section has scrolled up behind the bar (96px)
-      observer = new IntersectionObserver(([entry]) => set(entry.isIntersecting), {
-        rootMargin: "-96px 0px 0px 0px",
-      });
-      observer.observe(top);
-      return true;
-    };
-    const onScroll = () => {
-      if (observer || attach()) return;
-      set(window.scrollY < 160);
-    };
-    const first = requestAnimationFrame(onScroll);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(first);
-      observer?.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [pathname]);
-
-  return overHero;
-}
+// tablets up; phones get a smaller sign up ticket only (log in is in the
+// menu), shown over the opening section and hidden after it. On desktop the
+// main links sit inline too, over the opening section; once you scroll past
+// it they fold away into the menu.
 
 // Whether the page behind the bar is light, so lime "Log in" (too faint on
 // light: about 2:1) can switch to black there. Samples what sits under the
@@ -130,7 +95,11 @@ function SideNav() {
     <nav
       aria-label="Main navigation"
       ref={barRef}
-      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 max-md:right-[calc(max(1rem,env(safe-area-inset-right))+6.75rem)] lg:right-[5.875rem] lg:top-9"
+      className={cn(
+        "fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 max-md:right-[calc(max(1rem,env(safe-area-inset-right))+6.75rem)] max-md:transition-[opacity,translate,visibility] max-md:duration-300 motion-reduce:transition-none lg:right-[5.875rem] lg:top-9",
+        // phones: the sign up ticket leaves with the opening section
+        !expanded && "max-md:invisible max-md:translate-x-3 max-md:opacity-0",
+      )}
     >
       {/* inline links: desktop only, shown over the home hero */}
       <div

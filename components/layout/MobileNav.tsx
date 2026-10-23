@@ -10,10 +10,13 @@ import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { footerNavGroups, visibleNavItems } from "@/lib/navigation";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { useOverHomeHero } from "@/components/layout/use-over-hero";
 
 function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // phones: a "menu" pill over the opening section, just the circle after it
+  const pill = useOverHomeHero(pathname);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -33,13 +36,15 @@ function MobileNav() {
   return (
     <div>
       {/* solid circle so the menu button reads over light, dark and video;
-          on phones it widens to a pill that says "menu" (fixed width, so the
-          sign up ticket beside it can sit at a set distance) */}
+          on phones, over the opening section, it widens to a pill that says
+          "menu" (fixed width, so the sign up ticket beside it can sit at a
+          set distance), then shrinks back to the circle */}
       <button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         className={cn(
-          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center gap-2.5 rounded-full max-md:w-[6.25rem] border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-[width,opacity] duration-300 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black motion-reduce:transition-none",
+          pill && "max-md:w-[6.25rem]",
         )}
         onClick={() => setOpen((current) => !current)}
         type="button"
@@ -58,7 +63,13 @@ function MobileNav() {
             )}
           />
         </span>
-        <span aria-hidden="true" className="font-display text-sm font-semibold lowercase leading-none md:hidden">
+        <span
+          aria-hidden="true"
+          className={cn(
+            "ml-2.5 whitespace-nowrap font-display text-sm font-semibold lowercase leading-none md:hidden",
+            !pill && "hidden",
+          )}
+        >
           {open ? "close" : "menu"}
         </span>
       </button>

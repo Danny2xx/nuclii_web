@@ -274,13 +274,13 @@ function ConceptSection() {
           <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
             <div>
               <h2
-                className="max-w-[11.6em] font-display text-[clamp(1.5rem,4vw,3.625rem)] !font-medium leading-[1.3] tracking-[-0.01em] !text-black sm:leading-[1.4]"
+                className="max-w-[11.6em] font-display text-[clamp(2.25rem,4vw,3.625rem)] !font-medium leading-[1.4] tracking-[-0.01em] !text-black"
                 id="concept-heading"
               >
                 From something happening downstairs to something happening across
                 the city. From ten people to ten thousand.
               </h2>
-              <p className="!mt-[clamp(1.5rem,5vw,4.5rem)] flex gap-x-4 gap-y-2 whitespace-nowrap font-display text-base text-black sm:flex-wrap sm:gap-x-[clamp(2rem,5vw,5rem)] sm:text-2xl">
+              <p className="!mt-[clamp(1.5rem,5vw,4.5rem)] flex gap-x-4 gap-y-2 whitespace-nowrap font-display text-[clamp(0.875rem,4.6vw,1.125rem)] text-black sm:flex-wrap sm:gap-x-[clamp(2rem,5vw,5rem)] sm:text-2xl">
                 <span>
                   you <span className="font-bold text-[#F04A23]">make</span> it.
                 </span>

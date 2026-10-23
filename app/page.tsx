@@ -82,9 +82,9 @@ export default function Home() {
               <div className="mt-3 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
                 <p className="min-w-0 max-w-[30em] font-display text-base font-normal leading-[1.5] tracking-normal text-white/90 sm:text-lg lg:mb-12 xl:text-[clamp(1.25rem,1.2vw,1.625rem)] xl:leading-[1.4]">
                   <span className="lg:block">
-                    Start with an idea. Find the people it&apos;s for. Fill the room.
+                    Turn any idea into an experience, fill the room with the people it&apos;s for.
                   </span>{" "}
-                  Then do it again.
+                  Then, do it again.
                 </p>
 
                 <div className="flex shrink-0 items-center gap-2.5 lg:mr-16">
