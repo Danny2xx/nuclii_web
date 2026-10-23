@@ -37,15 +37,15 @@ const heroVideos = [
 // the ticket's stub: a dashed perforation, then an arrow
 function TicketStub() {
   return (
-    <span aria-hidden="true" className="flex items-center gap-3">
-      <span className="h-6 border-l-2 border-dotted border-black/45" />
-      <ArrowRight className="size-4" strokeWidth={2.25} />
+    <span aria-hidden="true" className="flex items-center gap-3 max-sm:gap-2.5">
+      <span className="h-6 border-l-2 border-dotted border-black/45 max-sm:h-5" />
+      <ArrowRight className="size-4 max-sm:size-3.5" strokeWidth={2.25} />
     </span>
   );
 }
 
 const heroCtaClassName =
-  "inline-flex h-11 min-w-[8.5rem] shrink-0 items-center justify-between gap-3 rounded-none pl-5 pr-3.5 font-display text-base font-semibold lowercase sm:min-w-[9rem] !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none";
+  "inline-flex h-11 min-w-[8.5rem] shrink-0 items-center justify-between gap-3 rounded-none pl-5 pr-3.5 font-display text-base font-semibold lowercase max-sm:h-9 max-sm:min-w-[7rem] max-sm:gap-2.5 max-sm:pl-4 max-sm:pr-3 max-sm:text-sm sm:min-w-[9rem] !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none";
 
 export default function Home() {
   return (
@@ -91,7 +91,7 @@ export default function Home() {
                   <TrackedLink
                     analyticsEvent={ANALYTICS_EVENTS.ctaClicked}
                     analyticsProperties={{ cta: "explore", location: "home_hero" }}
-                    className="inline-flex h-11 shrink-0 items-center justify-center rounded-none bg-white px-6 font-display text-base font-semibold lowercase !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none"
+                    className="inline-flex h-11 shrink-0 items-center justify-center rounded-none bg-white px-6 font-display text-base font-semibold lowercase max-sm:h-9 max-sm:px-4 max-sm:text-sm !text-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none"
                     href={routes.explore}
                     style={ticketPillStyle}
                   >

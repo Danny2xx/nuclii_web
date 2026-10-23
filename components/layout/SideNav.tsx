@@ -11,7 +11,7 @@ import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 // Top-bar actions beside the menu button. Log in and sign up sit here from
-// tablets up; on phones they'd crowd the page, so they live in the menu only.
+// tablets up; phones get a smaller sign up ticket only (log in is in the menu).
 // On desktop the main links sit inline too, over the page's opening section;
 // once you scroll past it they fold away into the menu. The home page folds
 // after its hero (#waitlist); every other page after its first section.
@@ -83,8 +83,8 @@ function useLightBehind(barRef: RefObject<HTMLElement | null>, pathname: string)
     const check = () => {
       timer = 0;
       const bar = barRef.current;
-      // hidden (phones): nothing to colour
-      if (!bar || bar.getClientRects().length === 0) return;
+      // phones only show the lime sign up ticket: nothing to colour
+      if (!bar || window.matchMedia("(max-width: 767px)").matches) return;
       const box = bar.getBoundingClientRect();
       const stack = document.elementsFromPoint(box.left + 12, box.top + box.height / 2);
       let next = false;
@@ -130,7 +130,7 @@ function SideNav() {
     <nav
       aria-label="Main navigation"
       ref={barRef}
-      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 max-md:hidden lg:right-[5.875rem] lg:top-9"
+      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))+3.375rem)] top-[max(1.25rem,env(safe-area-inset-top))] z-[60] flex h-11 items-center gap-2 max-md:right-[calc(max(1rem,env(safe-area-inset-right))+6.75rem)] lg:right-[5.875rem] lg:top-9"
     >
       {/* inline links: desktop only, shown over the home hero */}
       <div
@@ -171,18 +171,21 @@ function SideNav() {
           className={cn(
             "inline-flex h-10 items-center font-display text-sm font-semibold leading-none transition-opacity duration-200 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-base",
             item.variant === "signup"
-              ? "rounded-none bg-[var(--nuclii-lime)] px-4 !text-black sm:px-5"
+              ? "rounded-none bg-[var(--nuclii-lime)] px-4 !text-black max-md:h-9 sm:px-5"
               : // plain link: lime over dark, black over light sections
-                cn("px-2 transition-colors", lightBehind ? "!text-[#0A0A0B]" : "!text-[var(--nuclii-lime)]"),
+                cn(
+                  "px-2 transition-colors max-md:hidden",
+                  lightBehind ? "!text-[#0A0A0B]" : "!text-[var(--nuclii-lime)]",
+                ),
           )}
           href={item.href}
           key={item.label}
           style={item.variant === "signup" ? ticketPillStyle : undefined}
         >
           {item.label}
-          {/* sign up carries the ticket tear and a stub */}
+          {/* sign up carries the ticket tear and a stub (not on phones) */}
           {item.variant === "signup" && (
-            <span aria-hidden="true" className="ml-3 flex items-center gap-2.5">
+            <span aria-hidden="true" className="ml-3 flex items-center gap-2.5 max-md:hidden">
               <span className="h-5 border-l-2 border-dotted border-black/45" />
               <ArrowRight className="size-3.5" strokeWidth={2.25} />
             </span>

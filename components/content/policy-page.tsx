@@ -33,7 +33,8 @@ function PolicyPage({
   return (
     <main className="nuclii-page">
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <section className="nuclii-section border-b border-border">
+      {/* phones: clear the top bar (sign up + menu pill) above the title */}
+      <section className="nuclii-section border-b border-border max-md:!pt-24">
         <div className="nuclii-container max-w-4xl">
           <PageTitle>
             {title}

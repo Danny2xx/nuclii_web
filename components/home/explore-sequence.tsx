@@ -362,7 +362,10 @@ function PinnedSequence() {
       data-analytics-section="home_explore"
       ref={sectionRef}
     >
-      <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-[#F7F7FA] px-[var(--container-x)] pt-14">
+      {/* fills the large viewport (100vh) so no dark strip shows below it when
+          a phone browser hides its toolbar; the bottom padding keeps the
+          content centred in the small viewport, which is always visible */}
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-[#F7F7FA] px-[var(--container-x)] pb-[calc(100vh-100svh)] pt-14">
         {/* fades in over the light background: cheaper than animating the colour */}
         <motion.div
           aria-hidden="true"

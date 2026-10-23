@@ -32,12 +32,14 @@ function MobileNav() {
 
   return (
     <div>
-      {/* solid circle so the menu button reads over light, dark and video */}
+      {/* solid circle so the menu button reads over light, dark and video;
+          on phones it widens to a pill that says "menu" (fixed width, so the
+          sign up ticket beside it can sit at a set distance) */}
       <button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         className={cn(
-          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center rounded-full border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center gap-2.5 rounded-full max-md:w-[6.25rem] border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black",
         )}
         onClick={() => setOpen((current) => !current)}
         type="button"
@@ -55,6 +57,9 @@ function MobileNav() {
               open && "-translate-y-[4px] -rotate-45",
             )}
           />
+        </span>
+        <span aria-hidden="true" className="font-display text-sm font-semibold lowercase leading-none md:hidden">
+          {open ? "close" : "menu"}
         </span>
       </button>
 
