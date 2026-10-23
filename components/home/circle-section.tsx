@@ -34,11 +34,12 @@ const YOU: Name = "Tobi";
 
 type Message = { from: Name; text: string } | { update: string };
 
-// kept short: a question, the address reveal, one reply
+// kept short: a question, the address reveal, two replies
 const script: readonly Message[] = [
   { from: "Hamza", text: "Calm, got my outfit. Everyone good for 10?" },
   { update: "Address revealed · Digbeth, Birmingham" },
   { from: "Maya", text: "10 mins from the station, easy" },
+  { from: "Kai", text: "Who's on the last bus back?" },
 ];
 
 // space between messages
@@ -278,11 +279,11 @@ function CircleSection() {
             </div>
           </div>
 
-          {/* the chat, full size: three lines that fill in from the top; the
+          {/* the chat, full size: four lines that fill in from the top; the
               box keeps its full height so nothing below shifts as they arrive */}
           <div
             aria-label="Example group chat for Late Night Activities"
-            className="relative min-h-[17rem]"
+            className="relative min-h-[22rem]"
             role="log"
           >
             <div className="flex flex-col" style={{ gap: CHAT_GAP }}>
