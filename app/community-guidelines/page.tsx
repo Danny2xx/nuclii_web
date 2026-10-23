@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PolicyPage, type PolicySection } from "@/components/content/policy-page";
 
 export const metadata: Metadata = {
-  title: "Community Guidelines | Nuclii",
+  title: "Community Guidelines | nuclii",
   description:
     "Community guidelines for safe, respectful, and privacy-aware real-world experiences on Nuclii.",
 };

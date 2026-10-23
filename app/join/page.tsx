@@ -9,7 +9,7 @@ import { EXPERIENCE_ROLES } from "@/lib/experience-roles";
 
 const ACCENT = EXPERIENCE_ROLES.explorer.partnerAccent;
 
-const title = "Join Early Access | Nuclii";
+const title = "Join Early Access | nuclii";
 const description =
   "Join the first wave of Nuclii — UK early access for discovering, hosting and accessing real-world experiences without followers, group chats or social pressure.";
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         url: "/homepage/venue.jpg",
         width: 1200,
         height: 800,
-        alt: "A venue prepared for a real-world Nuclii experience",
+        alt: "A venue prepared for a real-world nuclii experience",
       },
     ],
   },

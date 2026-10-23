@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { StudioPage } from "@/components/studio/studio-page";
 
-const title = "Studio | Nuclii";
+const title = "Studio | nuclii";
 const description =
   "nuclii studio: the team's own corner. The events we host, the ideas we're testing, the journal and how to join the team.";
 

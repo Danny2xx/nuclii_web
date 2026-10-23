@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { WhoItsFor } from "@/components/who/who-its-for";
 
-const title = "Who it's for | Nuclii";
+const title = "Who it's for | nuclii";
 const description =
   "If you have an idea, you can make it happen. Nuclii is made for students, organisers, offline communities, venues and talent & makers.";
 

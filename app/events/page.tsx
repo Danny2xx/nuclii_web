@@ -4,8 +4,8 @@ import { EventsGate } from "@/components/events/events-gate";
 import { isEventsUnlocked } from "./gate";
 
 export const metadata: Metadata = {
-  title: "Events | Nuclii",
-  description: "Nuclii events — coming soon.",
+  title: "Events | nuclii",
+  description: "nuclii events — coming soon.",
   robots: { index: false, follow: false },
 };
 

@@ -23,9 +23,10 @@ const sora = Sora({
   display: "swap",
 });
 
-const siteTitle = "Nuclii · more than memories.";
+const siteTitle = "nuclii · more than memories.";
+// the hero line; link previews show it under the title
 const siteDescription =
-  "Discover what's on near you, host your own and keep everyone in the loop. Nuclii is where real-life moments start. Launching in Birmingham.";
+  "Turn any idea into an experience, fill the room with the people it's for. Then, do it again.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nuclii.co.uk"),
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/",
-    siteName: "Nuclii",
+    siteName: "nuclii",
     locale: "en_GB",
     title: siteTitle,
     description: siteDescription,

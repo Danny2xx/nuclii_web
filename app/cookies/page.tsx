@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { PolicyPage, type PolicySection } from "@/components/content/policy-page";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Nuclii",
-  description: "Cookie policy for the Nuclii pre-launch website: essential cookies, analytics, and managing preferences.",
+  title: "Cookie Policy | nuclii",
+  description: "Cookie policy for the nuclii pre-launch website: essential cookies, analytics, and managing preferences.",
 };
 
 const sections: PolicySection[] = [

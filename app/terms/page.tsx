@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { PolicyPage, type PolicySection } from "@/components/content/policy-page";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | Nuclii",
-  description: "Terms of use for the Nuclii pre-launch website: acceptable use, waitlist, and early-stage disclaimers.",
+  title: "Terms of Use | nuclii",
+  description: "Terms of use for the nuclii pre-launch website: acceptable use, waitlist, and early-stage disclaimers.",
 };
 
 const sections: PolicySection[] = [

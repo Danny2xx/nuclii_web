@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { PartnerPage } from "@/components/partner/partner-page";
 
-const title = "Partner with us | Nuclii";
+const title = "Partner with us | nuclii";
 const description =
   "Work with the Nuclii team directly: co-host events, get featured and get recommended. Societies, venues, talent, organisers and brands.";
 
