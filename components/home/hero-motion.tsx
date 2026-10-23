@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { VideoBackgroundCarousel } from "@/components/media/video-background-carousel";
-import { MotionToggleButton, useMotionPlayback } from "@/components/motion/motion-playback";
+import { announceHeroMotion, MotionToggleButton, useMotionPlayback } from "@/components/motion/motion-playback";
 
 // One state drives the hero video, the "meet nuclii" dot and the toggle, so
 // they can never disagree.
@@ -21,7 +21,11 @@ function useHeroMotion() {
 }
 
 function HeroMotionProvider({ children }: { children: ReactNode }) {
-  const { playing: isHeroPlaying, toggle: toggleHeroMotion } = useMotionPlayback();
+  const { playing: isHeroPlaying, setPlaying } = useMotionPlayback();
+  const toggleHeroMotion = () => {
+    setPlaying(!isHeroPlaying);
+    announceHeroMotion(!isHeroPlaying);
+  };
 
   return (
     <HeroMotionContext.Provider

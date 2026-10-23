@@ -11,7 +11,7 @@ import {
   type CategoryItem,
   type ModeItem,
 } from "@/components/home/concept-content";
-import { MotionToggleButton, useMotionPlayback } from "@/components/motion/motion-playback";
+import { MotionToggleButton, useHeroMotionToggles, useMotionPlayback } from "@/components/motion/motion-playback";
 import { motionToggleEdgeClassName } from "@/components/motion/motion-toggle-edge";
 import { cn } from "@/lib/utils";
 
@@ -259,7 +259,9 @@ function ModeCarousel({ playing }: { playing: boolean }) {
 function ConceptSection() {
   // One state for every auto-moving part of this section; pausing stops the
   // drift and rotation but leaves the arrows and swiping working.
-  const { playing: isSectionPlaying, toggle } = useMotionPlayback();
+  const { playing: isSectionPlaying, setPlaying, toggle } = useMotionPlayback();
+  // the hero's pause/play carries on down into this section
+  useHeroMotionToggles(setPlaying);
 
   return (
     <section

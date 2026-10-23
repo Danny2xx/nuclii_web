@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -41,7 +41,27 @@ function useMotionPlayback() {
     };
   }, []);
 
-  return { playing, toggle: () => setPlaying((current) => !current) };
+  return { playing, setPlaying, toggle: () => setPlaying((current) => !current) };
+}
+
+// The hero's play/pause also reaches the category strip just below it (a
+// different section), so pausing the top of the page pauses all of it.
+const HERO_MOTION_EVENT = "nuclii-hero-motion-toggle";
+
+function announceHeroMotion(playing: boolean) {
+  window.dispatchEvent(new CustomEvent<{ playing: boolean }>(HERO_MOTION_EVENT, { detail: { playing } }));
+}
+
+function useHeroMotionToggles(onToggle: (playing: boolean) => void) {
+  const latest = useRef(onToggle);
+  useEffect(() => {
+    latest.current = onToggle;
+  });
+  useEffect(() => {
+    const listener = (event: Event) => latest.current((event as CustomEvent<{ playing: boolean }>).detail.playing);
+    window.addEventListener(HERO_MOTION_EVENT, listener);
+    return () => window.removeEventListener(HERO_MOTION_EVENT, listener);
+  }, []);
 }
 
 type MotionToggleButtonProps = {
@@ -75,4 +95,4 @@ function MotionToggleButton({ className, label, onToggle, playing }: MotionToggl
   );
 }
 
-export { MotionToggleButton, useMotionPlayback };
+export { announceHeroMotion, MotionToggleButton, useHeroMotionToggles, useMotionPlayback };

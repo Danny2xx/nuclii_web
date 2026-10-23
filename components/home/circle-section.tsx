@@ -1,7 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { animate, motion, useInView, useMotionValueEvent, useScroll } from "motion/react";
+import { useRef, useState } from "react";
+import { motion, useInView, useMotionValueEvent, useScroll } from "motion/react";
 import { MapPin } from "lucide-react";
 
 import { profilePhotos, ProfileImage, type ProfilePhoto } from "@/components/home/profile-photos";
@@ -34,19 +34,14 @@ const YOU: Name = "Tobi";
 
 type Message = { from: Name; text: string } | { update: string };
 
+// kept short: a question, the address reveal, one reply
 const script: readonly Message[] = [
-  { from: "Zara", text: "Pre-drinks at mine from 7? Who's in? 🍾" },
-  { from: "Tobi", text: "I'm in! I'll bring the aux 🎧" },
-  { from: "Liv", text: "Dress code? Thinking all black 🖤" },
   { from: "Hamza", text: "Calm, got my outfit. Everyone good for 10?" },
   { update: "Address revealed · Digbeth, Birmingham" },
   { from: "Maya", text: "10 mins from the station, easy" },
-  { from: "Kai", text: "Who's on the last bus back?" },
-  { from: "Tobi", text: "Me, save me a seat 🙋" },
-  { from: "Jess", text: "See you all at 7 ✨" },
 ];
 
-// space between messages; older ones slide up under the fade
+// space between messages
 const CHAT_GAP = 16;
 
 // where each face starts before gathering, in multiples of its own size
@@ -224,8 +219,6 @@ function FaceRow({ speaking }: { speaking: Name | null }) {
 function CircleSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const columnRef = useRef<HTMLDivElement>(null);
-  const lastHeight = useRef(0);
   const inView = useInView(stageRef, { amount: 0.35 });
   const lessMotion = useLessMotion();
   const animated = !lessMotion;
@@ -243,23 +236,6 @@ function CircleSection() {
   const shown = animated ? count : script.length;
   const gathered = !animated || inView || shown > 1;
 
-  // The column is pinned to the bottom, so adding (or removing) a message
-  // shifts everything by that message's height at once. Offset the column by
-  // the change, set before paint, then slide it home: one transform, no snap.
-  useLayoutEffect(() => {
-    const column = columnRef.current;
-    if (!column) return;
-    const height = column.getBoundingClientRect().height;
-    const previous = lastHeight.current;
-    lastHeight.current = height;
-    const change = height - previous;
-    if (!animated || previous === 0 || change === 0) return;
-    const current = new DOMMatrixReadOnly(getComputedStyle(column).transform).m42;
-    const from = current + change;
-    column.style.transform = `translateY(${from}px)`;
-    const controls = animate(column, { y: [from, 0] }, { duration: 0.45, ease });
-    return () => controls.stop();
-  }, [animated, shown]);
 
   const latest = script[shown - 1];
   const speaking = animated && latest && "from" in latest ? latest.from : null;
@@ -269,7 +245,7 @@ function CircleSection() {
   return (
     <section
       aria-labelledby="circle-heading"
-      className={cn("relative bg-[#0A0A0B] text-white", animated && "!block h-[230svh] !flex-none")}
+      className={cn("relative bg-[#0A0A0B] text-white", animated && "!block h-[180svh] !flex-none")}
       data-analytics-section="home_circle"
       ref={sectionRef}
     >
@@ -302,17 +278,14 @@ function CircleSection() {
             </div>
           </div>
 
-          {/* the chat, full size; older messages slide up under the fade */}
+          {/* the chat, full size: three lines that fill in from the top; the
+              box keeps its full height so nothing below shifts as they arrive */}
           <div
             aria-label="Example group chat for Late Night Activities"
-            className="relative flex h-[22rem] flex-col justify-end overflow-hidden sm:h-[28rem] lg:h-[32rem]"
+            className="relative min-h-[17rem]"
             role="log"
-            style={{
-              maskImage: "linear-gradient(to bottom, transparent 0, #000 22%)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent 0, #000 22%)",
-            }}
           >
-            <div className="flex flex-col" ref={columnRef} style={{ gap: CHAT_GAP }}>
+            <div className="flex flex-col" style={{ gap: CHAT_GAP }}>
               {script.slice(0, shown).map((message, i) => (
                 <motion.div
                   animate={{ opacity: 1 }}
