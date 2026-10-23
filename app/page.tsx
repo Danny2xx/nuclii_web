@@ -81,7 +81,7 @@ export default function Home() {
               {/* copy sits just above the CTA row's baseline, as in the layout reference */}
               <div className="mt-3 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
                 <p className="min-w-0 max-w-[30em] font-display text-base font-normal leading-[1.5] tracking-normal text-white/90 sm:text-lg lg:mb-12 xl:text-[clamp(1.25rem,1.2vw,1.625rem)] xl:leading-[1.4]">
-                  <span className="block">
+                  <span className="max-sm:block">
                     Turn any idea into an experience, fill the room with the people it&apos;s for.
                   </span>{" "}
                   Then, do it again.
