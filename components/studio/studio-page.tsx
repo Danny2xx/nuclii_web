@@ -423,7 +423,9 @@ function StudioPage() {
           data-analytics-section="studio_hero"
         >
           <HeroMotionProvider>
-            <HeroVideo className="absolute inset-0" sources={heroVideos} />
+            {/* black and white here (a CSS filter, so the same clip stays in
+                colour on the home page) */}
+            <HeroVideo className="absolute inset-0 grayscale" sources={heroVideos} />
             {/* a dark wash over the footage */}
             <div className="absolute inset-0 bg-black/45" />
             <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/50 to-transparent" />

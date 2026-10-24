@@ -1,8 +1,8 @@
 // Content for /studio. Everything here is placeholder until the real events,
 // roles and journal posts are ready; swap the entries, the layout stays.
 
-// one clip, looped; web copies of public/studio_videos/*.MOV (smaller, no sound)
-export const heroVideos = ["/studio_videos/hero_main.mp4"] as const;
+// one clip, looped: the party clip from the home hero (shown in black and white here)
+export const heroVideos = ["/videos/videos_web2/party.mp4"] as const;
 
 // the rail's trailer: a short muted loop, cropped to drop the CapCut mark (upcoming event, the team, a past
 // night or anything worth sharing); `href` is where tapping it goes

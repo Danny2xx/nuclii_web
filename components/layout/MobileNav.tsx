@@ -35,16 +35,16 @@ function MobileNav() {
 
   return (
     <div>
-      {/* solid fill so the menu button reads over light, dark and video.
-          Phones get square corners (matching the ticket buttons): over the
-          opening section it widens to say "menu" (fixed width, so the sign up
-          ticket beside it can sit at a set distance), then shrinks back to a
-          square. Larger screens keep the circle. */}
+      {/* solid fill so the menu button reads over light, dark and video;
+          square corners like the site's ticket buttons. On phones, over the
+          opening section, it widens to say "menu" (fixed width, so the sign
+          up ticket beside it can sit at a set distance), then shrinks back
+          to a square. */}
       <button
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         className={cn(
-          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center overflow-hidden rounded-full border max-md:rounded-none border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-[width,opacity] duration-300 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black motion-reduce:transition-none",
+          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center overflow-hidden rounded-none border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-[width,opacity] duration-300 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black motion-reduce:transition-none",
           pill && "max-md:w-[6.25rem]",
         )}
         onClick={() => setOpen((current) => !current)}
