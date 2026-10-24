@@ -43,8 +43,8 @@ function MobileNav() {
         aria-expanded={open}
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         className={cn(
-          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-[width,opacity] duration-300 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black motion-reduce:transition-none",
-          pill && "max-md:w-[6.25rem]",
+          "nuclii-mobile-menu-button fixed !top-[max(1.25rem,env(safe-area-inset-top))] z-[70] flex size-11 lg:!right-10 lg:!top-9 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#0A0A0B] text-[var(--nuclii-lime)] transition-[width,opacity,border-radius] duration-300 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-black motion-reduce:transition-none",
+          pill && "max-md:w-[6.25rem] max-md:rounded-none",
         )}
         onClick={() => setOpen((current) => !current)}
         type="button"
