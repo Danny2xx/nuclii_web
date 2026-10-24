@@ -11,11 +11,12 @@ import { visibleNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { useOverHomeHero } from "@/components/layout/use-over-hero";
 
-// Top-bar actions beside the menu button. Log in and sign up sit here from
-// tablets up; phones get a smaller sign up ticket only (log in is in the
-// menu), shown over the opening section and hidden after it. On desktop the
-// main links sit inline too, over the opening section; once you scroll past
-// it they fold away into the menu.
+// Top-bar actions beside the menu button: just the sign up ticket. Log in
+// lives in the menu only (both go to /join until real login exists; bring it
+// back here, over the opening section only, once it does). Phones get a
+// smaller ticket, shown over the opening section and hidden after it. On
+// desktop the main links sit inline too, over the opening section; once you
+// scroll past it they fold away into the menu.
 
 // Whether the page behind the bar is light, so lime "Log in" (too faint on
 // light: about 2:1) can switch to black there. Samples what sits under the
@@ -88,7 +89,7 @@ function SideNav() {
   // The /join gate is intentionally distraction-free — logo only.
   if (pathname === "/join") return null;
 
-  const actions = visibleNavItems.filter((item) => item.variant === "login" || item.variant === "signup");
+  const actions = visibleNavItems.filter((item) => item.variant === "signup");
   const links = visibleNavItems.filter((item) => !item.variant);
 
   return (
