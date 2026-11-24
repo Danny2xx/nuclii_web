@@ -1,6 +1,8 @@
 export const routes = {
   home: "/",
-  waitlist: "/join",
+  // The join buttons go to the app's sign-up now it's live (24 Nov 2026); the /join page and its
+  // referral links still work for anybody who has one.
+  waitlist: "https://app.nuclii.co.uk/signup",
   partner: "/partner",
   events: "/events",
   whoItsFor: "/who-its-for",
