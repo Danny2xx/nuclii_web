@@ -108,7 +108,7 @@ function PolicyPage({
                 }}
                 href={routes.waitlist}
               >
-                join early access
+                sign up
               </TrackedAnchor>
             </Button>
           </div>

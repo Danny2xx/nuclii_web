@@ -33,7 +33,7 @@ export const footerLinks: readonly {
   // the part of the label set in bold
   bold?: string;
 }[] = [
-  { label: "events", href: routes.events },
+  { label: "events", href: routes.explore },
   { label: "partner with us", href: routes.partner },
   { label: "nuclii studio", bold: "studio", href: routes.studio },
   { label: "join the team", href: `${routes.studio}#team` },

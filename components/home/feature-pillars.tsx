@@ -111,7 +111,7 @@ function FeaturePillars() {
               className="group inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full bg-white px-6 text-sm font-semibold lowercase !text-black transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transform-none"
               href={routes.waitlist}
             >
-              join the waitlist
+              sign up
               <ArrowRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
           </div>
